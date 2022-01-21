@@ -61,8 +61,6 @@ class OpenloginPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRe
   }
 
   override fun onNewIntent(intent: Intent) : Boolean {
-    //handle data with intent
-    Log.d("lol", "intent")
     openlogin.setResultUrl(intent.data)
     return true
   }
@@ -71,7 +69,6 @@ class OpenloginPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRe
     CoroutineScope(Dispatchers.Default).launch {
       try {
         val response = runMethodCall(call)
-        Log.d("lol", response.toString())
         launch(Dispatchers.Main) { result.success(response) }
       } catch (e: NotImplementedError) {
         launch(Dispatchers.Main) { result.notImplemented() }
@@ -104,7 +101,6 @@ class OpenloginPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRe
         val loginCF = openlogin.login(mapLoginParams(call))
         loginCF.join()
         Log.d("${OpenloginPlugin::class.qualifiedName}","#login")
-        Log.d("lol", "login")
 
         var loginResult : Map<String, Any?>? = null
         loginCF.whenComplete { result, error ->
@@ -131,7 +127,6 @@ class OpenloginPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRe
         val logoutCF = openlogin.logout()
         logoutCF.join()
         Log.d("${OpenloginPlugin::class.qualifiedName}","#logout")
-        Log.d("lol", "logout")
 
         logoutCF.whenComplete { _, error ->
           if (error != null) {
