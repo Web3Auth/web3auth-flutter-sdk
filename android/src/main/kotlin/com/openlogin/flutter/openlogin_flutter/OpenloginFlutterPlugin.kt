@@ -6,22 +6,14 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-import androidx.annotation.NonNull
 
-import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-
-import io.flutter.plugin.common.MethodChannel.Result
 import com.openlogin.core.OpenLogin
 import com.openlogin.core.types.ExtraLoginOptions
 import com.openlogin.core.types.LoginParams
@@ -100,7 +92,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
         openlogin.setResultUrl(activity?.intent?.data)
 
-        Log.d("${OpenloginPlugin::class.qualifiedName}","#init")
+        Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#init")
         return null
       }
 
@@ -108,7 +100,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
         val loginCF = openlogin.login(mapLoginParams(call))
         loginCF.join()
-        Log.d("${OpenloginPlugin::class.qualifiedName}","#login")
+        Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#login")
 
         var loginResult : Map<String, Any?>? = null
         loginCF.whenComplete { result, error ->
@@ -134,7 +126,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
       "triggerLogout" -> {
         val logoutCF = openlogin.logout()
         logoutCF.join()
-        Log.d("${OpenloginPlugin::class.qualifiedName}","#logout")
+        Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#logout")
 
         logoutCF.whenComplete { _, error ->
           if (error != null) {
