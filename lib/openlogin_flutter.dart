@@ -150,4 +150,110 @@ class OpenloginFlutter {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
+
+  static Future<void> init({
+    required String clientId,
+    required Network network,
+    required String redirectUri
+  }) async {
+    final String networkString = network.toString();
+    await _channel.invokeMethod('init', {
+      'network': networkString.substring(networkString.lastIndexOf('.') + 1),
+      'redirectUri': redirectUri,
+      'clientId': clientId
+    });
+  }
+
+  static Future<OpenLoginResponse> triggerLogin({
+    required Provider provider,
+    String? appState,
+    bool? reLogin,
+    String? redirectUrl,
+    bool? skipTKey,
+    String? client_id,
+    String? connection,
+    String? domain,
+    String? id_token_hint,
+    String? login_hint,
+    Map jwtParams = const {},
+  }) async {
+    try {
+      final Map loginResponse = await _channel.invokeMethod('triggerLogin', {
+        'provider':provider.toString().substring(provider.toString().lastIndexOf('.') + 1),
+        'appState':appState,
+        'reLogin':reLogin,
+        'redirectUrl':redirectUrl,
+        'skipTKey':skipTKey,
+        'client_id':client_id,
+        'connection':connection,
+        'domain':domain,
+        'id_token_hint':id_token_hint,
+        'login_hint':login_hint
+      });
+      return OpenLoginResponse(
+          loginResponse['privateKey'],
+          _convertUserInfo(loginResponse['userInfo']).first,
+          loginResponse['error']
+      );
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          throw e;
+      }
+    }
+  }
+
+  static Future<void> triggerLogout() async {
+    try {
+      await _channel.invokeMethod('triggerLogout', {});
+      return;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          throw e;
+      }
+    }
+  }
+
+
+  static List<TorusUserInfo> _convertUserInfo(dynamic obj) {
+    if (obj == null) {
+      return [];
+    }
+    if (obj is List<dynamic>) {
+      return obj
+          .whereType<Map>()
+          .map((e) => TorusUserInfo(
+          email: e['email'],
+          name: e['name'],
+          profileImage: e['profileImage'],
+          verifier: e['verifier'],
+          verifierId: e['verifierId'],
+          typeOfLogin: e['typeOfLogin']
+      ))
+          .toList();
+    }
+    if (obj is Map) {
+      final Map e = obj;
+      return [
+        TorusUserInfo(
+            email: e['email'],
+            name: e['name'],
+            profileImage: e['profileImage'],
+            verifier: e['verifier'],
+            verifierId: e['verifierId'],
+            typeOfLogin: e['typeOfLogin']
+        )
+      ];
+    }
+    throw Exception("incorrect userInfo format");
+  }
 }
