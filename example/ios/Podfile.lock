@@ -1,11 +1,17 @@
 PODS:
   - Flutter (1.0.0)
+  - OpenLogin (1.0.0)
   - openlogin_flutter (0.0.1):
     - Flutter
+    - OpenLogin (~> 1.0.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - openlogin_flutter (from `.symlinks/plugins/openlogin_flutter/ios`)
+
+SPEC REPOS:
+  trunk:
+    - OpenLogin
 
 EXTERNAL SOURCES:
   Flutter:
@@ -15,8 +21,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  openlogin_flutter: 2e76fcb9fa5339fcdf5eecb3cbbffbe9f0c3e2de
+  OpenLogin: 055c3108e8ada81a1e833c2c59188faed302e32b
+  openlogin_flutter: 084e1668577030b5f8c40484b6c93905977a94f8
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
 COCOAPODS: 1.11.2
