@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     await OpenloginFlutter.init(
-        clientId: 'BAMp-KU7prtnHfNL6DsA5FwWAZp2LJOiPSm0mjPu42NUYgtMo-D6W2ajxbsytlg3hEETzh6AODvvPM_DmLsgy7M',
+        clientId: 'BOsNaqfC9exeI_0K_YWV_jLe_wpLcqLu1QU1_bv5wb_D7ufUHSIuRyhqh6AnpfgsWkVChdaOO3cJ6T9LJddpYYQ',
         network: Network.mainnet,
         redirectUri: 'org.torusresearch.flutter.openloginexample://auth');
   }
