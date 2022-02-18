@@ -9,14 +9,14 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Flutter SDK for Torus Web3Auth (OpenLogin)
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://web3auth.io'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Web3Auth' => 'hello@web3auth.io' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   s.dependency 'OpenLogin', '~> 1.0.0'
-  s.platform = :ios, '9.0'
+  s.platform = :ios, '12.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
