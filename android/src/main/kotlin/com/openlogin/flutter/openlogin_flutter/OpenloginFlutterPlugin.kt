@@ -12,12 +12,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import com.web3auth.core.Web3Auth
+import com.web3auth.core.types.*
 
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import com.openlogin.core.OpenLogin
-import com.openlogin.core.types.ExtraLoginOptions
-import com.openlogin.core.types.LoginParams
-import com.openlogin.core.types.OpenLoginOptions
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +29,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
   private var activity: Activity? = null
   private lateinit var context: Context
-  private lateinit var openlogin: OpenLogin
+  private lateinit var web3auth: Web3Auth
 
   override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(binding.binaryMessenger, "openlogin_flutter")
@@ -61,7 +59,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
   }
 
   override fun onNewIntent(intent: Intent) : Boolean {
-    openlogin.setResultUrl(intent.data)
+    web3auth.setResultUrl(intent.data)
     return true
   }
 
@@ -83,14 +81,18 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
   private fun runMethodCall(@NonNull call: MethodCall): Any? {
     when (call.method) {
       "init" -> {
-        openlogin = OpenLogin(OpenLoginOptions(
+        val whiteLabelData = mapWhiteLabelData(call)
+        web3auth = Web3Auth(
+          Web3AuthOptions(
                 activity!!,
                 call.argument("clientId")!!,
                 getOpenLoginNetwork(call.argument("network")!!),
                 Uri.parse(call.argument("redirectUri")),
-        ))
+                whiteLabel = whiteLabelData
+          )
+        )
 
-        openlogin.setResultUrl(activity?.intent?.data)
+        web3auth.setResultUrl(activity?.intent?.data)
 
         Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#init")
         return null
@@ -98,7 +100,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
       "triggerLogin" -> {
 
-        val loginCF = openlogin.login(mapLoginParams(call))
+        val loginCF = web3auth.login(mapLoginParams(call))
         loginCF.join()
         Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#login")
 
@@ -124,7 +126,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
       }
 
       "triggerLogout" -> {
-        val logoutCF = openlogin.logout()
+        val logoutCF = web3auth.logout()
         logoutCF.join()
         Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#logout")
 
@@ -139,30 +141,47 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
     throw NotImplementedError()
   }
 
-  private fun getOpenLoginProvider(provider: String): OpenLogin.Provider {
+  private fun getOpenLoginProvider(provider: String): Provider {
     return when (provider) {
-      "google" -> OpenLogin.Provider.GOOGLE
-      "facebook" -> OpenLogin.Provider.FACEBOOK
-      "reddit" -> OpenLogin.Provider.REDDIT
-      "discord" -> OpenLogin.Provider.DISCORD
-      "twitch" -> OpenLogin.Provider.TWITCH
-      "apple" -> OpenLogin.Provider.APPLE
-      "line" -> OpenLogin.Provider.LINE
-      "github" -> OpenLogin.Provider.GITHUB
-      "kakao" -> OpenLogin.Provider.KAKAO
-      "linkedin" -> OpenLogin.Provider.LINKEDIN
-      "twitter" -> OpenLogin.Provider.TWITTER
-      "weibo" -> OpenLogin.Provider.WEIBO
-      "wechat" -> OpenLogin.Provider.WECHAT
-      "email_passwordless" -> OpenLogin.Provider.EMAIL_PASSWORDLESS
+      "google" -> Provider.GOOGLE
+      "facebook" -> Provider.FACEBOOK
+      "reddit" -> Provider.REDDIT
+      "discord" -> Provider.DISCORD
+      "twitch" -> Provider.TWITCH
+      "apple" -> Provider.APPLE
+      "line" -> Provider.LINE
+      "github" -> Provider.GITHUB
+      "kakao" -> Provider.KAKAO
+      "linkedin" -> Provider.LINKEDIN
+      "twitter" -> Provider.TWITTER
+      "weibo" -> Provider.WEIBO
+      "wechat" -> Provider.WECHAT
+      "email_passwordless" -> Provider.EMAIL_PASSWORDLESS
 
-      else -> OpenLogin.Provider.GOOGLE
+      else -> Provider.GOOGLE
     }
   }
 
-  private fun getOpenLoginNetwork(network : String) : OpenLogin.Network {
-    if (network.equals("mainnet", true)) return OpenLogin.Network.MAINNET
-    else return OpenLogin.Network.TESTNET
+  private fun getOpenLoginNetwork(network : String) : Web3Auth.Network {
+    if (network.equals("mainnet", true)) return Web3Auth.Network.MAINNET
+    else return Web3Auth.Network.TESTNET
+  }
+
+  private fun mapWhiteLabelData(call: MethodCall) : WhiteLabelData? {
+
+    val wlName : String? = call.argument("wl_name")
+    val wlLogoLight : String? = call.argument("wl_logo_light")
+    val wlLogoDark : String? = call.argument("wl_logo_dark")
+    val wlDefaultLang : String? = call.argument("wl_default_language")
+    val wlDark : Boolean? = call.argument("wl_dark")
+    val wlTheme : HashMap<String, String>? = call.argument("wl_theme")
+
+    return WhiteLabelData(name = wlName,
+      logoLight = wlLogoLight,
+      logoDark = wlLogoDark,
+      defaultLanguage = wlDefaultLang,
+      dark = wlDark,
+      theme = wlTheme)
   }
 
   private fun mapLoginParams(call : MethodCall) : LoginParams {
@@ -187,7 +206,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
     return LoginParams(getOpenLoginProvider(provider),
             appState = appState,
-            reLogin = reLogin,
+            relogin = reLogin,
             redirectUrl = redirectUrl,
             skipTKey = skipTKey,
             extraLoginOptions = extraLoginOptions)

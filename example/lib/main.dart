@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -25,10 +27,16 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
+    HashMap themeMap = new HashMap<String, String>();
+    themeMap['primary'] = "#fff000";
+    
     await OpenloginFlutter.init(
-        clientId: 'BOsNaqfC9exeI_0K_YWV_jLe_wpLcqLu1QU1_bv5wb_D7ufUHSIuRyhqh6AnpfgsWkVChdaOO3cJ6T9LJddpYYQ',
+        clientId:
+            'BOsNaqfC9exeI_0K_YWV_jLe_wpLcqLu1QU1_bv5wb_D7ufUHSIuRyhqh6AnpfgsWkVChdaOO3cJ6T9LJddpYYQ',
         network: Network.mainnet,
-        redirectUri: 'org.torusresearch.flutter.openloginexample://auth');
+        redirectUri: 'org.torusresearch.flutter.openloginexample://auth',
+        whiteLabelData: WhiteLabelData(
+            dark: true, name: "Web3Auth Flutter App", theme: themeMap));
   }
 
   @override
@@ -40,31 +48,35 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Login with'),
-                ),
-                ElevatedButton(
-                    onPressed: _login(_withGoogle), child: Text('Google')),
-                ElevatedButton(
-                    onPressed: _login(_withFacebook), child: Text('Facebook')),
-                ElevatedButton(
-                    onPressed: _login(_withReddit), child: Text('Reddit ')),
-                ElevatedButton(
-                    onPressed: _login(_withDiscord), child: Text('Discord')),
-                Visibility(
-                  child: ElevatedButton(style: ElevatedButton.styleFrom(primary: Colors.red // This is what you need!
-                  ),onPressed: _logout(), child: Text('Logout')),
-                  visible: logoutVisible,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Result: $_result'),
-                )
-              ],
-            )),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Login with'),
+            ),
+            ElevatedButton(
+                onPressed: _login(_withGoogle), child: Text('Google')),
+            ElevatedButton(
+                onPressed: _login(_withFacebook), child: Text('Facebook')),
+            ElevatedButton(
+                onPressed: _login(_withReddit), child: Text('Reddit ')),
+            ElevatedButton(
+                onPressed: _login(_withDiscord), child: Text('Discord')),
+            Visibility(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.red // This is what you need!
+                      ),
+                  onPressed: _logout(),
+                  child: Text('Logout')),
+              visible: logoutVisible,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Result: $_result'),
+            )
+          ],
+        )),
       ),
     );
   }
@@ -101,24 +113,20 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
-
   Future<OpenLoginResponse> _withGoogle() {
     return OpenloginFlutter.triggerLogin(
         provider: Provider.google);
   }
 
   Future<OpenLoginResponse> _withFacebook() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.facebook);
+    return OpenloginFlutter.triggerLogin(provider: Provider.facebook);
   }
 
   Future<OpenLoginResponse> _withReddit() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.reddit);
+    return OpenloginFlutter.triggerLogin(provider: Provider.reddit);
   }
 
   Future<OpenLoginResponse> _withDiscord() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.discord);
+    return OpenloginFlutter.triggerLogin(provider: Provider.discord);
   }
 }

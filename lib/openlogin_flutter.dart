@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:ffi';
+import 'dart:collection';
 
 import 'package:flutter/services.dart';
 
@@ -26,14 +28,13 @@ class LoginParams {
   final Uri? redirectUrl;
   final String? appState;
 
-  LoginParams({
-    required this.loginProvider,
-    this.reLogin,
-    this.skipTKey,
-    this.extraLoginOptions,
-    this.redirectUrl,
-    this.appState
-  });
+  LoginParams(
+      {required this.loginProvider,
+      this.reLogin,
+      this.skipTKey,
+      this.extraLoginOptions,
+      this.redirectUrl,
+      this.appState});
 }
 
 class ExtraLoginOptions {
@@ -55,25 +56,24 @@ class ExtraLoginOptions {
   final String? response_type;
   final String? nonce;
 
-  ExtraLoginOptions({
-    this.additionalParams = const {},
-    this.domain,
-    this.client_id,
-    this.leeway,
-    this.verifierIdField,
-    this.isVerifierIdCaseSensitive,
-    this.max_age,
-    this.ui_locales,
-    this.id_token_hint,
-    this.login_hint,
-    this.acr_values,
-    this.scope,
-    this.audience,
-    this.connection,
-    this.state,
-    this.response_type,
-    this.nonce
-  });
+  ExtraLoginOptions(
+      {this.additionalParams = const {},
+      this.domain,
+      this.client_id,
+      this.leeway,
+      this.verifierIdField,
+      this.isVerifierIdCaseSensitive,
+      this.max_age,
+      this.ui_locales,
+      this.id_token_hint,
+      this.login_hint,
+      this.acr_values,
+      this.scope,
+      this.audience,
+      this.connection,
+      this.state,
+      this.response_type,
+      this.nonce});
 }
 
 class OpenLoginOptions {
@@ -82,12 +82,31 @@ class OpenLoginOptions {
   final Uri? redirectUrl;
   final String? sdkUrl;
 
-  OpenLoginOptions({
-    required this.clientId,
-    required this.network,
-    this.redirectUrl,
-    this.sdkUrl
-  });
+  OpenLoginOptions(
+      {required this.clientId,
+      required this.network,
+      this.redirectUrl,
+      this.sdkUrl});
+}
+
+class WhiteLabelData {
+  final String? name;
+  final String? logoLight;
+  final String? logoDark;
+  final String? defaultLanguage;
+  final bool? dark;
+  final HashMap? theme;
+
+  WhiteLabelData(
+    {
+      this.name,
+      this.logoLight,
+      this.logoDark,
+      this.defaultLanguage,
+      this.dark,
+      this.theme
+    });
+
 }
 
 class OpenLoginResponse {
@@ -95,11 +114,7 @@ class OpenLoginResponse {
   final TorusUserInfo userInfo;
   final String? error;
 
-  OpenLoginResponse(
-      this.privKey,
-      this.userInfo,
-      this.error
-      );
+  OpenLoginResponse(this.privKey, this.userInfo, this.error);
 
   @override
   String toString() {
@@ -138,9 +153,7 @@ class UserCancelledException implements Exception {}
 class UnKnownException implements Exception {
   final String? message;
 
-  UnKnownException(
-      this.message
-      );
+  UnKnownException(this.message);
 }
 
 class OpenloginFlutter {
@@ -151,16 +164,22 @@ class OpenloginFlutter {
     return version;
   }
 
-  static Future<void> init({
-    required String clientId,
-    required Network network,
-    required String redirectUri
-  }) async {
+  static Future<void> init(
+      {required String clientId,
+      required Network network,
+      required String redirectUri,
+    WhiteLabelData? whiteLabelData}) async {
     final String networkString = network.toString();
     await _channel.invokeMethod('init', {
       'network': networkString.substring(networkString.lastIndexOf('.') + 1),
       'redirectUri': redirectUri,
-      'clientId': clientId
+      'clientId': clientId,
+      'wl_name': whiteLabelData?.name,
+      'wl_logo_light': whiteLabelData?.logoLight,
+      'wl_logo_dark': whiteLabelData?.logoDark,
+      'wl_default_language': whiteLabelData?.defaultLanguage,
+      'wl_dark': whiteLabelData?.dark,
+      'wl_theme': whiteLabelData?.theme
     });
   }
 
@@ -175,26 +194,28 @@ class OpenloginFlutter {
     String? domain,
     String? id_token_hint,
     String? login_hint,
-    Map jwtParams = const {},
+    Map jwtParams = const {}
   }) async {
     try {
       final Map loginResponse = await _channel.invokeMethod('triggerLogin', {
-        'provider':provider.toString().substring(provider.toString().lastIndexOf('.') + 1),
-        'appState':appState,
-        'reLogin':reLogin,
-        'redirectUrl':redirectUrl,
-        'skipTKey':skipTKey,
-        'client_id':client_id,
-        'connection':connection,
-        'domain':domain,
-        'id_token_hint':id_token_hint,
-        'login_hint':login_hint
+        'provider': provider
+            .toString()
+            .substring(provider.toString().lastIndexOf('.') + 1),
+        'appState': appState,
+        'reLogin': reLogin,
+        'redirectUrl': redirectUrl,
+        'skipTKey': skipTKey,
+        'client_id': client_id,
+        'connection': connection,
+        'domain': domain,
+        'id_token_hint': id_token_hint,
+        'login_hint': login_hint,
+
       });
       return OpenLoginResponse(
           loginResponse['privateKey'],
           _convertUserInfo(loginResponse['userInfo']).first,
-          loginResponse['error']
-      );
+          loginResponse['error']);
     } on PlatformException catch (e) {
       switch (e.code) {
         case "UserCancelledException":
@@ -223,7 +244,6 @@ class OpenloginFlutter {
     }
   }
 
-
   static List<TorusUserInfo> _convertUserInfo(dynamic obj) {
     if (obj == null) {
       return [];
@@ -232,13 +252,12 @@ class OpenloginFlutter {
       return obj
           .whereType<Map>()
           .map((e) => TorusUserInfo(
-          email: e['email'],
-          name: e['name'],
-          profileImage: e['profileImage'],
-          verifier: e['verifier'],
-          verifierId: e['verifierId'],
-          typeOfLogin: e['typeOfLogin']
-      ))
+              email: e['email'],
+              name: e['name'],
+              profileImage: e['profileImage'],
+              verifier: e['verifier'],
+              verifierId: e['verifierId'],
+              typeOfLogin: e['typeOfLogin']))
           .toList();
     }
     if (obj is Map) {
@@ -250,8 +269,7 @@ class OpenloginFlutter {
             profileImage: e['profileImage'],
             verifier: e['verifier'],
             verifierId: e['verifierId'],
-            typeOfLogin: e['typeOfLogin']
-        )
+            typeOfLogin: e['typeOfLogin'])
       ];
     }
     throw Exception("incorrect userInfo format");
