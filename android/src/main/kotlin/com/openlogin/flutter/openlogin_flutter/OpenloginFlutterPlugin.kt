@@ -14,6 +14,7 @@ import android.net.Uri
 import android.util.Log
 import com.google.gson.Gson
 import com.openlogin.flutter.openlogin_flutter.types.LoginConfig
+import com.openlogin.flutter.openlogin_flutter.types.WLData
 import com.web3auth.core.Web3Auth
 import com.web3auth.core.types.*
 
@@ -89,7 +90,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
           Web3AuthOptions(
                 activity!!,
                 call.argument("clientId")!!,
-                getOpenLoginNetwork(call.argument("network")!!),
+                getOpenLoginNetwork(call.argument("network")),
                 Uri.parse(call.argument("redirectUri")),
                 whiteLabel = whiteLabelData,
                 loginConfig = loginConfig
@@ -166,37 +167,31 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
     }
   }
 
-  private fun getOpenLoginNetwork(network : String) : Web3Auth.Network {
-    if (network.equals("mainnet", true)) return Web3Auth.Network.MAINNET
-    else return Web3Auth.Network.TESTNET
+  private fun getOpenLoginNetwork(network : String?) : Web3Auth.Network {
+    return when {
+        network.isNullOrBlank() -> Web3Auth.Network.MAINNET
+        network.equals("mainnet", true) -> Web3Auth.Network.MAINNET
+        network.equals("cyan", true) -> Web3Auth.Network.CYAN
+        else -> Web3Auth.Network.TESTNET
+    }
   }
 
   private fun mapWhiteLabelData(call: MethodCall) : WhiteLabelData? {
-    val wlName : String? = call.argument("wl_name")
-    val wlLogoLight : String? = call.argument("wl_logo_light")
-    val wlLogoDark : String? = call.argument("wl_logo_dark")
-    val wlDefaultLang : String? = call.argument("wl_default_language")
-    val wlDark : Boolean? = call.argument("wl_dark")
-    val wlTheme : HashMap<String, String>? = call.argument("wl_theme")
-
-    return WhiteLabelData(name = wlName,
-      logoLight = wlLogoLight,
-      logoDark = wlLogoDark,
-      defaultLanguage = wlDefaultLang,
-      dark = wlDark,
-      theme = wlTheme)
+    val wlData : String? = call.argument("white_label_data")
+    if (wlData.isNullOrBlank()) return null
+    return Gson().fromJson(wlData, WLData::class.java).toWhiteLabelData()
   }
 
   private fun mapLoginConfigItem(call : MethodCall) : HashMap<String, LoginConfigItem>? {
     val loginConfig : String? = call.argument("login_config")
-    if (loginConfig.isNullOrBlank()) return null
+    if (loginConfig.isNullOrBlank() || loginConfig == "null") return null
     return Gson().fromJson(loginConfig, LoginConfig::class.java).toLoginConfig()
   }
 
   private fun mapLoginParams(call : MethodCall) : LoginParams {
     val provider: String = call.argument("provider") ?: ""
     val appState: String? = call.argument("appState")
-    val reLogin: Boolean? = call.argument("reLogin")
+    val relogin: Boolean? = call.argument("relogin")
     val redirectUrlStr: String? = call.argument("redirectUrl")
     val redirectUrl: Uri? = redirectUrlStr?.let { Uri.parse(redirectUrlStr) }
     val skipTKey: Boolean? = call.argument("skipTKey")
@@ -215,7 +210,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
     return LoginParams(getOpenLoginProvider(provider),
             appState = appState,
-            relogin = reLogin,
+            relogin = relogin,
             redirectUrl = redirectUrl,
             skipTKey = skipTKey,
             extraLoginOptions = extraLoginOptions)

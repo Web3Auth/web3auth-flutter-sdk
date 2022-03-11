@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:collection';
 
 import 'package:flutter/services.dart';
 
-enum Network { mainnet, testnet }
+enum Network { mainnet, testnet, cyan }
 
 enum Provider {
   google,
@@ -71,21 +72,39 @@ class LoginConfigItem {
   final bool? showOnDesktop;
   final bool? showOnMobile;
 
-  LoginConfigItem({
-    required this.verifier,
-    required this.typeOfLogin,
-    required this.name,
-    this.description,
-    this.clientId,
-    this.verifierSubIdentifier,
-    this.logoHover,
-    this.logoLight,
-    this.logoDark,
-    this.mainOption,
-    this.showOnModal,
-    this.showOnDesktop,
-    this.showOnMobile
-  });
+  LoginConfigItem(
+      {required this.verifier,
+      required this.typeOfLogin,
+      required this.name,
+      this.description,
+      this.clientId,
+      this.verifierSubIdentifier,
+      this.logoHover,
+      this.logoLight,
+      this.logoDark,
+      this.mainOption,
+      this.showOnModal,
+      this.showOnDesktop,
+      this.showOnMobile});
+
+    Map<String, dynamic> toJson() {
+    return {
+      'verifier': verifier,
+      'typeOfLogin': typeOfLogin.toString(),
+      'name': name,
+      'description': description,
+      'clientId': clientId,
+      'verifierSubIdentifier': verifierSubIdentifier,
+      'logoHover': logoHover,
+      'logoLight': logoLight,
+      'logoDark': logoDark,
+      'mainOption': mainOption,
+      'showOnModal': showOnModal,
+      'showOnDesktop': showOnDesktop,
+      'showOnMobile': showOnMobile
+      };
+  }
+
 }
 
 class ExtraLoginOptions {
@@ -155,6 +174,18 @@ class WhiteLabelData {
       this.defaultLanguage,
       this.dark,
       this.theme});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'logoLight': logoLight,
+      'logoDark': logoDark,
+      'defaultLanguage': defaultLanguage,
+      'dark': dark,
+      'theme': theme
+    };
+  }
+
 }
 
 class OpenLoginResponse {
@@ -214,29 +245,26 @@ class OpenloginFlutter {
 
   static Future<void> init(
       {required String clientId,
-      required Network network,
+      Network? network,
       required String redirectUri,
       WhiteLabelData? whiteLabelData,
       HashMap? loginConfig}) async {
-    final String networkString = network.toString();
+    final String? networkString = (network != null) ? network.toString() : null;
     await _channel.invokeMethod('init', {
-      'network': networkString.substring(networkString.lastIndexOf('.') + 1),
+      'network': (networkString != null)
+          ? networkString.substring(networkString.lastIndexOf('.') + 1)
+          : null,
       'redirectUri': redirectUri,
       'clientId': clientId,
-      'wl_name': whiteLabelData?.name,
-      'wl_logo_light': whiteLabelData?.logoLight,
-      'wl_logo_dark': whiteLabelData?.logoDark,
-      'wl_default_language': whiteLabelData?.defaultLanguage,
-      'wl_dark': whiteLabelData?.dark,
-      'wl_theme': whiteLabelData?.theme,  
-      'login_config':loginConfig?.toString()
+      'white_label_data': jsonEncode(whiteLabelData),
+      'login_config': jsonEncode(loginConfig)
     });
   }
 
   static Future<OpenLoginResponse> triggerLogin(
       {required Provider provider,
       String? appState,
-      bool? reLogin,
+      bool? relogin,
       String? redirectUrl,
       bool? skipTKey,
       String? client_id,
@@ -251,7 +279,7 @@ class OpenloginFlutter {
             .toString()
             .substring(provider.toString().lastIndexOf('.') + 1),
         'appState': appState,
-        'reLogin': reLogin,
+        'relogin': relogin,
         'redirectUrl': redirectUrl,
         'skipTKey': skipTKey,
         'client_id': client_id,
