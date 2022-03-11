@@ -12,6 +12,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import com.google.gson.Gson
+import com.openlogin.flutter.openlogin_flutter.types.LoginConfig
 import com.web3auth.core.Web3Auth
 import com.web3auth.core.types.*
 
@@ -82,13 +84,15 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
     when (call.method) {
       "init" -> {
         val whiteLabelData = mapWhiteLabelData(call)
+        val loginConfig = mapLoginConfigItem(call)
         web3auth = Web3Auth(
           Web3AuthOptions(
                 activity!!,
                 call.argument("clientId")!!,
                 getOpenLoginNetwork(call.argument("network")!!),
                 Uri.parse(call.argument("redirectUri")),
-                whiteLabel = whiteLabelData
+                whiteLabel = whiteLabelData,
+                loginConfig = loginConfig
           )
         )
 
@@ -168,7 +172,6 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
   }
 
   private fun mapWhiteLabelData(call: MethodCall) : WhiteLabelData? {
-
     val wlName : String? = call.argument("wl_name")
     val wlLogoLight : String? = call.argument("wl_logo_light")
     val wlLogoDark : String? = call.argument("wl_logo_dark")
@@ -182,6 +185,12 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
       defaultLanguage = wlDefaultLang,
       dark = wlDark,
       theme = wlTheme)
+  }
+
+  private fun mapLoginConfigItem(call : MethodCall) : HashMap<String, LoginConfigItem>? {
+    val loginConfig : String? = call.argument("login_config")
+    if (loginConfig.isNullOrBlank()) return null
+    return Gson().fromJson(loginConfig, LoginConfig::class.java).toLoginConfig()
   }
 
   private fun mapLoginParams(call : MethodCall) : LoginParams {

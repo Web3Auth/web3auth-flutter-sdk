@@ -20,6 +20,25 @@ enum Provider {
   email_passwordless
 }
 
+enum TypeOfLogin {
+  google,
+  facebook,
+  reddit,
+  discord,
+  twitch,
+  github,
+  apple,
+  kakao,
+  linkedin,
+  twitter,
+  weibo,
+  wechat,
+  line,
+  email_passwordless,
+  email_password,
+  jwt
+}
+
 class LoginParams {
   final Provider loginProvider;
   final bool? reLogin;
@@ -35,6 +54,38 @@ class LoginParams {
       this.extraLoginOptions,
       this.redirectUrl,
       this.appState});
+}
+
+class LoginConfigItem {
+  final String verifier;
+  final TypeOfLogin typeOfLogin;
+  final String name;
+  final String? description;
+  final String? clientId;
+  final String? verifierSubIdentifier;
+  final String? logoHover;
+  final String? logoLight;
+  final String? logoDark;
+  final bool? mainOption;
+  final bool? showOnModal;
+  final bool? showOnDesktop;
+  final bool? showOnMobile;
+
+  LoginConfigItem({
+    required this.verifier,
+    required this.typeOfLogin,
+    required this.name,
+    this.description,
+    this.clientId,
+    this.verifierSubIdentifier,
+    this.logoHover,
+    this.logoLight,
+    this.logoDark,
+    this.mainOption,
+    this.showOnModal,
+    this.showOnDesktop,
+    this.showOnMobile
+  });
 }
 
 class ExtraLoginOptions {
@@ -98,15 +149,12 @@ class WhiteLabelData {
   final HashMap? theme;
 
   WhiteLabelData(
-    {
-      this.name,
+      {this.name,
       this.logoLight,
       this.logoDark,
       this.defaultLanguage,
       this.dark,
-      this.theme
-    });
-
+      this.theme});
 }
 
 class OpenLoginResponse {
@@ -168,7 +216,8 @@ class OpenloginFlutter {
       {required String clientId,
       required Network network,
       required String redirectUri,
-    WhiteLabelData? whiteLabelData}) async {
+      WhiteLabelData? whiteLabelData,
+      HashMap? loginConfig}) async {
     final String networkString = network.toString();
     await _channel.invokeMethod('init', {
       'network': networkString.substring(networkString.lastIndexOf('.') + 1),
@@ -179,23 +228,23 @@ class OpenloginFlutter {
       'wl_logo_dark': whiteLabelData?.logoDark,
       'wl_default_language': whiteLabelData?.defaultLanguage,
       'wl_dark': whiteLabelData?.dark,
-      'wl_theme': whiteLabelData?.theme
+      'wl_theme': whiteLabelData?.theme,  
+      'login_config':loginConfig?.toString()
     });
   }
 
-  static Future<OpenLoginResponse> triggerLogin({
-    required Provider provider,
-    String? appState,
-    bool? reLogin,
-    String? redirectUrl,
-    bool? skipTKey,
-    String? client_id,
-    String? connection,
-    String? domain,
-    String? id_token_hint,
-    String? login_hint,
-    Map jwtParams = const {}
-  }) async {
+  static Future<OpenLoginResponse> triggerLogin(
+      {required Provider provider,
+      String? appState,
+      bool? reLogin,
+      String? redirectUrl,
+      bool? skipTKey,
+      String? client_id,
+      String? connection,
+      String? domain,
+      String? id_token_hint,
+      String? login_hint,
+      Map jwtParams = const {}}) async {
     try {
       final Map loginResponse = await _channel.invokeMethod('triggerLogin', {
         'provider': provider
@@ -210,7 +259,6 @@ class OpenloginFlutter {
         'domain': domain,
         'id_token_hint': id_token_hint,
         'login_hint': login_hint,
-
       });
       return OpenLoginResponse(
           loginResponse['privateKey'],
