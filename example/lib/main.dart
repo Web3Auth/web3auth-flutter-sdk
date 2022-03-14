@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
 
     await Web3AuthFlutter.init(
         clientId:
-            'BOsNaqfC9exeI_0K_YWV_jLe_wpLcqLu1QU1_bv5wb_D7ufUHSIuRyhqh6AnpfgsWkVChdaOO3cJ6T9LJddpYYQ',
+            'BPcJHn_y62h5k9v33TzTSPQiHJZuOGwQdjOanCC7-GKgelSYz1PYPoU7LIJqix3CGFHLF7IEIvsfQhBF_rx9rUw',
         network: Network.mainnet,
         redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
         whiteLabelData: WhiteLabelData(
