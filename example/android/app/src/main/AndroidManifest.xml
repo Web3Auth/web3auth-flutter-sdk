@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.openlogin.flutter.openlogin_flutter_example">
+    package="com.web3auth.flutter.web3auth_flutter_example">
    <application
-        android:label="openlogin_flutter_example"
+        android:label="web3auth_flutter_example"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Accept URIs: {YOUR_APP_PACKAGE_NAME}://* -->
-                <data android:scheme="org.torusresearch.flutter.openloginexample" />
+                <data android:scheme="org.torusresearch.flutter.web3authexample" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

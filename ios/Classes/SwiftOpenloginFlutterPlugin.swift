@@ -1,11 +1,11 @@
 import Flutter
 import UIKit
-import OpenLogin
+import Web3Auth
 
-public class SwiftOpenloginFlutterPlugin: NSObject, FlutterPlugin {
+public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "openlogin_flutter", binaryMessenger: registrar.messenger())
-    let instance = SwiftOpenloginFlutterPlugin()
+    let channel = FlutterMethodChannel(name: "web3auth_flutter", binaryMessenger: registrar.messenger())
+    let instance = SwiftWeb3AuthFlutterPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
     
@@ -39,13 +39,13 @@ public class SwiftOpenloginFlutterPlugin: NSObject, FlutterPlugin {
           else {
               result(FlutterError(
                       code: "NotInitializedException",
-                      message: "OpenLogin.init has to be called first",
+                      message: "Web3Auth.init has to be called first",
                       details: nil))
               return
           }
           let loginParams = mapLoginParams(args)
-          let openlogin = OpenLogin(initParams)
-          openlogin.login(loginParams) {
+          let web3auth = Web3Auth(initParams)
+          web3auth.login(loginParams) {
               switch $0 {
               case .success(let state):
                   let map: [String: Any] = [
@@ -64,28 +64,28 @@ public class SwiftOpenloginFlutterPlugin: NSObject, FlutterPlugin {
               case .failure(let error):
                   result(FlutterError(
                     code: "LoginFailedException",
-                    message: "OpenLogin login flow failed",
+                    message: "Web3Auth login flow failed",
                     details: error.localizedDescription
                   ))
                   return
               }
           }
       case "triggerLogout":
-          print("OpenLogin.logout has been called, this operation is a no-op on iOS.")
+          print("Web3Auth.logout has been called, this operation is a no-op on iOS.")
       default:
           result(FlutterMethodNotImplemented)
       }
   }
 }
 
-func getOpenLoginNetwork(_ networkStr: String) -> Network {
+func getWeb3AuthNetwork(_ networkStr: String) -> Network {
     if networkStr == "mainnet"{
         return .mainnet
     }
     return .testnet
 }
 
-func getOpenLoginProvider(_ providerStr: String) -> OpenLoginProvider {
+func getWeb3AuthProvider(_ providerStr: String) -> Web3AuthProvider {
     switch providerStr {
     case "google":
         return .GOOGLE
@@ -137,5 +137,5 @@ func mapLoginParams(_ args: Dictionary<String, Any>) -> OLLoginParams {
     if let loginHint = args["login_hint"] as? String {
         extraLoginOptions["login_hint"] = loginHint
     }
-    return OLLoginParams(provider: getOpenLoginProvider(args["provider"] as! String), relogin: args["reLogin"] as? Bool, skipTKey: args["skipTKey"] as? Bool, extraLoginOptions: extraLoginOptions, redirectUrl: args["redirectUrl"] as? String, appState: args["appState"] as? String)
+    return OLLoginParams(provider: getWeb3AuthProvider(args["provider"] as! String), relogin: args["reLogin"] as? Bool, skipTKey: args["skipTKey"] as? Bool, extraLoginOptions: extraLoginOptions, redirectUrl: args["redirectUrl"] as? String, appState: args["appState"] as? String)
 }

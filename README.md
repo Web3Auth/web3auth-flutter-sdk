@@ -1,19 +1,19 @@
-# openlogin_flutter
+# web3auth_flutter
 
-Flutter SDK for Torus Web3Auth (OpenLogin)
+Flutter SDK for Torus Web3Auth (Web3Auth)
 
 ## Installation
 
 ```yml
 dependencies:
-  openlogin_flutter:
-    git: https://github.com/torusresearch/openlogin-flutter-sdk.git
+  web3auth_flutter:
+    git: https://github.com/torusresearch/web3auth-flutter-sdk.git
 ```
 
 Please refer to the native SDKs for platform-specific configuration.
 
-- [Android SDK](https://github.com/torusresearch/openlogin-android-sdk)
-- [iOS SDK](https://github.com/torusresearch/openlogin-swift-sdk)
+- [Android SDK](https://github.com/torusresearch/web3auth-android-sdk)
+- [iOS SDK](https://github.com/torusresearch/web3auth-swift-sdk)
 
 For iOS, the redirectUrl parameter is fixed, which is `\(bundleId)://auth`, and does not need to be added as a iOS Custom URL Scheme.
 
@@ -25,10 +25,10 @@ Refer to the demo app for more detailed example.
 
 ```dart
 // Login
-final OpenLoginResponse response = await OpenloginFlutter.triggerLogin(provider: Provider.google);
+final Web3AuthResponse response = await Web3AuthFlutter.triggerLogin(provider: Provider.google);
 
 // Logout
-await OpenloginFlutter.triggerLogout();
+await Web3AuthFlutter.triggerLogout();
 
 ```
 

@@ -1,4 +1,4 @@
-package com.openlogin.flutter.openlogin_flutter_example
+package com.web3auth.flutter.web3auth_flutter_example
 
 import io.flutter.embedding.android.FlutterActivity
 

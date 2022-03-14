@@ -1,4 +1,4 @@
-package com.openlogin.flutter.openlogin_flutter.types
+package com.web3auth.flutter.web3auth_flutter.types
 
 data class LoginConfigItem(
     var verifier: String,

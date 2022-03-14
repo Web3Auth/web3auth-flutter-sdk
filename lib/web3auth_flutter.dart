@@ -87,7 +87,7 @@ class LoginConfigItem {
       this.showOnDesktop,
       this.showOnMobile});
 
-    Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'verifier': verifier,
       'typeOfLogin': typeOfLogin.toString(),
@@ -102,9 +102,8 @@ class LoginConfigItem {
       'showOnModal': showOnModal,
       'showOnDesktop': showOnDesktop,
       'showOnMobile': showOnMobile
-      };
+    };
   }
-
 }
 
 class ExtraLoginOptions {
@@ -146,13 +145,13 @@ class ExtraLoginOptions {
       this.nonce});
 }
 
-class OpenLoginOptions {
+class Web3AuthOptions {
   final String clientId;
   final Network network;
   final Uri? redirectUrl;
   final String? sdkUrl;
 
-  OpenLoginOptions(
+  Web3AuthOptions(
       {required this.clientId,
       required this.network,
       this.redirectUrl,
@@ -185,15 +184,14 @@ class WhiteLabelData {
       'theme': theme
     };
   }
-
 }
 
-class OpenLoginResponse {
+class Web3AuthResponse {
   final String privKey;
   final TorusUserInfo userInfo;
   final String? error;
 
-  OpenLoginResponse(this.privKey, this.userInfo, this.error);
+  Web3AuthResponse(this.privKey, this.userInfo, this.error);
 
   @override
   String toString() {
@@ -235,8 +233,8 @@ class UnKnownException implements Exception {
   UnKnownException(this.message);
 }
 
-class OpenloginFlutter {
-  static const MethodChannel _channel = MethodChannel('openlogin_flutter');
+class Web3AuthFlutter {
+  static const MethodChannel _channel = MethodChannel('web3auth_flutter');
 
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
@@ -261,7 +259,7 @@ class OpenloginFlutter {
     });
   }
 
-  static Future<OpenLoginResponse> triggerLogin(
+  static Future<Web3AuthResponse> triggerLogin(
       {required Provider provider,
       String? appState,
       bool? relogin,
@@ -288,7 +286,7 @@ class OpenloginFlutter {
         'id_token_hint': id_token_hint,
         'login_hint': login_hint,
       });
-      return OpenLoginResponse(
+      return Web3AuthResponse(
           loginResponse['privateKey'],
           _convertUserInfo(loginResponse['userInfo']).first,
           loginResponse['error']);

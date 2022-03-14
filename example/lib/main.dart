@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:openlogin_flutter/openlogin_flutter.dart';
+import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,12 +29,12 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     HashMap themeMap = new HashMap<String, String>();
     themeMap['primary'] = "#fff000";
-    
-    await OpenloginFlutter.init(
+
+    await Web3AuthFlutter.init(
         clientId:
             'BOsNaqfC9exeI_0K_YWV_jLe_wpLcqLu1QU1_bv5wb_D7ufUHSIuRyhqh6AnpfgsWkVChdaOO3cJ6T9LJddpYYQ',
         network: Network.mainnet,
-        redirectUri: 'org.torusresearch.flutter.openloginexample://auth',
+        redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
         whiteLabelData: WhiteLabelData(
             dark: true, name: "Web3Auth Flutter App", theme: themeMap));
   }
@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Torus OpenLogin Example'),
+          title: const Text('Torus Web3Auth Example'),
         ),
         body: Center(
             child: Column(
@@ -81,10 +81,10 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  VoidCallback _login(Future<OpenLoginResponse> Function() method) {
+  VoidCallback _login(Future<Web3AuthResponse> Function() method) {
     return () async {
       try {
-        final OpenLoginResponse response = await method();
+        final Web3AuthResponse response = await method();
         setState(() {
           _result = response.toString();
           logoutVisible = true;
@@ -100,7 +100,7 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _logout() {
     return () async {
       try {
-        await OpenloginFlutter.triggerLogout();
+        await Web3AuthFlutter.triggerLogout();
         setState(() {
           _result = '<empty>';
           logoutVisible = false;
@@ -113,20 +113,19 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
-  Future<OpenLoginResponse> _withGoogle() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.google);
+  Future<Web3AuthResponse> _withGoogle() {
+    return Web3AuthFlutter.triggerLogin(provider: Provider.google);
   }
 
-  Future<OpenLoginResponse> _withFacebook() {
-    return OpenloginFlutter.triggerLogin(provider: Provider.facebook);
+  Future<Web3AuthResponse> _withFacebook() {
+    return Web3AuthFlutter.triggerLogin(provider: Provider.facebook);
   }
 
-  Future<OpenLoginResponse> _withReddit() {
-    return OpenloginFlutter.triggerLogin(provider: Provider.reddit);
+  Future<Web3AuthResponse> _withReddit() {
+    return Web3AuthFlutter.triggerLogin(provider: Provider.reddit);
   }
 
-  Future<OpenLoginResponse> _withDiscord() {
-    return OpenloginFlutter.triggerLogin(provider: Provider.discord);
+  Future<Web3AuthResponse> _withDiscord() {
+    return Web3AuthFlutter.triggerLogin(provider: Provider.discord);
   }
 }

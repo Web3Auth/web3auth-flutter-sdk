@@ -1,4 +1,4 @@
-group 'com.openlogin.flutter.openlogin_flutter'
+group 'com.web3auth.flutter.web3auth_flutter'
 version '1.0-SNAPSHOT'
 
 buildscript {

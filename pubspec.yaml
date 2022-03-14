@@ -1,5 +1,5 @@
-name: openlogin_flutter
-description: Flutter SDK for Torus Web3Auth (OpenLogin)
+name: web3auth_flutter
+description: Flutter SDK for Torus Web3Auth (Web3Auth)
 version: 0.0.1
 homepage:
 
@@ -28,10 +28,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.openlogin.flutter.openlogin_flutter
-        pluginClass: OpenloginFlutterPlugin
+        package: com.web3auth.flutter.web3auth_flutter
+        pluginClass: Web3AuthFlutterPlugin
       ios:
-        pluginClass: OpenloginFlutterPlugin
+        pluginClass: Web3AuthFlutterPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

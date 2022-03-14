@@ -1,4 +1,4 @@
-package com.openlogin.flutter.openlogin_flutter
+package com.web3auth.flutter.web3auth_flutter
 
 import androidx.annotation.NonNull
 
@@ -13,8 +13,8 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import com.google.gson.Gson
-import com.openlogin.flutter.openlogin_flutter.types.LoginConfig
-import com.openlogin.flutter.openlogin_flutter.types.WLData
+import com.web3auth.flutter.web3auth_flutter.types.LoginConfig
+import com.web3auth.flutter.web3auth_flutter.types.WLData
 import com.web3auth.core.Web3Auth
 import com.web3auth.core.types.*
 
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import java.lang.Error
 
 
-class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.NewIntentListener {
+class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.NewIntentListener {
   private lateinit var channel: MethodChannel
 
   private var activity: Activity? = null
@@ -35,7 +35,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
   private lateinit var web3auth: Web3Auth
 
   override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(binding.binaryMessenger, "openlogin_flutter")
+    channel = MethodChannel(binding.binaryMessenger, "web3auth_flutter")
     channel.setMethodCallHandler(this)
     context = binding.applicationContext
   }
@@ -90,7 +90,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
           Web3AuthOptions(
                 activity!!,
                 call.argument("clientId")!!,
-                getOpenLoginNetwork(call.argument("network")),
+                getWeb3AuthNetwork(call.argument("network")),
                 Uri.parse(call.argument("redirectUri")),
                 whiteLabel = whiteLabelData,
                 loginConfig = loginConfig
@@ -99,7 +99,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
         web3auth.setResultUrl(activity?.intent?.data)
 
-        Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#init")
+        Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}","#init")
         return null
       }
 
@@ -107,7 +107,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
 
         val loginCF = web3auth.login(mapLoginParams(call))
         loginCF.join()
-        Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#login")
+        Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}","#login")
 
         var loginResult : Map<String, Any?>? = null
         loginCF.whenComplete { result, error ->
@@ -133,7 +133,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
       "triggerLogout" -> {
         val logoutCF = web3auth.logout()
         logoutCF.join()
-        Log.d("${OpenloginFlutterPlugin::class.qualifiedName}","#logout")
+        Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}","#logout")
 
         logoutCF.whenComplete { _, error ->
           if (error != null) {
@@ -146,7 +146,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
     throw NotImplementedError()
   }
 
-  private fun getOpenLoginProvider(provider: String): Provider {
+  private fun getWeb3AuthProvider(provider: String): Provider {
     return when (provider) {
       "google" -> Provider.GOOGLE
       "facebook" -> Provider.FACEBOOK
@@ -167,7 +167,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
     }
   }
 
-  private fun getOpenLoginNetwork(network : String?) : Web3Auth.Network {
+  private fun getWeb3AuthNetwork(network : String?) : Web3Auth.Network {
     return when {
         network.isNullOrBlank() -> Web3Auth.Network.MAINNET
         network.equals("mainnet", true) -> Web3Auth.Network.MAINNET
@@ -208,7 +208,7 @@ class OpenloginFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, P
             id_token_hint = id_token_hint,
             login_hint = login_hint)
 
-    return LoginParams(getOpenLoginProvider(provider),
+    return LoginParams(getWeb3AuthProvider(provider),
             appState = appState,
             relogin = relogin,
             redirectUrl = redirectUrl,

@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface OpenloginFlutterPlugin : NSObject<FlutterPlugin>
+@interface Web3AuthFlutterPlugin : NSObject<FlutterPlugin>
 @end

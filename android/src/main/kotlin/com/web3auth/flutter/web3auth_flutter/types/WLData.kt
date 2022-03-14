@@ -1,4 +1,4 @@
-package com.openlogin.flutter.openlogin_flutter.types
+package com.web3auth.flutter.web3auth_flutter.types
 
 import com.web3auth.core.types.WhiteLabelData
 
