@@ -1,15 +1,15 @@
 import Flutter
 import UIKit
-import OpenLogin
+import Web3Auth
 
-public class SwiftOpenloginFlutterPlugin: NSObject, FlutterPlugin {
+public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "openlogin_flutter", binaryMessenger: registrar.messenger())
-    let instance = SwiftOpenloginFlutterPlugin()
+    let channel = FlutterMethodChannel(name: "web3auth_flutter", binaryMessenger: registrar.messenger())
+    let instance = SwiftWeb3AuthFlutterPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
     
-    var initParams: OLInitParams? = nil
+    var initParams: W3AInitParams? = nil
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       guard let args = call.arguments as? Dictionary<String, Any> else {
@@ -31,7 +31,7 @@ public class SwiftOpenloginFlutterPlugin: NSObject, FlutterPlugin {
                       details: nil))
               return
           }
-          self.initParams = OLInitParams(clientId: clientId, network: Network(rawValue: network) ?? .testnet)
+          self.initParams = W3AInitParams(clientId: clientId, network: Network(rawValue: network) ?? .testnet)
           result(nil)
           return
       case "triggerLogin":
@@ -39,12 +39,12 @@ public class SwiftOpenloginFlutterPlugin: NSObject, FlutterPlugin {
           else {
               result(FlutterError(
                       code: "NotInitializedException",
-                      message: "OpenLogin.init has to be called first",
+                      message: "Web3Auth.init has to be called first",
                       details: nil))
               return
           }
           let loginParams = mapLoginParams(args)
-          let openlogin = OpenLogin(initParams)
+          let openlogin = Web3Auth(initParams)
           openlogin.login(loginParams) {
               switch $0 {
               case .success(let state):
@@ -64,14 +64,14 @@ public class SwiftOpenloginFlutterPlugin: NSObject, FlutterPlugin {
               case .failure(let error):
                   result(FlutterError(
                     code: "LoginFailedException",
-                    message: "OpenLogin login flow failed",
+                    message: "Web3Auth login flow failed",
                     details: error.localizedDescription
                   ))
                   return
               }
           }
       case "triggerLogout":
-          print("OpenLogin.logout has been called, this operation is a no-op on iOS.")
+          print("Web3Auth.logout has been called, this operation is a no-op on iOS.")
       default:
           result(FlutterMethodNotImplemented)
       }
@@ -85,7 +85,7 @@ func getOpenLoginNetwork(_ networkStr: String) -> Network {
     return .testnet
 }
 
-func getOpenLoginProvider(_ providerStr: String) -> OpenLoginProvider {
+func getWeb3AuthProvider(_ providerStr: String) -> Web3AuthProvider {
     switch providerStr {
     case "google":
         return .GOOGLE
@@ -120,22 +120,10 @@ func getOpenLoginProvider(_ providerStr: String) -> OpenLoginProvider {
     }
 }
 
-func mapLoginParams(_ args: Dictionary<String, Any>) -> OLLoginParams {
-    var extraLoginOptions: [String: Any] = [:]
-    if let clientId = args["client_id"] as? String {
-        extraLoginOptions["client_id"] = clientId
-    }
-    if let connection = args["connection"] as? String {
-        extraLoginOptions["connection"] = connection
-    }
-    if let domain = args["domain"] as? String {
-        extraLoginOptions["domain"] = domain
-    }
-    if let idTokenHint = args["id_token_hint"] as? String {
-        extraLoginOptions["id_token_hint"] = idTokenHint
-    }
-    if let loginHint = args["login_hint"] as? String {
-        extraLoginOptions["login_hint"] = loginHint
-    }
-    return OLLoginParams(provider: getOpenLoginProvider(args["provider"] as! String), relogin: args["reLogin"] as? Bool, skipTKey: args["skipTKey"] as? Bool, extraLoginOptions: extraLoginOptions, redirectUrl: args["redirectUrl"] as? String, appState: args["appState"] as? String)
+func mapLoginParams(_ args: Dictionary<String, Any>) -> W3ALoginParams {
+    let extraLoginOptions: ExtraLoginOptions = ExtraLoginOptions(
+        display: nil, prompt: nil, max_age: nil, ui_locales: nil, id_token_hint: args["id_token_hint"] as? String, login_hint: args["login_hint"] as? String, acr_values: nil, scope: nil, audience: nil, connection: args["connection"] as? String, domain: args["domain"] as? String, client_id: args["client_id"] as? String, redirect_uri: nil, leeway: nil, verifierIdField: nil, isVerifierIdCaseSensitive: nil
+    )
+    
+    return W3ALoginParams(loginProvider: getWeb3AuthProvider(args["provider"] as! String).rawValue, relogin: args["reLogin"] as? Bool, skipTKey: args["skipTKey"] as? Bool, extraLoginOptions: extraLoginOptions, redirectUrl: args["redirectUrl"] as? String, appState: args["appState"] as? String)
 }

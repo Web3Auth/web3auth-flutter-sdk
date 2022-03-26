@@ -1,29 +1,29 @@
 PODS:
   - Flutter (1.0.0)
-  - OpenLogin (1.0.0)
-  - openlogin_flutter (0.0.1):
+  - Web3Auth (3.0.0)
+  - web3auth_flutter (0.1.1):
     - Flutter
-    - OpenLogin (~> 1.0.0)
+    - Web3Auth (~> 3.0.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - openlogin_flutter (from `.symlinks/plugins/openlogin_flutter/ios`)
+  - web3auth_flutter (from `.symlinks/plugins/web3auth_flutter/ios`)
 
 SPEC REPOS:
-  trunk:
-    - OpenLogin
+  https://github.com/CocoaPods/Specs.git:
+    - Web3Auth
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  openlogin_flutter:
-    :path: ".symlinks/plugins/openlogin_flutter/ios"
+  web3auth_flutter:
+    :path: ".symlinks/plugins/web3auth_flutter/ios"
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  OpenLogin: 055c3108e8ada81a1e833c2c59188faed302e32b
-  openlogin_flutter: 084e1668577030b5f8c40484b6c93905977a94f8
+  Web3Auth: a8a29927f869bd09464bf4ac2f72431278bae0f3
+  web3auth_flutter: 4b73ccf3f8f4065ea9e7bd072892cc8e5287c592
 
-PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
+PODFILE CHECKSUM: 16b18c023339b337fec4a05dcdc6004f5d733352
 
 COCOAPODS: 1.11.2
