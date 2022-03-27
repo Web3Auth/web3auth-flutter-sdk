@@ -44,8 +44,8 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
               return
           }
           let loginParams = mapLoginParams(args)
-          let openlogin = Web3Auth(initParams)
-          openlogin.login(loginParams) {
+          let web3auth = Web3Auth(initParams)
+          web3auth.login(loginParams) {
               switch $0 {
               case .success(let state):
                   let map: [String: Any] = [
@@ -78,7 +78,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
   }
 }
 
-func getOpenLoginNetwork(_ networkStr: String) -> Network {
+func getWeb3AuthNetwork(_ networkStr: String) -> Network {
     if networkStr == "mainnet"{
         return .mainnet
     }
