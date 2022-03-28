@@ -119,6 +119,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
                     "userInfo" to listOf(mapOf(
                             "email" to result.userInfo?.email,
                             "name" to result.userInfo?.name,
+                            "dappShare" to result.userInfo?.dappShare,
                             "profileImage" to result.userInfo?.profileImage,
                             "aggregateVerifier" to result.userInfo?.aggregateVerifier,
                             "verifier" to result.userInfo?.verifier,
