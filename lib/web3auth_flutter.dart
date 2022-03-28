@@ -217,6 +217,7 @@ class TorusUserInfo {
   final String? verifierId;
   final String? typeOfLogin;
   final String? aggregateVerifier;
+  final String? dappShare;
 
   const TorusUserInfo({
     required this.email,
@@ -226,6 +227,7 @@ class TorusUserInfo {
     this.verifierId,
     this.typeOfLogin,
     this.aggregateVerifier,
+    this.dappShare,
   });
 
   @override
@@ -291,7 +293,8 @@ class Web3AuthFlutter {
         'login_hint': extraLoginOptions?.login_hint,
         'leeway': extraLoginOptions?.leeway,
         'verifierIdField': extraLoginOptions?.verifierIdField,
-        'isVerifierIdCaseSensitive': extraLoginOptions?.isVerifierIdCaseSensitive,
+        'isVerifierIdCaseSensitive':
+            extraLoginOptions?.isVerifierIdCaseSensitive,
         'display': extraLoginOptions?.display.toString(),
         'prompt': extraLoginOptions?.prompt.toString(),
         'max_age': extraLoginOptions?.max_age,
@@ -303,7 +306,7 @@ class Web3AuthFlutter {
         'response_type': extraLoginOptions?.response_type,
         'nonce': extraLoginOptions?.nonce,
         'redirect_uri': extraLoginOptions?.redirect_uri
-        });
+      });
       return Web3AuthResponse(
           loginResponse['privateKey'],
           _convertUserInfo(loginResponse['userInfo']).first,
@@ -347,6 +350,7 @@ class Web3AuthFlutter {
               email: e['email'],
               name: e['name'],
               profileImage: e['profileImage'],
+              dappShare: e['dappShare'],
               aggregateVerifier: e['aggregateVerifier'],
               verifier: e['verifier'],
               verifierId: e['verifierId'],
