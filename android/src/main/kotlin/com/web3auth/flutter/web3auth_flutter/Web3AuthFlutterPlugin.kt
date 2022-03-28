@@ -103,7 +103,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
         return null
       }
 
-      "triggerLogin" -> {
+      "login" -> {
 
         val loginCF = web3auth.login(mapLoginParams(call))
         loginCF.join()
@@ -120,6 +120,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
                             "email" to result.userInfo?.email,
                             "name" to result.userInfo?.name,
                             "profileImage" to result.userInfo?.profileImage,
+                            "aggregateVerifier" to result.userInfo?.aggregateVerifier,
                             "verifier" to result.userInfo?.verifier,
                             "verifierId" to result.userInfo?.verifierId,
                             "typeOfLogin" to result.userInfo?.typeOfLogin
@@ -130,7 +131,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
         return loginResult
       }
 
-      "triggerLogout" -> {
+      "logout" -> {
         val logoutCF = web3auth.logout()
         logoutCF.join()
         Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}","#logout")
@@ -163,7 +164,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
       "wechat" -> Provider.WECHAT
       "email_passwordless" -> Provider.EMAIL_PASSWORDLESS
 
-      else -> Provider.GOOGLE
+      else -> throw Exception("Provider is required")
     }
   }
 
@@ -171,8 +172,9 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
     return when {
         network.isNullOrBlank() -> Web3Auth.Network.MAINNET
         network.equals("mainnet", true) -> Web3Auth.Network.MAINNET
+        network.equals("testnet", true) -> Web3Auth.Network.TESTNET
         network.equals("cyan", true) -> Web3Auth.Network.CYAN
-        else -> Web3Auth.Network.TESTNET
+        else -> Web3Auth.Network.MAINNET
     }
   }
 
@@ -194,17 +196,46 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
     val relogin: Boolean? = call.argument("relogin")
     val redirectUrlStr: String? = call.argument("redirectUrl")
     val redirectUrl: Uri? = redirectUrlStr?.let { Uri.parse(redirectUrlStr) }
-    val skipTKey: Boolean? = call.argument("skipTKey")
 
+    val additionalParams: Map<String, String>? = call.argument("additionalParams")
     val client_id: String? = call.argument("client_id")
     val connection: String? = call.argument("connection")
     val domain: String? = call.argument("domain")
     val id_token_hint: String? = call.argument("id_token_hint")
     val login_hint : String? = call.argument("login_hint")
+    val leeway : String? = call.argument("leeway")
+    val verifierIdField : String? = call.argument("verifierIdField")
+    val isVerifierIdCaseSensitive : Boolean? = call.argument("isVerifierIdCaseSensitive")
+    val displayStr : String? = call.argument("display")
+    val promptStr : String? = call.argument("prompt")
+    val max_age : String? = call.argument("max_age")
+    val ui_locales : String? = call.argument("ui_locales")
+    val acr_values : String? = call.argument("acr_values")
+    val scope : String? = call.argument("scope")
+    val audience : String? = call.argument("audience")
+    val state : String? = call.argument("state")
+    val response_type : String? = call.argument("response_type")
+    val nonce : String? = call.argument("nonce")
+    val redirect_uri : String? = call.argument("redirect_uri")
 
     val extraLoginOptions = ExtraLoginOptions(client_id = client_id,
             connection = connection,
+            additionalParams = additionalParams as HashMap<String, String>?,
             domain = domain,
+            leeway = leeway,
+            verifierIdField = verifierIdField,
+            isVerifierIdCaseSensitive = isVerifierIdCaseSensitive,
+            display = getDisplay(displayStr),
+            prompt = getPrompt(promptStr),
+            max_age = max_age,
+            ui_locales = ui_locales,
+            acr_values = acr_values,
+            scope = scope,
+            audience = audience,
+            state = state,
+            response_type = response_type,
+            nonce = nonce,
+            redirect_uri = redirect_uri,
             id_token_hint = id_token_hint,
             login_hint = login_hint)
 
@@ -212,7 +243,28 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
             appState = appState,
             relogin = relogin,
             redirectUrl = redirectUrl,
-            skipTKey = skipTKey,
             extraLoginOptions = extraLoginOptions)
+  }
+
+  private fun getDisplay(display : String?) : Display? {
+    return when {
+      display.isNullOrBlank() -> null
+      display.equals("page", true) -> Display.PAGE
+      display.equals("popup", true) -> Display.POPUP
+      display.equals("touch", true) -> Display.TOUCH
+      display.equals("wap", true) -> Display.WAP
+      else -> null
+    }
+  }
+
+  private fun getPrompt(prompt : String?) : Prompt? {
+    return when {
+      prompt.isNullOrBlank() -> null
+      prompt.equals("none", true) -> Prompt.NONE
+      prompt.equals("login", true) -> Prompt.LOGIN
+      prompt.equals("consent", true) -> Prompt.CONSENT
+      prompt.equals("select_account", true) -> Prompt.SELECT_ACCOUNT
+      else -> null
+    }
   }
 }

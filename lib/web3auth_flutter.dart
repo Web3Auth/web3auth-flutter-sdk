@@ -40,6 +40,10 @@ enum TypeOfLogin {
   jwt
 }
 
+enum Display { page, popup, touch, wap }
+
+enum Prompt { none, login, consent, select_account }
+
 class LoginParams {
   final Provider loginProvider;
   final bool? reLogin;
@@ -113,6 +117,8 @@ class ExtraLoginOptions {
   final String? leeway;
   final String? verifierIdField;
   final bool? isVerifierIdCaseSensitive;
+  final Display? display;
+  final Prompt? prompt;
   final String? max_age;
   final String? ui_locales;
   final String? id_token_hint;
@@ -124,6 +130,7 @@ class ExtraLoginOptions {
   final String? state;
   final String? response_type;
   final String? nonce;
+  final String? redirect_uri;
 
   ExtraLoginOptions(
       {this.additionalParams = const {},
@@ -132,6 +139,8 @@ class ExtraLoginOptions {
       this.leeway,
       this.verifierIdField,
       this.isVerifierIdCaseSensitive,
+      this.display,
+      this.prompt,
       this.max_age,
       this.ui_locales,
       this.id_token_hint,
@@ -142,7 +151,8 @@ class ExtraLoginOptions {
       this.connection,
       this.state,
       this.response_type,
-      this.nonce});
+      this.nonce,
+      this.redirect_uri});
 }
 
 class Web3AuthOptions {
@@ -247,7 +257,7 @@ class Web3AuthFlutter {
       required String redirectUri,
       WhiteLabelData? whiteLabelData,
       HashMap? loginConfig}) async {
-    final String? networkString = (network != null) ? network.toString() : null;
+    final String? networkString = network?.toString();
     await _channel.invokeMethod('init', {
       'network': (networkString != null)
           ? networkString.substring(networkString.lastIndexOf('.') + 1)
@@ -259,33 +269,41 @@ class Web3AuthFlutter {
     });
   }
 
-  static Future<Web3AuthResponse> triggerLogin(
+  static Future<Web3AuthResponse> login(
       {required Provider provider,
       String? appState,
       bool? relogin,
       String? redirectUrl,
-      bool? skipTKey,
-      String? client_id,
-      String? connection,
-      String? domain,
-      String? id_token_hint,
-      String? login_hint,
-      Map jwtParams = const {}}) async {
+      ExtraLoginOptions? extraLoginOptions}) async {
     try {
-      final Map loginResponse = await _channel.invokeMethod('triggerLogin', {
+      final Map loginResponse = await _channel.invokeMethod('login', {
         'provider': provider
             .toString()
             .substring(provider.toString().lastIndexOf('.') + 1),
         'appState': appState,
         'relogin': relogin,
         'redirectUrl': redirectUrl,
-        'skipTKey': skipTKey,
-        'client_id': client_id,
-        'connection': connection,
-        'domain': domain,
-        'id_token_hint': id_token_hint,
-        'login_hint': login_hint,
-      });
+        'additionalParams': extraLoginOptions?.additionalParams,
+        'client_id': extraLoginOptions?.client_id,
+        'connection': extraLoginOptions?.connection,
+        'domain': extraLoginOptions?.domain,
+        'id_token_hint': extraLoginOptions?.id_token_hint,
+        'login_hint': extraLoginOptions?.login_hint,
+        'leeway': extraLoginOptions?.leeway,
+        'verifierIdField': extraLoginOptions?.verifierIdField,
+        'isVerifierIdCaseSensitive': extraLoginOptions?.isVerifierIdCaseSensitive,
+        'display': extraLoginOptions?.display.toString(),
+        'prompt': extraLoginOptions?.prompt.toString(),
+        'max_age': extraLoginOptions?.max_age,
+        'ui_locales': extraLoginOptions?.ui_locales,
+        'acr_values': extraLoginOptions?.acr_values,
+        'scope': extraLoginOptions?.scope,
+        'audience': extraLoginOptions?.audience,
+        'state': extraLoginOptions?.state,
+        'response_type': extraLoginOptions?.response_type,
+        'nonce': extraLoginOptions?.nonce,
+        'redirect_uri': extraLoginOptions?.redirect_uri
+        });
       return Web3AuthResponse(
           loginResponse['privateKey'],
           _convertUserInfo(loginResponse['userInfo']).first,
@@ -302,9 +320,9 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> triggerLogout() async {
+  static Future<void> logout() async {
     try {
-      await _channel.invokeMethod('triggerLogout', {});
+      await _channel.invokeMethod('logout', {});
       return;
     } on PlatformException catch (e) {
       switch (e.code) {
@@ -329,6 +347,7 @@ class Web3AuthFlutter {
               email: e['email'],
               name: e['name'],
               profileImage: e['profileImage'],
+              aggregateVerifier: e['aggregateVerifier'],
               verifier: e['verifier'],
               verifierId: e['verifierId'],
               typeOfLogin: e['typeOfLogin']))

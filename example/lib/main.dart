@@ -100,7 +100,7 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _logout() {
     return () async {
       try {
-        await Web3AuthFlutter.triggerLogout();
+        await Web3AuthFlutter.logout();
         setState(() {
           _result = '<empty>';
           logoutVisible = false;
@@ -114,18 +114,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
-    return Web3AuthFlutter.triggerLogin(provider: Provider.google);
+    return Web3AuthFlutter.login(provider: Provider.google);
   }
 
   Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.triggerLogin(provider: Provider.facebook);
+    return Web3AuthFlutter.login(provider: Provider.facebook);
   }
 
   Future<Web3AuthResponse> _withReddit() {
-    return Web3AuthFlutter.triggerLogin(provider: Provider.reddit);
+    return Web3AuthFlutter.login(provider: Provider.reddit);
   }
 
   Future<Web3AuthResponse> _withDiscord() {
-    return Web3AuthFlutter.triggerLogin(provider: Provider.discord);
+    return Web3AuthFlutter.login(provider: Provider.discord);
   }
 }
