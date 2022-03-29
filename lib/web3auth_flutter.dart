@@ -365,6 +365,8 @@ class Web3AuthFlutter {
             email: e['email'],
             name: e['name'],
             profileImage: e['profileImage'],
+            dappShare: e['dappShare'],
+            aggregateVerifier: e['aggregateVerifier'],
             verifier: e['verifier'],
             verifierId: e['verifierId'],
             typeOfLogin: e['typeOfLogin'])
