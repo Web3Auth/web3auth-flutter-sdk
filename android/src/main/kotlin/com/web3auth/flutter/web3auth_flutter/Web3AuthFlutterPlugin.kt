@@ -164,6 +164,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
       "weibo" -> Provider.WEIBO
       "wechat" -> Provider.WECHAT
       "email_passwordless" -> Provider.EMAIL_PASSWORDLESS
+      "jwt" -> Provider.JWT
 
       else -> throw Exception("Provider is required")
     }

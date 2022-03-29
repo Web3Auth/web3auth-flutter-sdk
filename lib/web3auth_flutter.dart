@@ -18,7 +18,8 @@ enum Provider {
   linkedin,
   twitter,
   line,
-  email_passwordless
+  email_passwordless,
+  jwt
 }
 
 enum TypeOfLogin {
