@@ -1,6 +1,6 @@
-# openlogin_flutter_example
+# web3auth_flutter_example
 
-Demonstrates how to use the openlogin_flutter plugin.
+Demonstrates how to use the web3auth_flutter plugin.
 
 ## Getting Started
 

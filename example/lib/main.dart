@@ -1,8 +1,10 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:openlogin_flutter/openlogin_flutter.dart';
+import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,10 +27,16 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    await OpenloginFlutter.init(
-        clientId: 'BOsNaqfC9exeI_0K_YWV_jLe_wpLcqLu1QU1_bv5wb_D7ufUHSIuRyhqh6AnpfgsWkVChdaOO3cJ6T9LJddpYYQ',
+    HashMap themeMap = new HashMap<String, String>();
+    themeMap['primary'] = "#fff000";
+
+    await Web3AuthFlutter.init(
+        clientId:
+            'BPcJHn_y62h5k9v33TzTSPQiHJZuOGwQdjOanCC7-GKgelSYz1PYPoU7LIJqix3CGFHLF7IEIvsfQhBF_rx9rUw',
         network: Network.mainnet,
-        redirectUri: 'org.torusresearch.flutter.openloginexample://auth');
+        redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
+        whiteLabelData: WhiteLabelData(
+            dark: true, name: "Web3Auth Flutter App", theme: themeMap));
   }
 
   @override
@@ -36,43 +44,47 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Torus OpenLogin Example'),
+          title: const Text('Torus Web3Auth Example'),
         ),
         body: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Login with'),
-                ),
-                ElevatedButton(
-                    onPressed: _login(_withGoogle), child: Text('Google')),
-                ElevatedButton(
-                    onPressed: _login(_withFacebook), child: Text('Facebook')),
-                ElevatedButton(
-                    onPressed: _login(_withReddit), child: Text('Reddit ')),
-                ElevatedButton(
-                    onPressed: _login(_withDiscord), child: Text('Discord')),
-                Visibility(
-                  child: ElevatedButton(style: ElevatedButton.styleFrom(primary: Colors.red // This is what you need!
-                  ),onPressed: _logout(), child: Text('Logout')),
-                  visible: logoutVisible,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Result: $_result'),
-                )
-              ],
-            )),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Login with'),
+            ),
+            ElevatedButton(
+                onPressed: _login(_withGoogle), child: Text('Google')),
+            ElevatedButton(
+                onPressed: _login(_withFacebook), child: Text('Facebook')),
+            ElevatedButton(
+                onPressed: _login(_withReddit), child: Text('Reddit ')),
+            ElevatedButton(
+                onPressed: _login(_withDiscord), child: Text('Discord')),
+            Visibility(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.red // This is what you need!
+                      ),
+                  onPressed: _logout(),
+                  child: Text('Logout')),
+              visible: logoutVisible,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Result: $_result'),
+            )
+          ],
+        )),
       ),
     );
   }
 
-  VoidCallback _login(Future<OpenLoginResponse> Function() method) {
+  VoidCallback _login(Future<Web3AuthResponse> Function() method) {
     return () async {
       try {
-        final OpenLoginResponse response = await method();
+        final Web3AuthResponse response = await method();
         setState(() {
           _result = response.toString();
           logoutVisible = true;
@@ -88,7 +100,7 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _logout() {
     return () async {
       try {
-        await OpenloginFlutter.triggerLogout();
+        await Web3AuthFlutter.logout();
         setState(() {
           _result = '<empty>';
           logoutVisible = false;
@@ -101,24 +113,19 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
-
-  Future<OpenLoginResponse> _withGoogle() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.google);
+  Future<Web3AuthResponse> _withGoogle() {
+    return Web3AuthFlutter.login(provider: Provider.google);
   }
 
-  Future<OpenLoginResponse> _withFacebook() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.facebook);
+  Future<Web3AuthResponse> _withFacebook() {
+    return Web3AuthFlutter.login(provider: Provider.facebook);
   }
 
-  Future<OpenLoginResponse> _withReddit() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.reddit);
+  Future<Web3AuthResponse> _withReddit() {
+    return Web3AuthFlutter.login(provider: Provider.reddit);
   }
 
-  Future<OpenLoginResponse> _withDiscord() {
-    return OpenloginFlutter.triggerLogin(
-        provider: Provider.discord);
+  Future<Web3AuthResponse> _withDiscord() {
+    return Web3AuthFlutter.login(provider: Provider.discord);
   }
 }

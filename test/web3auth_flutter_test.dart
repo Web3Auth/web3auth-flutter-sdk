@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openlogin_flutter/openlogin_flutter.dart';
+import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('openlogin_flutter');
+  const MethodChannel channel = MethodChannel('web3auth_flutter');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -18,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await OpenloginFlutter.platformVersion, '42');
+    expect(await Web3AuthFlutter.platformVersion, '42');
   });
 }
