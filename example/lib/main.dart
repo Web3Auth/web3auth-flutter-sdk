@@ -36,7 +36,8 @@ class _MyAppState extends State<MyApp> {
         network: Network.mainnet,
         redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
         whiteLabelData: WhiteLabelData(
-            dark: true, name: "Web3Auth Flutter App", theme: themeMap));
+            dark: true, name: "Web3Auth Flutter App", theme: themeMap),
+    );
   }
 
   @override
