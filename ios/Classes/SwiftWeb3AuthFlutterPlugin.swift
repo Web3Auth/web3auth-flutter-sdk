@@ -31,7 +31,8 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                       details: nil))
               return
           }
-          self.initParams = W3AInitParams(clientId: clientId, network: Network(rawValue: network) ?? .testnet)
+          let whiteLabelData = mapWhiteLabelData(args["white_label_data"] as? Dictionary<String, Any> ?? [:])
+          self.initParams = W3AInitParams(clientId: clientId, network: Network(rawValue: network) ?? .mainnet, whiteLabel: whiteLabelData)
           result(nil)
           return
       case "triggerLogin":
@@ -56,7 +57,8 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         "profileImage": state.userInfo.profileImage,
                         "verifier": state.userInfo.verifier,
                         "verifierId": state.userInfo.verifierId,
-                        "typeOfLogin": state.userInfo.typeOfLogin
+                        "typeOfLogin": state.userInfo.typeOfLogin,
+                        "aggregateVerifier": state.userInfo.aggregateVerifier,
                     ]
                   ]
                   result(map)
@@ -79,10 +81,16 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
 }
 
 func getWeb3AuthNetwork(_ networkStr: String) -> Network {
-    if networkStr == "mainnet"{
+    if networkStr.lowercased() == "mainnet" {
         return .mainnet
     }
-    return .testnet
+    if networkStr.lowercased() == "testnet" {
+        return .testnet
+    }
+    if networkStr.lowercased() == "cyan" {
+        return .cyan
+    }
+    return .mainnet
 }
 
 func getWeb3AuthProvider(_ providerStr: String) -> Web3AuthProvider {
@@ -127,3 +135,14 @@ func mapLoginParams(_ args: Dictionary<String, Any>) -> W3ALoginParams {
     
     return W3ALoginParams(loginProvider: getWeb3AuthProvider(args["provider"] as! String).rawValue, relogin: args["reLogin"] as? Bool, skipTKey: args["skipTKey"] as? Bool, extraLoginOptions: extraLoginOptions, redirectUrl: args["redirectUrl"] as? String, appState: args["appState"] as? String)
 }
+
+func mapWhiteLabelData(_ args: Dictionary<String, Any>) -> W3AWhiteLabelData {
+    let whiteLabelData: W3AWhiteLabelData = W3AWhiteLabelData(name: args["name"] as? String, logoLight: args["logoLight"] as? String, logoDark: args["logoDark"] as? String, defaultLanguage: args["defaultLanguage"] as? String, dark: args["dark"] as? Bool, theme: args["theme"] as? Dictionary<String, String>)
+    return whiteLabelData
+}
+
+func mapLoginConfig(_ args: Dictionary<String, Any>) -> W3ALoginConfig {
+    // TODO(michaellee8)
+    return W3ALoginConfig(verifier: "abc", typeOfLogin: .apple, name: "def")
+}
+ 
