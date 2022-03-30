@@ -277,6 +277,7 @@ class Web3AuthFlutter {
       String? appState,
       bool? relogin,
       String? redirectUrl,
+      String? dappShare,
       ExtraLoginOptions? extraLoginOptions}) async {
     try {
       final Map loginResponse = await _channel.invokeMethod('login', {
@@ -286,6 +287,7 @@ class Web3AuthFlutter {
         'appState': appState,
         'relogin': relogin,
         'redirectUrl': redirectUrl,
+        'dappShare': dappShare,
         'additionalParams': extraLoginOptions?.additionalParams,
         'client_id': extraLoginOptions?.client_id,
         'connection': extraLoginOptions?.connection,
