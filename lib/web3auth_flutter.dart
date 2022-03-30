@@ -259,7 +259,7 @@ class Web3AuthFlutter {
       Network? network,
       required String redirectUri,
       WhiteLabelData? whiteLabelData,
-      HashMap? loginConfig}) async {
+      LoginConfigItem? loginConfig}) async {
     final String? networkString = network?.toString();
     await _channel.invokeMethod('init', {
       'network': (networkString != null)
