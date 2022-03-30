@@ -25,10 +25,10 @@ Refer to the demo app for more detailed example.
 
 ```dart
 // Login
-final Web3AuthResponse response = await Web3AuthFlutter.triggerLogin(provider: Provider.google);
+final Web3AuthResponse response = await Web3AuthFlutter.login(provider: Provider.google);
 
 // Logout
-await Web3AuthFlutter.triggerLogout();
+await Web3AuthFlutter.logout();
 
 ```
 
