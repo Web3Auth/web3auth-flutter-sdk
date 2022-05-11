@@ -31,12 +31,12 @@ class _MyAppState extends State<MyApp> {
     themeMap['primary'] = "#fff000";
 
     await Web3AuthFlutter.init(
-        clientId:
-            'BPcJHn_y62h5k9v33TzTSPQiHJZuOGwQdjOanCC7-GKgelSYz1PYPoU7LIJqix3CGFHLF7IEIvsfQhBF_rx9rUw',
-        network: Network.mainnet,
-        redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
-        whiteLabelData: WhiteLabelData(
-            dark: true, name: "Web3Auth Flutter App", theme: themeMap),
+      clientId:
+          'BEvzsPEkx0ir-DKwS4rJ9_Wf5FlZMTLaSlFuWN64wDlpqOkMI-gUSXUYN9JV-QZEt60dqlQOMD1oK9ZcOxbyfrc',
+      network: Network.mainnet,
+      redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
+      whiteLabelData: WhiteLabelData(
+          dark: true, name: "Web3Auth Flutter App", theme: themeMap),
     );
   }
 
@@ -115,15 +115,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
-    return Web3AuthFlutter.login(provider: Provider.google);
+    return Web3AuthFlutter.login(
+        provider: Provider.google, mfaLevel: MFALevel.MANDATORY);
   }
 
   Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.login(provider: Provider.facebook);
+    return Web3AuthFlutter.login(
+        provider: Provider.facebook, mfaLevel: MFALevel.MANDATORY);
   }
 
   Future<Web3AuthResponse> _withReddit() {
-    return Web3AuthFlutter.login(provider: Provider.reddit);
+    return Web3AuthFlutter.login(
+        provider: Provider.reddit, mfaLevel: MFALevel.MANDATORY);
   }
 
   Future<Web3AuthResponse> _withDiscord() {

@@ -178,7 +178,7 @@ func mapLoginParams(_ args: Dictionary<String, Any>) -> W3ALoginParams {
         prompt: args["prompt"] as? String,
         max_age: args["max_age"] as? String,
         ui_locales: args["ui_locales"] as? String,
-        id_token_hint: args["id_token_hint"] as? String,
+        id_token_hint: args["id_token_hint"] as? String, id_token: args["id_token"] as? String,
         login_hint: args["login_hint"] as? String,
         acr_values: args["acr_values"] as? String,
         scope: args["scope"] as? String,
@@ -198,8 +198,8 @@ func mapLoginParams(_ args: Dictionary<String, Any>) -> W3ALoginParams {
         dappShare: args["dappShare"] as? String,
         extraLoginOptions: extraLoginOptions,
         redirectUrl: args["redirectUrl"] as? String,
-        appState: args["appState"] as? String
-        mfaLevel : args["mfaLevel"] as? MfaLevel
+        appState: args["appState"] as? String,
+        mfaLevel : args["mfaLevel"] as? MFALevel
     )
 }
 
