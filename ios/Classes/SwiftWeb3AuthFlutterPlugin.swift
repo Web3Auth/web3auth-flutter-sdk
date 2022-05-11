@@ -7,6 +7,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
     let channel = FlutterMethodChannel(name: "web3auth_flutter", binaryMessenger: registrar.messenger())
     let instance = SwiftWeb3AuthFlutterPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
+    
   }
     
     var initParams: W3AInitParams? = nil
@@ -198,6 +199,7 @@ func mapLoginParams(_ args: Dictionary<String, Any>) -> W3ALoginParams {
         extraLoginOptions: extraLoginOptions,
         redirectUrl: args["redirectUrl"] as? String,
         appState: args["appState"] as? String
+        mfaLevel : args["mfaLevel"] as? MfaLevel
     )
 }
 
