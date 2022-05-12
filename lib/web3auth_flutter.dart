@@ -43,6 +43,23 @@ enum TypeOfLogin {
 
 enum Display { page, popup, touch, wap }
 
+enum MFALevel { DEFAULT, OPTIONAL, MANDATORY, NONE }
+
+extension MFALevelExtension on MFALevel {
+  String get type {
+    switch (this) {
+      case MFALevel.DEFAULT:
+        return "default";
+      case MFALevel.OPTIONAL:
+        return "optional";
+      case MFALevel.MANDATORY:
+        return "mandatory";
+      case MFALevel.NONE:
+        return "none";
+    }
+  }
+}
+
 enum Prompt { none, login, consent, select_account }
 
 class LoginParams {
@@ -52,6 +69,7 @@ class LoginParams {
   final ExtraLoginOptions? extraLoginOptions;
   final Uri? redirectUrl;
   final String? appState;
+  final MFALevel? mfaLevel;
 
   LoginParams(
       {required this.loginProvider,
@@ -59,7 +77,8 @@ class LoginParams {
       this.skipTKey,
       this.extraLoginOptions,
       this.redirectUrl,
-      this.appState});
+      this.appState,
+      this.mfaLevel});
 }
 
 class LoginConfigItem {
@@ -278,13 +297,17 @@ class Web3AuthFlutter {
       bool? relogin,
       String? redirectUrl,
       String? dappShare,
-      ExtraLoginOptions? extraLoginOptions}) async {
+      ExtraLoginOptions? extraLoginOptions,
+      MFALevel? mfaLevel}) async {
     try {
       final Map loginResponse = await _channel.invokeMethod('login', {
         'provider': provider
             .toString()
             .substring(provider.toString().lastIndexOf('.') + 1),
         'appState': appState,
+        'mfaLevel': mfaLevel
+            .toString()
+            .substring(mfaLevel.toString().lastIndexOf('.') + 1),
         'relogin': relogin,
         'redirectUrl': redirectUrl,
         'dappShare': dappShare,
