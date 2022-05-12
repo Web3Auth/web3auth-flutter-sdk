@@ -136,6 +136,22 @@ func getWeb3AuthProvider(_ providerStr: String) -> Web3AuthProvider {
     }
 }
 
+func getMfaLevel(_ mfaLevel: String?) -> MFALevel {
+    let mfaLevelStr = mfaLevel?.lowercased()
+    switch mfaLevelStr {
+    case "none":
+        return .NONE
+    case "default":
+        return .DEFAULT
+    case "mandatory":
+        return .MANDATORY
+    case "optional":
+        return .OPTIONAL
+    default:
+        return .DEFAULT
+    }
+}
+
 func getW3ATypeOfLogin(_ providerStr: String?) -> TypeOfLogin? {
     guard let providerStr = providerStr else {
         return nil
@@ -199,7 +215,7 @@ func mapLoginParams(_ args: Dictionary<String, Any>) -> W3ALoginParams {
         extraLoginOptions: extraLoginOptions,
         redirectUrl: args["redirectUrl"] as? String,
         appState: args["appState"] as? String,
-        mfaLevel : args["mfaLevel"] as? MFALevel
+        mfaLevel : getMfaLevel(args["mfaLevel"] as? String)
     )
 }
 
