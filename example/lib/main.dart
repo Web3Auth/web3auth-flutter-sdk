@@ -1,15 +1,16 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -57,7 +58,8 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
                 onPressed: _login(_withGoogle), child: const Text('Google')),
             ElevatedButton(
-                onPressed: _login(_withFacebook), child: const Text('Facebook')),
+                onPressed: _login(_withFacebook),
+                child: const Text('Facebook')),
             ElevatedButton(
                 onPressed: _login(_withReddit), child: const Text('Reddit ')),
             ElevatedButton(
@@ -114,18 +116,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
-    return Web3AuthFlutter.login(
-        provider: Provider.google, mfaLevel: MFALevel.MANDATORY);
+    return Web3AuthFlutter.login(provider: Provider.google);
   }
 
   Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.login(
-        provider: Provider.facebook, mfaLevel: MFALevel.MANDATORY);
+    return Web3AuthFlutter.login(provider: Provider.facebook);
   }
 
   Future<Web3AuthResponse> _withReddit() {
     return Web3AuthFlutter.login(
-        provider: Provider.email_passwordless, mfaLevel: MFALevel.NONE, extraLoginOptions: ExtraLoginOptions(login_hint: "sosid94742@abincol.com"));
+        provider: Provider.email_passwordless,
+        extraLoginOptions:
+            ExtraLoginOptions(login_hint: "sosid94742@abincol.com"));
   }
 
   Future<Web3AuthResponse> _withDiscord() {
