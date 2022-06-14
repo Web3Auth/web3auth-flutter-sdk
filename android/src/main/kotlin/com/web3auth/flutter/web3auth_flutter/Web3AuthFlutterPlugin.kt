@@ -248,7 +248,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
             dappShare = dappShare,
             relogin = relogin,
             redirectUrl = redirectUrl,
-            extraLoginOptions = extraLoginOptions
+            extraLoginOptions = extraLoginOptions,
             mfaLevel = mfaLevel
     )
   }
