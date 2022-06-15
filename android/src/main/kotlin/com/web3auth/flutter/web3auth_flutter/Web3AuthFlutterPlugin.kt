@@ -195,7 +195,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
   private fun mapLoginParams(call : MethodCall) : LoginParams {
     val provider: String = call.argument("provider") ?: ""
     val appState: String? = call.argument("appState")
-    val mfaLevel: String? = call.argument("mfaLevel") 
+    val mfaLevel: String? = call.argument("mfaLevel")
     val dappShare: String? = call.argument("dappShare")
     val relogin: Boolean? = call.argument("relogin")
     val redirectUrlStr: String? = call.argument("redirectUrl")
@@ -249,7 +249,7 @@ class Web3AuthFlutterPlugin: FlutterPlugin, ActivityAware, MethodCallHandler, Pl
             relogin = relogin,
             redirectUrl = redirectUrl,
             extraLoginOptions = extraLoginOptions,
-            mfaLevel = mfaLevel
+            mfaLevel = mfaLevel?.uppercase()?.let { MFALevel.valueOf(it) }
     )
   }
 
