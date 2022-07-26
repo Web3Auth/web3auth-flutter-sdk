@@ -57,7 +57,8 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
                 onPressed: _login(_withGoogle), child: const Text('Google')),
             ElevatedButton(
-                onPressed: _login(_withFacebook), child: const Text('Facebook')),
+                onPressed: _login(_withFacebook),
+                child: const Text('Facebook')),
             ElevatedButton(
                 onPressed: _login(_withReddit), child: const Text('Reddit ')),
             ElevatedButton(
@@ -125,7 +126,10 @@ class _MyAppState extends State<MyApp> {
 
   Future<Web3AuthResponse> _withReddit() {
     return Web3AuthFlutter.login(
-        provider: Provider.email_passwordless, mfaLevel: MFALevel.NONE, extraLoginOptions: ExtraLoginOptions(login_hint: "sosid94742@abincol.com"));
+        provider: Provider.email_passwordless,
+        mfaLevel: MFALevel.NONE,
+        extraLoginOptions:
+            ExtraLoginOptions(login_hint: "sosid94742@abincol.com"));
   }
 
   Future<Web3AuthResponse> _withDiscord() {

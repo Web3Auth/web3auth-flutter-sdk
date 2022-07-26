@@ -58,6 +58,9 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
               case .success(let state):
                   let map: [String: Any] = [
                     "privateKey": state.privKey,
+                    "sessionId":state.sessionId,
+                    "ed25519PrivKey":state.ed25519PrivKey,
+                    "error":state.error,
                     "userInfo": [
                         "email": state.userInfo.email,
                         "name": state.userInfo.name,
@@ -67,6 +70,9 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         "verifierId": state.userInfo.verifierId,
                         "typeOfLogin": state.userInfo.typeOfLogin,
                         "aggregateVerifier": state.userInfo.aggregateVerifier,
+                        "idToken":state.userInfo.idToken,
+                        "oAuthIdToken":state.userInfo.oAuthIdToken,
+                        "oAuthAccessToken":state.userInfo.oAuthAccessToken
                     ]
                   ]
                   result(map)
@@ -136,6 +142,7 @@ func getWeb3AuthProvider(_ providerStr: String) -> Web3AuthProvider {
     }
 }
 
+
 func getMfaLevel(_ mfaLevel: String?) -> MFALevel {
     let mfaLevelStr = mfaLevel?.lowercased()
     switch mfaLevelStr {
@@ -149,6 +156,18 @@ func getMfaLevel(_ mfaLevel: String?) -> MFALevel {
         return .OPTIONAL
     default:
         return .DEFAULT
+    }
+}
+
+func getCurveType(_ curve: String?) -> SUPPORTED_KEY_CURVES {
+    let curveStr = curve?.lowercased()
+    switch curveStr {
+    case "secp256k1":
+        return .SECP256K1
+    case "ed25519":
+        return .ed25519
+    default:
+        return .SECP256K1
     }
 }
 
@@ -215,8 +234,10 @@ func mapLoginParams(_ args: Dictionary<String, Any>) -> W3ALoginParams {
         extraLoginOptions: extraLoginOptions,
         redirectUrl: args["redirectUrl"] as? String,
         appState: args["appState"] as? String,
-        mfaLevel : getMfaLevel(args["mfaLevel"] as? String)
-    )
+        mfaLevel : getMfaLevel(args["mfaLevel"] as? String),
+        sessionTime: args["sessionTime"] as? Int ?? 86400,
+        curve: getCurveType(args["curve"] as? String)
+         )
 }
 
 func mapWhiteLabelData(_ args: Dictionary<String, Any>?) -> W3AWhiteLabelData? {

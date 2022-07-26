@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ffi';
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/services.dart';
 
@@ -45,6 +47,19 @@ enum Display { page, popup, touch, wap }
 
 enum MFALevel { DEFAULT, OPTIONAL, MANDATORY, NONE }
 
+enum SUPPORTED_KEY_CURVES { SECP256K1, ED25519 }
+
+extension SUPPORTED_KEY_CURVES_Extension on SUPPORTED_KEY_CURVES {
+  String get type {
+    switch (this) {
+      case SUPPORTED_KEY_CURVES.SECP256K1:
+        return "secp256k1";
+      case SUPPORTED_KEY_CURVES.ED25519:
+        return "ed25519";
+    }
+  }
+}
+
 extension MFALevelExtension on MFALevel {
   String get type {
     switch (this) {
@@ -70,6 +85,8 @@ class LoginParams {
   final Uri? redirectUrl;
   final String? appState;
   final MFALevel? mfaLevel;
+  final int sessionTime;
+  final SUPPORTED_KEY_CURVES curve;
 
   LoginParams(
       {required this.loginProvider,
@@ -78,7 +95,9 @@ class LoginParams {
       this.extraLoginOptions,
       this.redirectUrl,
       this.appState,
-      this.mfaLevel});
+      this.mfaLevel,
+      this.sessionTime = 86400,
+      this.curve = SUPPORTED_KEY_CURVES.SECP256K1});
 }
 
 class LoginConfigItem {
@@ -220,12 +239,15 @@ class Web3AuthResponse {
   final String privKey;
   final TorusUserInfo userInfo;
   final String? error;
+  final String sessionId;
+  final String ed25519PrivKey;
 
-  Web3AuthResponse(this.privKey, this.userInfo, this.error);
+  Web3AuthResponse(this.privKey, this.userInfo, this.error, this.sessionId,
+      this.ed25519PrivKey);
 
   @override
   String toString() {
-    return "{privKey=$privKey, userInfo = ${userInfo.toString()}}";
+    return "{privKey=$privKey, userInfo = ${userInfo.toString()},error=$error,sessionId=$sessionId,ed25519PrivKey=$ed25519PrivKey}";
   }
 }
 
@@ -238,22 +260,27 @@ class TorusUserInfo {
   final String? typeOfLogin;
   final String? aggregateVerifier;
   final String? dappShare;
+  final String? idToken;
+  final String? oAuthIdToken;
+  final String? oAuthAccessToken;
 
-  const TorusUserInfo({
-    required this.email,
-    required this.name,
-    this.profileImage,
-    this.verifier,
-    this.verifierId,
-    this.typeOfLogin,
-    this.aggregateVerifier,
-    this.dappShare,
-  });
+  const TorusUserInfo(
+      {required this.email,
+      required this.name,
+      this.profileImage,
+      this.verifier,
+      this.verifierId,
+      this.typeOfLogin,
+      this.aggregateVerifier,
+      this.dappShare,
+      this.idToken,
+      this.oAuthIdToken,
+      this.oAuthAccessToken});
 
   @override
   String toString() {
     return "{email=$email, name=$name, profileImage=$profileImage, verifier=$verifier,"
-        "verifierId=$verifierId, typeOfLogin=$typeOfLogin}";
+        "verifierId=$verifierId, typeOfLogin=$typeOfLogin,idToken=$idToken,oAuthIdToken=$oAuthIdToken,oAuthAccessToken=$oAuthAccessToken }";
   }
 }
 
@@ -298,7 +325,9 @@ class Web3AuthFlutter {
       String? redirectUrl,
       String? dappShare,
       ExtraLoginOptions? extraLoginOptions,
-      MFALevel? mfaLevel}) async {
+      MFALevel? mfaLevel,
+      int sessionTime = 86400,
+      SUPPORTED_KEY_CURVES curve = SUPPORTED_KEY_CURVES.SECP256K1}) async {
     try {
       final Map loginResponse = await _channel.invokeMethod('login', {
         'provider': provider
@@ -308,6 +337,8 @@ class Web3AuthFlutter {
         'mfaLevel': mfaLevel
             .toString()
             .substring(mfaLevel.toString().lastIndexOf('.') + 1),
+        'sessionTime': min(7 * 86400, sessionTime).toString(),
+        'curve': curve.type,
         'relogin': relogin,
         'redirectUrl': redirectUrl,
         'dappShare': dappShare,
@@ -333,10 +364,13 @@ class Web3AuthFlutter {
         'nonce': extraLoginOptions?.nonce,
         'redirect_uri': extraLoginOptions?.redirect_uri
       });
+      print(loginResponse['userInfo']);
       return Web3AuthResponse(
           loginResponse['privateKey'],
           _convertUserInfo(loginResponse['userInfo']).first,
-          loginResponse['error']);
+          loginResponse['error'],
+          loginResponse['sessionId'],
+          loginResponse['ed25519PrivKey']);
     } on PlatformException catch (e) {
       switch (e.code) {
         case "UserCancelledException":
@@ -377,6 +411,9 @@ class Web3AuthFlutter {
               name: e['name'],
               profileImage: e['profileImage'],
               dappShare: e['dappShare'],
+              idToken: e["idToken"],
+              oAuthIdToken: e["oAuthIdToken"],
+              oAuthAccessToken: e["oAuthAccessToken"],
               aggregateVerifier: e['aggregateVerifier'],
               verifier: e['verifier'],
               verifierId: e['verifierId'],
@@ -391,6 +428,9 @@ class Web3AuthFlutter {
             name: e['name'],
             profileImage: e['profileImage'],
             dappShare: e['dappShare'],
+            idToken: e["idToken"],
+            oAuthIdToken: e["oAuthIdToken"],
+            oAuthAccessToken: e["oAuthAccessToken"],
             aggregateVerifier: e['aggregateVerifier'],
             verifier: e['verifier'],
             verifierId: e['verifierId'],
