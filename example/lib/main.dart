@@ -47,8 +47,8 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Torus Web3Auth Example'),
         ),
         body: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+            child: SingleChildScrollView(
+                child: Column(
           children: [
             const Padding(
               padding: EdgeInsets.all(8.0),
@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
               child: Text('Result: $_result'),
             )
           ],
-        )),
+        ))),
       ),
     );
   }
