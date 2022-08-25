@@ -1,9 +1,9 @@
 PODS:
   - Flutter (1.0.0)
-  - Web3Auth (3.4.0)
+  - Web3Auth (3.5.0)
   - web3auth_flutter (0.1.1):
     - Flutter
-    - Web3Auth (~> 3.4.0)
+    - Web3Auth (~> 3.5.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -21,8 +21,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  Web3Auth: a102d7239000edbc93eff11556e966780abc84db
-  web3auth_flutter: 3f754572120035f2a658832cadae7bebcab6ffcd
+  Web3Auth: 75c2b7d480f23dffa0eda9a589e2bc3cba1cd961
+  web3auth_flutter: d79313b6942fd627cd279e9c1d13232a4345f7f7
 
 PODFILE CHECKSUM: 16b18c023339b337fec4a05dcdc6004f5d733352
 
