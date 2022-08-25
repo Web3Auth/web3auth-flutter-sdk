@@ -23,23 +23,23 @@ For Android, the redirectUrl parameter is specifiable, and has to be added into 
 
 Refer to the demo app for more detailed example.
 
-```dart
+````dart
 // Initialization
-await Web3AuthFlutter.init(
-    clientId:
-        'BPcJHn_y62h5k9v33TzTSPQiHJZuOGwQdjOanCC7-GKgelSYz1PYPoU7LIJqix3CGFHLF7IEIvsfQhBF_rx9rUw',
-    network: Network.mainnet,
-    redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
-    whiteLabelData: WhiteLabelData(
-        dark: true, name: "Web3Auth Flutter App", theme: themeMap),
-);
+ await Web3AuthFlutter.init(Web3AuthOptions(
+        clientId:
+            'BCtbnOamqh0cJFEUYA0NB5YkvBECZ3HLZsKfvSRBvew2EiiKW3UxpyQASSR0artjQkiUOCHeZ_ZeygXpYpxZjOs',
+        network: Network.testnet,
+        redirectUrl: Uri.parse('torusapp://org.torusresearch.flutter.web3authexample'),
+        whiteLabel: WhiteLabelData(
+            dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
+```
 
 // Login
-final Web3AuthResponse response = await Web3AuthFlutter.login(provider: Provider.google);
+final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
 
 // Logout
 await Web3AuthFlutter.logout();
-```
+````
 
 ## License
 
