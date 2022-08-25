@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Accept URIs: {YOUR_APP_PACKAGE_NAME}://* -->
-                <data android:scheme="org.torusresearch.flutter.web3authexample" />
+                <data android:scheme="torusapp" android:host="org.torusresearch.flutter.web3authexample" android:path="/auth" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
