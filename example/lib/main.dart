@@ -1,6 +1,10 @@
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:web3auth_flutter/enums.dart';
+import 'package:web3auth_flutter/input.dart';
+import 'package:web3auth_flutter/output.dart';
 import 'dart:async';
 
 import 'package:web3auth_flutter/web3auth_flutter.dart';
@@ -29,14 +33,24 @@ class _MyAppState extends State<MyApp> {
     HashMap themeMap = HashMap<String, String>();
     themeMap['primary'] = "#fff000";
 
-    await Web3AuthFlutter.init(
-      clientId:
-          'BEvzsPEkx0ir-DKwS4rJ9_Wf5FlZMTLaSlFuWN64wDlpqOkMI-gUSXUYN9JV-QZEt60dqlQOMD1oK9ZcOxbyfrc',
-      network: Network.mainnet,
-      redirectUri: 'org.torusresearch.flutter.web3authexample://auth',
-      whiteLabelData: WhiteLabelData(
-          dark: true, name: "Web3Auth Flutter App", theme: themeMap),
-    );
+    Uri redirectUrl;
+    if (Platform.isAndroid) {
+      redirectUrl = Uri.parse(
+          'torusapp://org.torusresearch.flutter.web3authexample/auth');
+    } else if (Platform.isIOS) {
+      redirectUrl =
+          Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
+    } else {
+      throw UnKnownException('Unknown platform');
+    }
+
+    await Web3AuthFlutter.init(Web3AuthOptions(
+        clientId:
+            'BCtbnOamqh0cJFEUYA0NB5YkvBECZ3HLZsKfvSRBvew2EiiKW3UxpyQASSR0artjQkiUOCHeZ_ZeygXpYpxZjOs',
+        network: Network.cyan,
+        redirectUrl: redirectUrl,
+        whiteLabel: WhiteLabelData(
+            dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
   }
 
   @override
@@ -57,7 +71,8 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
                 onPressed: _login(_withGoogle), child: const Text('Google')),
             ElevatedButton(
-                onPressed: _login(_withFacebook), child: const Text('Facebook')),
+                onPressed: _login(_withFacebook),
+                child: const Text('Facebook')),
             ElevatedButton(
                 onPressed: _login(_withReddit), child: const Text('Reddit ')),
             ElevatedButton(
@@ -114,21 +129,24 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
-    return Web3AuthFlutter.login(
-        provider: Provider.google, mfaLevel: MFALevel.MANDATORY);
+    return Web3AuthFlutter.login(LoginParams(
+      loginProvider: Provider.google,
+      mfaLevel: MFALevel.NONE,
+    ));
   }
 
   Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.login(
-        provider: Provider.facebook, mfaLevel: MFALevel.MANDATORY);
+    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.facebook));
   }
 
   Future<Web3AuthResponse> _withReddit() {
-    return Web3AuthFlutter.login(
-        provider: Provider.email_passwordless, mfaLevel: MFALevel.NONE, extraLoginOptions: ExtraLoginOptions(login_hint: "sosid94742@abincol.com"));
+    return Web3AuthFlutter.login(LoginParams(
+        loginProvider: Provider.email_passwordless,
+        extraLoginOptions:
+            ExtraLoginOptions(login_hint: "sosid94742@abincol.com")));
   }
 
   Future<Web3AuthResponse> _withDiscord() {
-    return Web3AuthFlutter.login(provider: Provider.discord);
+    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
   }
 }
