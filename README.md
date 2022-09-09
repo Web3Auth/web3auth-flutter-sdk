@@ -6,8 +6,13 @@ Flutter SDK for Torus Web3Auth (Web3Auth)
 
 ```yml
 dependencies:
-  web3auth_flutter:
-    git: https://github.com/Web3Auth/web3auth-flutter-sdk.git
+  web3auth_flutter: ^1.0.1
+```
+
+or
+
+```sh
+flutter pub add web3auth_flutter
 ```
 
 Please refer to the native SDKs for platform-specific configuration.
