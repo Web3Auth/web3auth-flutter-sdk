@@ -43,7 +43,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml`
 
 ```yaml
 dependencies:
-  web3auth_flutter:
+  web3auth_flutter: ^1.1.0
     git: https://github.com/torusresearch/web3auth-flutter-sdk.git
 ```
 
@@ -71,7 +71,7 @@ Checkout the examples for your preferred blockchain and platform in our [example
 
 Checkout the [Web3Auth Demo](https://demo-app.web3auth.io/) to see how Web3Auth can be used in an application.
 
-Further checkout the [example folder](https://github.com/Web3Auth/web3auth-react-native-sdk/tree/master/example) within this repository, which contains a sample app.
+Further checkout the [example folder](https://github.com/Web3Auth/web3auth-flutter-sdk/tree/master/example) within this repository, which contains a sample app.
 
 ## 💬 Troubleshooting and Discussions
 
