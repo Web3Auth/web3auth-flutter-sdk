@@ -95,6 +95,7 @@ class ExtraLoginOptions {
   final String? max_age;
   final String? ui_locales;
   final String? id_token_hint;
+  final String? id_token;
   final String? login_hint;
   final String? acr_values;
   final String? scope;
@@ -117,6 +118,7 @@ class ExtraLoginOptions {
       this.max_age,
       this.ui_locales,
       this.id_token_hint,
+      this.id_token,
       this.login_hint,
       this.acr_values,
       this.scope,
@@ -139,6 +141,7 @@ class ExtraLoginOptions {
         "max_age": max_age,
         "ui_locales": ui_locales,
         "id_token_hint": id_token_hint,
+        "id_token": id_token,
         "login_hint": login_hint,
         "acr_values": acr_values,
         "scope": scope,
