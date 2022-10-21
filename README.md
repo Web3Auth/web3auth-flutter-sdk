@@ -41,7 +41,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^1.0.1
+  web3auth_flutter: ^1.0.3
 ```
 
 or
@@ -78,7 +78,7 @@ builds.
 ```dart
 // Initialization
 Future<void> initPlatformState() async {
-  HashMap themeMap = HashMap<String, String>();
+  final themeMap = HashMap<String, String>();
   themeMap['primary'] = "#fff000";
 
   Uri redirectUrl;
@@ -103,6 +103,55 @@ Future<void> initPlatformState() async {
 
 // Login
 final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
+
+// Logout
+await Web3AuthFlutter.logout();
+
+```
+
+## 🩹 Custom JWT - Example
+
+```dart
+// Initialization
+Future<void> initPlatformState() async {
+  final themeMap = HashMap<String, String>();
+  themeMap['primary'] = "#fff000";
+
+  Uri redirectUrl;
+  if (Platform.isAndroid) {
+    redirectUrl = Uri.parse(
+        'torusapp://org.torusresearch.flutter.web3authexample/auth');
+  } else if (Platform.isIOS) {
+    redirectUrl =
+        Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
+  } else {
+    throw UnKnownException('Unknown platform');
+  }
+
+  final loginConfig = new HashMap<String, LoginConfigItem>();
+  loginConfig['jwt'] = LoginConfigItem(
+    verifier: "verifier-name", // get it from web3auth dashboard
+    typeOfLogin: TypeOfLogin.jwt,
+    name: "Custom JWT Login",
+    clientId: "web3auth_client_id" // web3auth's plug and play client id
+  );
+
+  await Web3AuthFlutter.init(Web3AuthOptions(
+      clientId:
+          'BCtbnOamqh0cJFEUYA0NB5YkvBECZ3HLZsKfvSRBvew2EiiKW3UxpyQASSR0artjQkiUOCHeZ_ZeygXpYpxZjOs',
+      network: Network.cyan,
+      redirectUrl: redirectUrl,
+      whiteLabel: WhiteLabelData(
+          dark: true, name: "Web3Auth Flutter App", theme: themeMap),
+      loginConfig: loginConfig));
+}
+
+// Login
+final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(
+  loginProvider: Provider.jwt,
+  extraLoginOptions: ExtraLoginOptions(
+      id_token: "{YOUR_JWT_TOKEN}", domain: "{YOUR-DOMAIN}")
+));
 
 // Logout
 await Web3AuthFlutter.logout();
