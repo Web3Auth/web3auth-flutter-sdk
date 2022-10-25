@@ -67,7 +67,7 @@ class LoginConfigItem {
   Map<String, dynamic> toJson() {
     return {
       'verifier': verifier,
-      'typeOfLogin': typeOfLogin.toString(),
+      'typeOfLogin': typeOfLogin.name,
       'name': name,
       'description': description,
       'clientId': clientId,
