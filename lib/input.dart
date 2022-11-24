@@ -37,7 +37,7 @@ class LoginParams {
 class LoginConfigItem {
   final String verifier;
   final TypeOfLogin typeOfLogin;
-  final String name;
+  final String? name;
   final String? description;
   final String? clientId;
   final String? verifierSubIdentifier;
@@ -52,7 +52,7 @@ class LoginConfigItem {
   LoginConfigItem(
       {required this.verifier,
       required this.typeOfLogin,
-      required this.name,
+      this.name,
       this.description,
       this.clientId,
       this.verifierSubIdentifier,

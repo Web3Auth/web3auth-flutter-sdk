@@ -1,4 +1,4 @@
-enum Network { mainnet, testnet, cyan }
+enum Network { mainnet, testnet, cyan, aqua, celeste }
 
 enum Provider {
   google,
