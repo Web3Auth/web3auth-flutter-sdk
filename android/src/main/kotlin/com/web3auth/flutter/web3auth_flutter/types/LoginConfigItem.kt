@@ -3,7 +3,7 @@ package com.web3auth.flutter.web3auth_flutter.types
 data class LoginConfigItem(
     var verifier: String,
     var typeOfLogin: TypeOfLogin,
-    var name: String,
+    var name: String? = null,
     var description: String? = null,
     var clientId: String? = null,
     var verifierSubIdentifier: String? = null,
