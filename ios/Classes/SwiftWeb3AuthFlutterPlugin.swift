@@ -10,7 +10,9 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
     }
 
     var web3auth: Web3Auth?
-    public var state: Web3AuthState?
+    public var state: Web3AuthState?{
+        return web3auth?.state
+    }
     var decoder = JSONDecoder()
     var encoder = JSONEncoder()
 
@@ -47,7 +49,6 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 let web3auth = await Web3Auth(initParams)
                 self.web3auth = web3auth
-                state = web3auth.state
                 result(nil)
                 return
             case "login":
