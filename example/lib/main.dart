@@ -51,6 +51,8 @@ class _MyAppState extends State<MyApp> {
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
             dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
+
+    _sessionResponse(_sessionRes);
   }
 
   @override
@@ -107,6 +109,9 @@ class _MyAppState extends State<MyApp> {
                     const SizedBox(
                       height: 20,
                     ),
+                    ElevatedButton(
+                        onPressed: _sessionResponse(_sessionRes),
+                        child: const Text('Get Session Response')),
                     ElevatedButton(
                         onPressed: _login(_withGoogle),
                         child: const Text('Google')),
@@ -168,6 +173,26 @@ class _MyAppState extends State<MyApp> {
         print("Unknown exception occurred");
       }
     };
+  }
+
+  VoidCallback _sessionResponse(Future<Web3AuthResponse> Function() method) {
+    return () async {
+      try {
+        final Web3AuthResponse response = await method();
+        setState(() {
+          _result = response.toString();
+          logoutVisible = true;
+        });
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
+  Future<Web3AuthResponse> _sessionRes() {
+    return Web3AuthFlutter.sessionResponse();
   }
 
   VoidCallback _logout() {

@@ -131,6 +131,21 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
                 return null
             }
+
+            "sessionResponse" -> {
+                val sessionCF = web3auth.sessionResponse()
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#sessionResponse")
+                sessionCF.join()
+                var sessionResult: String? = null
+                sessionCF.whenComplete { result, error ->
+                    if (error != null) {
+                        throw Error(error)
+                    } else {
+                        sessionResult = gson.toJson(result)
+                    }
+                }
+                return sessionResult
+            }
         }
         throw NotImplementedError()
     }
