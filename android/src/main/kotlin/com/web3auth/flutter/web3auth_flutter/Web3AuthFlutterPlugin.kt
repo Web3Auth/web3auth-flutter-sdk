@@ -62,7 +62,9 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     }
 
     override fun onNewIntent(intent: Intent): Boolean {
-        web3auth.setResultUrl(intent.data)
+        if(this::web3auth.isInitialized) {
+            web3auth.setResultUrl(intent.data)
+        }
         return true
     }
 
