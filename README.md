@@ -41,7 +41,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^1.0.3
+  web3auth_flutter: ^1.2.0
 ```
 
 or
@@ -170,7 +170,7 @@ within this repository, which contains a sample app.
 ## 💬 Troubleshooting and Discussions
 
 - Have a look at our
-  [GitHub Discussions](https://github.com/Web3Auth/Web3Auth/discussions?discussions_q=sort%3Atop)
+  [Community Portal](https://community.web3auth.io/c/help-pnp/pnp-flutter/18)
   to see if anyone has any questions or issues you might be having.
 - Checkout our
   [Troubleshooting Documentation Page](https://web3auth.io/docs/troubleshooting)
