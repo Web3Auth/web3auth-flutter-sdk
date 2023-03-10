@@ -75,6 +75,8 @@ builds.
 
 ## 🩹 Example
 
+Checkout the examples for your preferred blockchain and platform in our [examples](https://web3auth.io/docs/examples)
+
 ```dart
 // Initialization
 Future<void> initPlatformState() async {
