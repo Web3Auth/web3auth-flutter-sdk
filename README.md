@@ -41,7 +41,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^1.0.3
+  web3auth_flutter: ^1.2.0
 ```
 
 or
@@ -74,6 +74,8 @@ builds.
 - iOS `Info.plist` (optional)
 
 ## 🩹 Example
+
+Checkout the examples for your preferred blockchain and platform in our [examples](https://web3auth.io/docs/examples)
 
 ```dart
 // Initialization
@@ -167,13 +169,8 @@ Further checkout the
 [example folder](https://github.com/Web3Auth/web3auth-flutter-sdk/tree/master/example)
 within this repository, which contains a sample app.
 
-## 💬 Troubleshooting and Discussions
+## 💬 Troubleshooting and Support
 
-- Have a look at our
-  [GitHub Discussions](https://github.com/Web3Auth/Web3Auth/discussions?discussions_q=sort%3Atop)
-  to see if anyone has any questions or issues you might be having.
-- Checkout our
-  [Troubleshooting Documentation Page](https://web3auth.io/docs/troubleshooting)
-  to know the common issues and solutions
-- Join our [Discord](https://discord.gg/web3auth) to join our community and get
-  private integration support or help with your integration.
+- Have a look at our [Community Portal](https://community.web3auth.io/) to see if anyone has any questions or issues you might be having. Feel free to reate new topics and we'll help you out as soon as possible.
+- Checkout our [Troubleshooting Documentation Page](https://web3auth.io/docs/troubleshooting) to know the common issues and solutions.
+- For Priority Support, please have a look at our [Pricing Page](https://web3auth.io/pricing.html) for the plan that suits your needs.
