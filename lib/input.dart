@@ -188,6 +188,7 @@ class Web3AuthOptions {
   final Uri? redirectUrl;
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
+  final bool? useCoreKitKey;
 
   Web3AuthOptions({
     required this.clientId,
@@ -195,6 +196,7 @@ class Web3AuthOptions {
     this.redirectUrl,
     this.whiteLabel,
     this.loginConfig,
+    this.useCoreKitKey,
   });
 
   Map<String, dynamic> toJson() {
@@ -204,6 +206,7 @@ class Web3AuthOptions {
       'redirectUrl': redirectUrl?.toString(),
       'whiteLabel': whiteLabel?.toJson(),
       'loginConfig': loginConfig,
+      'useCoreKitKey': useCoreKitKey,
     };
   }
 }
