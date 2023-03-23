@@ -189,6 +189,7 @@ class Web3AuthOptions {
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
   final bool? useCoreKitKey;
+  final ChainNameSpace? chainNameSpace;
 
   Web3AuthOptions({
     required this.clientId,
@@ -197,6 +198,7 @@ class Web3AuthOptions {
     this.whiteLabel,
     this.loginConfig,
     this.useCoreKitKey,
+    this.chainNameSpace
   });
 
   Map<String, dynamic> toJson() {
@@ -207,6 +209,7 @@ class Web3AuthOptions {
       'whiteLabel': whiteLabel?.toJson(),
       'loginConfig': loginConfig,
       'useCoreKitKey': useCoreKitKey,
+      'chainNameSpace': chainNameSpace,
     };
   }
 }

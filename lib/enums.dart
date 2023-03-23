@@ -1,5 +1,7 @@
 enum Network { mainnet, testnet, cyan, aqua, celeste }
 
+enum ChainNameSpace { eip155, solana }
+
 enum Provider {
   google,
   facebook,

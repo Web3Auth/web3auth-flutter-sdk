@@ -4,17 +4,21 @@ class Web3AuthResponse {
   final String? sessionId;
   final TorusUserInfo? userInfo;
   final String? error;
+  final String? coreKitKey;
+  final String? coreKitEd25519PrivKey;
 
   Web3AuthResponse(
       {this.privKey,
       this.userInfo,
       this.error,
       this.ed25519PrivKey,
-      this.sessionId});
+      this.sessionId,
+      this.coreKitKey,
+      this.coreKitEd25519PrivKey});
 
   @override
   String toString() {
-    return "{privKey=$privKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, sessionId=$sessionId, error=$error}";
+    return "{privKey=$privKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error}";
   }
 
   Map<String, dynamic> toJson() {
@@ -23,7 +27,9 @@ class Web3AuthResponse {
       'userInfo': userInfo?.toJson(),
       'ed25519PrivKey': ed25519PrivKey,
       'sessionId': sessionId,
-      'error': error
+      'error': error,
+      'coreKitKey': coreKitKey,
+      'coreKitEd25519PrivKey': coreKitEd25519PrivKey
     };
   }
 
@@ -34,6 +40,8 @@ class Web3AuthResponse {
             : null,
         ed25519PrivKey = json['ed25519PrivKey'],
         sessionId = json['sessionId'],
+        coreKitKey = json['coreKitKey'],
+        coreKitEd25519PrivKey = json['coreKitEd25519PrivKey'],
         error = json['error'];
 }
 
