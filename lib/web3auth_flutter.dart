@@ -55,4 +55,36 @@ class Web3AuthFlutter {
       }
     }
   }
+
+  static Future<String> getPrivKey() async {
+    try {
+      final String privKey = await _channel.invokeMethod('getPrivKey');
+      return privKey;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<String> getEd25519PrivKey() async {
+    try {
+      final String getEd25519PrivKey = await _channel.invokeMethod('getEd25519PrivKey');
+      return getEd25519PrivKey;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
 }

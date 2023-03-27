@@ -207,4 +207,12 @@ class _MyAppState extends State<MyApp> {
   Future<Web3AuthResponse> _withDiscord() {
     return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
   }
+
+  Future<String> _privKey() {
+    return Web3AuthFlutter.getPrivKey();
+  }
+
+  Future<String> _ed25519PrivKey() {
+    return Web3AuthFlutter.getEd25519PrivKey();
+  }
 }
