@@ -98,6 +98,34 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
+            case "getPrivKey":
+                let privKey: String = ""
+                do {
+                    privKey = try await web3auth?.getPrivKey()
+                    result(privKey)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "GetPrivKeyFailedException",
+                        message: "Web3Auth getPrivKey failed",
+                        details: ""
+                    ))
+                    return
+                }
+            case "getEd25519PrivKey":
+                let getEd25519PrivKey: String = ""
+                do {
+                    getEd25519PrivKey = try await web3auth?.getEd25519PrivKey()
+                    result(getEd25519PrivKey)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "GetEd25519PrivKeyFailedException",
+                        message: "Web3Auth getEd25519PrivKey failed",
+                        details: ""
+                    ))
+                    return
+                }
             default:
                 result(FlutterMethodNotImplemented)
             }
