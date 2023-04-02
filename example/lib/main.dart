@@ -119,6 +119,9 @@ class _MyAppState extends State<MyApp> {
                     ElevatedButton(
                         onPressed: _login(_withDiscord),
                         child: const Text('Discord')),
+                    ElevatedButton(
+                        onPressed: _privKey(_getPrivKey),
+                        child: const Text('Get PrivKey')),
                   ],
                 ),
               ),
@@ -186,6 +189,22 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
+  VoidCallback _privKey(Future<String> Function() method) {
+    return () async {
+      try {
+        final String response = await method();
+        setState(() {
+          _result = response;
+          logoutVisible = true;
+        });
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.login(LoginParams(
       loginProvider: Provider.google,
@@ -208,11 +227,7 @@ class _MyAppState extends State<MyApp> {
     return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
   }
 
-  Future<String> _privKey() {
+  Future<String> _getPrivKey() {
     return Web3AuthFlutter.getPrivKey();
-  }
-
-  Future<String> _ed25519PrivKey() {
-    return Web3AuthFlutter.getEd25519PrivKey();
   }
 }
