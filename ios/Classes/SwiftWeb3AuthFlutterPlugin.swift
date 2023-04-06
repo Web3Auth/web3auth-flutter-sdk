@@ -98,6 +98,17 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
+            case "sessionResponse":
+                var resultMap: String = ""
+                guard let state = web3auth?.state
+                else{
+                    result(nil)
+                    return
+                }
+                    let resultData = try encoder.encode(state)
+                    resultMap = String(decoding: resultData, as: UTF8.self)
+                    result(resultMap)
+                    return
             default:
                 result(FlutterMethodNotImplemented)
             }
