@@ -7,12 +7,9 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.NonNull
 import com.google.gson.Gson
-import com.google.gson.JsonObject
-import org.json.JSONObject
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.*
-import com.web3auth.flutter.web3auth_flutter.types.LoginConfig
-import com.web3auth.flutter.web3auth_flutter.types.WLData
+import com.web3auth.core.types.LoginParams
+import com.web3auth.core.types.Web3AuthOptions
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -23,6 +20,7 @@ import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 
 class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
@@ -144,6 +142,12 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val getEd25519PrivKey = web3auth.getEd25519PrivKey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
                 return getEd25519PrivKey
+            }
+
+            "getUserInfo" -> {
+                val userInfoResult = web3auth.getUserInfo()
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getUserInfo")
+                return gson.toJson(userInfoResult)
             }
         }
         throw NotImplementedError()

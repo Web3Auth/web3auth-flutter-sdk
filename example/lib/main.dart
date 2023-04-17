@@ -122,6 +122,9 @@ class _MyAppState extends State<MyApp> {
                     ElevatedButton(
                         onPressed: _privKey(_getPrivKey),
                         child: const Text('Get PrivKey')),
+                    ElevatedButton(
+                        onPressed: _userInfo(_getUserInfo),
+                        child: const Text('Get UserInfo')),
                   ],
                 ),
               ),
@@ -205,6 +208,22 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
+  VoidCallback _userInfo(Future<TorusUserInfo> Function() method) {
+    return () async {
+      try {
+        final TorusUserInfo response = await method();
+        setState(() {
+          _result = response.toString();
+          logoutVisible = true;
+        });
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.login(LoginParams(
       loginProvider: Provider.google,
@@ -229,5 +248,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<String> _getPrivKey() {
     return Web3AuthFlutter.getPrivKey();
+  }
+
+  Future<TorusUserInfo> _getUserInfo() {
+    return Web3AuthFlutter.getUserInfo();
   }
 }

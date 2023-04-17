@@ -74,8 +74,25 @@ class Web3AuthFlutter {
 
   static Future<String> getEd25519PrivKey() async {
     try {
-      final String getEd25519PrivKey = await _channel.invokeMethod('getEd25519PrivKey');
+      final String getEd25519PrivKey =
+          await _channel.invokeMethod('getEd25519PrivKey');
       return getEd25519PrivKey;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<TorusUserInfo> getUserInfo() async {
+    try {
+      final String torusUserInfo = await _channel.invokeMethod('getUserInfo');
+      return TorusUserInfo.fromJson(jsonDecode(torusUserInfo));
     } on PlatformException catch (e) {
       switch (e.code) {
         case "UserCancelledException":
