@@ -120,10 +120,10 @@ class _MyAppState extends State<MyApp> {
                         onPressed: _login(_withDiscord),
                         child: const Text('Discord')),
                     ElevatedButton(
-                        onPressed: _privKey(_getPrivKey),
+                        onPressed: _privKey(),
                         child: const Text('Get PrivKey')),
                     ElevatedButton(
-                        onPressed: _userInfo(_getUserInfo),
+                        onPressed: _userInfo(),
                         child: const Text('Get UserInfo')),
                   ],
                 ),
@@ -192,12 +192,12 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
-  VoidCallback _privKey(Future<String> Function() method) {
-    return () async {
+  VoidCallback _privKey() {
+    return () {
       try {
-        final String response = await method();
+          Web3AuthFlutter.getPrivKey();
         setState(() {
-          _result = response;
+          //_result = response;
           logoutVisible = true;
         });
       } on UserCancelledException {
@@ -208,12 +208,12 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
-  VoidCallback _userInfo(Future<TorusUserInfo> Function() method) {
-    return () async {
+  VoidCallback _userInfo() {
+    return () {
       try {
-        final TorusUserInfo response = await method();
+         Web3AuthFlutter.getUserInfo();
         setState(() {
-          _result = response.toString();
+         // _result = response.toString();
           logoutVisible = true;
         });
       } on UserCancelledException {
@@ -246,11 +246,11 @@ class _MyAppState extends State<MyApp> {
     return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
   }
 
-  Future<String> _getPrivKey() {
-    return Web3AuthFlutter.getPrivKey();
-  }
+  // Future<String> _getPrivKey() {
+  //   return Web3AuthFlutter.getPrivKey();
+  // }
 
-  Future<TorusUserInfo> _getUserInfo() {
-    return Web3AuthFlutter.getUserInfo();
-  }
+  // Future<TorusUserInfo> _getUserInfo() {
+  //   return Web3AuthFlutter.getUserInfo();
+  // }
 }

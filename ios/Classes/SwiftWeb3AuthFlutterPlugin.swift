@@ -99,9 +99,8 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
             case "getPrivKey":
-                let privKey: String = ""
                 do {
-                    privKey = try await web3auth?.getPrivKey()
+                    let privKey = try web3auth?.getPrivkey()
                     result(privKey)
                     return
                 } catch {
@@ -113,9 +112,8 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
             case "getEd25519PrivKey":
-                let getEd25519PrivKey: String = ""
                 do {
-                    getEd25519PrivKey = try await web3auth?.getEd25519PrivKey()
+                    let getEd25519PrivKey = try web3auth?.getEd25519PrivKey()
                     result(getEd25519PrivKey)
                     return
                 } catch {
@@ -126,6 +124,24 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
+            case "getUserInfo":
+                var resultMap: String = ""
+                do{
+                    let userInfo = try web3auth?.getUserInfo()
+                    let resultData = try encoder.encode(userInfo)
+                    resultMap = String(decoding: resultData, as: UTF8.self)
+                }
+                catch{
+                    result(FlutterError(
+                        code: "GetUserInfoFailedException",
+                        message: "Web3Auth getUserInfo failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+               result(resultMap)
+                return
+                
             default:
                 result(FlutterMethodNotImplemented)
             }
