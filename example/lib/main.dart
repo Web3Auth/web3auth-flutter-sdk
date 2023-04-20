@@ -119,12 +119,6 @@ class _MyAppState extends State<MyApp> {
                     ElevatedButton(
                         onPressed: _login(_withDiscord),
                         child: const Text('Discord')),
-                    ElevatedButton(
-                        onPressed: _privKey(_getPrivKey),
-                        child: const Text('Get PrivKey')),
-                    ElevatedButton(
-                        onPressed: _userInfo(_getUserInfo),
-                        child: const Text('Get UserInfo')),
                   ],
                 ),
               ),
@@ -145,6 +139,12 @@ class _MyAppState extends State<MyApp> {
                             ],
                           )),
                     ),
+                    ElevatedButton(
+                        onPressed: _privKey(_getPrivKey),
+                        child: const Text('Get PrivKey')),
+                    ElevatedButton(
+                        onPressed: _userInfo(_getUserInfo),
+                        child: const Text('Get UserInfo')),
                   ],
                 ),
                 visible: logoutVisible,
@@ -165,7 +165,7 @@ class _MyAppState extends State<MyApp> {
       try {
         final Web3AuthResponse response = await method();
         setState(() {
-          _result = response.toString();
+          // _result = response.toString();
           logoutVisible = true;
         });
       } on UserCancelledException {
@@ -195,7 +195,10 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _privKey(Future<String> Function() method) {
     return () async {
       try {
-        final String response = await method();
+        print("Test");
+        final String response = await Web3AuthFlutter.getPrivKey();
+        print("Test 2");
+        print(response.toString());
         setState(() {
           _result = response;
           logoutVisible = true;
@@ -211,7 +214,7 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _userInfo(Future<TorusUserInfo> Function() method) {
     return () async {
       try {
-        final TorusUserInfo response = await method();
+        final TorusUserInfo response = await Web3AuthFlutter.getUserInfo();
         setState(() {
           _result = response.toString();
           logoutVisible = true;
@@ -239,7 +242,7 @@ class _MyAppState extends State<MyApp> {
     return Web3AuthFlutter.login(LoginParams(
         loginProvider: Provider.email_passwordless,
         extraLoginOptions:
-            ExtraLoginOptions(login_hint: "sosid94742@abincol.com")));
+            ExtraLoginOptions(login_hint: "shahbaz@web3auth.io")));
   }
 
   Future<Web3AuthResponse> _withDiscord() {

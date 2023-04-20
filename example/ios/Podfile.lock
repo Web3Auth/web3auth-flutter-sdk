@@ -9,13 +9,13 @@ PODS:
     - BigInt (~> 5.0.0)
     - GenericJSON (~> 2.0)
     - secp256k1.swift (~> 0.1)
-  - Web3Auth (5.0.0):
+  - Web3Auth (5.2.1):
     - CryptoSwift (~> 1.5.1)
     - KeychainSwift (~> 20.0.0)
     - web3.swift (~> 0.9.3)
   - web3auth_flutter (0.1.1):
     - Flutter
-    - Web3Auth (~> 5.0.0)
+    - Web3Auth (~> 5.2.1)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -45,9 +45,9 @@ SPEC CHECKSUMS:
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   web3.swift: c6c3bf1f853743f8a7a58d263e5f7e46545e22c7
-  Web3Auth: 3ef09358f409cf6b2b57f3bcc074281ac73681a1
-  web3auth_flutter: c40401ed4bb3aff723349a382ddae9809eeee959
+  Web3Auth: f72e33e51279eaae6349dea88c42e9225c112586
+  web3auth_flutter: 0e011c61ca51dcdccdb8e0e04f499322c78606b5
 
 PODFILE CHECKSUM: 1d58595b82b880200a7ded05da9181d30ef8c1b7
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.0
