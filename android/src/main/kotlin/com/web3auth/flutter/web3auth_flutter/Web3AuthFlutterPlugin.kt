@@ -8,7 +8,9 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.google.gson.Gson
 import com.web3auth.core.Web3Auth
+import com.web3auth.core.types.ErrorCode
 import com.web3auth.core.types.LoginParams
+import com.web3auth.core.types.Web3AuthError
 import com.web3auth.core.types.Web3AuthOptions
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -135,18 +137,27 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             "getPrivKey" -> {
                 val privKey = web3auth.getPrivkey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivKey")
+                if(privKey.isEmpty()) {
+                    throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
+                }
                 return privKey
             }
 
             "getEd25519PrivKey" -> {
                 val getEd25519PrivKey = web3auth.getEd25519PrivKey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
+                if(getEd25519PrivKey.isEmpty()) {
+                    throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
+                }
                 return getEd25519PrivKey
             }
 
             "getUserInfo" -> {
                 val userInfoResult = web3auth.getUserInfo()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getUserInfo")
+                if(userInfoResult == null) {
+                    throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
+                }
                 return gson.toJson(userInfoResult)
             }
         }
