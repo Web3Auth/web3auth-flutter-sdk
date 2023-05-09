@@ -110,9 +110,6 @@ class _MyAppState extends State<MyApp> {
                       height: 20,
                     ),
                     ElevatedButton(
-                        onPressed: _sessionResponse(_sessionRes),
-                        child: const Text('Get Session Response')),
-                    ElevatedButton(
                         onPressed: _login(_withGoogle),
                         child: const Text('Google')),
                     ElevatedButton(
@@ -144,6 +141,9 @@ class _MyAppState extends State<MyApp> {
                             ],
                           )),
                     ),
+                    ElevatedButton(
+                        onPressed: _sessionResponse(_sessionRes),
+                        child: const Text('Get Session Response')),
                   ],
                 ),
                 visible: logoutVisible,
