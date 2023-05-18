@@ -56,6 +56,22 @@ class Web3AuthFlutter {
     }
   }
 
+  static Future<void> initialize() async {
+    try {
+      await _channel.invokeMethod('initialize', jsonEncode({}));
+      return;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
   static Future<String> getPrivKey() async {
     try {
       final String privKey =

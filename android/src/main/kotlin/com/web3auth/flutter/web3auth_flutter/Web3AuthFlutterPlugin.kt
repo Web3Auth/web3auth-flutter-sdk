@@ -134,10 +134,23 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 return null
             }
 
+            "initialize" -> {
+                val initializeCF = web3auth.initialize()
+                initializeCF.join()
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#initialize")
+
+                initializeCF.whenComplete { _, error ->
+                    if (error != null) {
+                        throw Error(error)
+                    }
+                }
+                return null
+            }
+
             "getPrivKey" -> {
                 val privKey = web3auth.getPrivkey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivKey")
-                if(privKey.isEmpty()) {
+                if(privKey?.isEmpty() == true) {
                     throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
                 }
                 return privKey
@@ -146,7 +159,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             "getEd25519PrivKey" -> {
                 val getEd25519PrivKey = web3auth.getEd25519PrivKey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
-                if(getEd25519PrivKey.isEmpty()) {
+                if(getEd25519PrivKey?.isEmpty() == true) {
                     throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
                 }
                 return getEd25519PrivKey
