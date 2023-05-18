@@ -52,6 +52,12 @@ class _MyAppState extends State<MyApp> {
         whiteLabel: WhiteLabelData(
             dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
 
+    final bool res = await Web3AuthFlutter.initialize();
+    setState(() {
+      if(res) {
+        logoutVisible = true;
+      }
+    });
   }
 
   @override
@@ -120,9 +126,6 @@ class _MyAppState extends State<MyApp> {
                     ElevatedButton(
                         onPressed: _login(_withDiscord),
                         child: const Text('Discord')),
-                    ElevatedButton(
-                        onPressed: _initialize(),
-                        child: const Text('Initialize')),
                   ],
                 ),
               ),
@@ -187,21 +190,6 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           _result = '';
           logoutVisible = false;
-        });
-      } on UserCancelledException {
-        print("User cancelled.");
-      } on UnKnownException {
-        print("Unknown exception occurred");
-      }
-    };
-  }
-
-  VoidCallback _initialize() {
-    return () async {
-      try {
-        await Web3AuthFlutter.initialize();
-        setState(() {
-          logoutVisible = true;
         });
       } on UserCancelledException {
         print("User cancelled.");

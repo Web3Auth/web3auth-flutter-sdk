@@ -56,10 +56,10 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> initialize() async {
+  static Future<bool> initialize() async {
     try {
-      await _channel.invokeMethod('initialize', jsonEncode({}));
-      return;
+      final bool response = await _channel.invokeMethod('initialize', jsonEncode({}));
+      return response;
     } on PlatformException catch (e) {
       switch (e.code) {
         case "UserCancelledException":
