@@ -52,12 +52,14 @@ class _MyAppState extends State<MyApp> {
         whiteLabel: WhiteLabelData(
             dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
 
-    final bool res = await Web3AuthFlutter.initialize();
-    setState(() {
-      if(res) {
+    await Web3AuthFlutter.initialize();
+
+    final String res = await Web3AuthFlutter.getPrivKey();
+    if(res.isNotEmpty) {
+      setState(() {
         logoutVisible = true;
-      }
-    });
+      });
+    }
   }
 
   @override
@@ -172,7 +174,6 @@ class _MyAppState extends State<MyApp> {
       try {
         final Web3AuthResponse response = await method();
         setState(() {
-          // _result = response.toString();
           logoutVisible = true;
         });
       } on UserCancelledException {
@@ -202,10 +203,7 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _privKey(Future<String> Function() method) {
     return () async {
       try {
-        print("Test");
         final String response = await Web3AuthFlutter.getPrivKey();
-        print("Test 2");
-        print(response.toString());
         setState(() {
           _result = response;
           logoutVisible = true;

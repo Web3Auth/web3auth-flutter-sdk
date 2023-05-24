@@ -138,16 +138,13 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val initializeCF = web3auth.initialize()
                 initializeCF.join()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#initialize")
-                var initializeResult: Boolean? = false
+
                 initializeCF.whenComplete { _, error ->
-                    initializeResult = if (error != null) {
+                    if (error != null) {
                         throw Error(error)
-                        false
-                    } else {
-                        true
                     }
                 }
-                return initializeResult
+                return null
             }
 
             "getPrivKey" -> {
