@@ -10,10 +10,12 @@ import 'dart:async';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -51,6 +53,16 @@ class _MyAppState extends State<MyApp> {
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
             dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
+
+    await Web3AuthFlutter.initialize();
+
+    final String res = await Web3AuthFlutter.getPrivKey();
+    print(res);
+    if (res.isNotEmpty) {
+      setState(() {
+        logoutVisible = true;
+      });
+    }
   }
 
   @override
@@ -133,12 +145,18 @@ class _MyAppState extends State<MyApp> {
                                   Colors.red[600] // This is what you need!
                               ),
                           onPressed: _logout(),
-                          child: Column(
-                            children: const [
+                          child: const Column(
+                            children: [
                               Text('Logout'),
                             ],
                           )),
                     ),
+                    ElevatedButton(
+                        onPressed: _privKey(_getPrivKey),
+                        child: const Text('Get PrivKey')),
+                    ElevatedButton(
+                        onPressed: _userInfo(_getUserInfo),
+                        child: const Text('Get UserInfo')),
                   ],
                 ),
                 visible: logoutVisible,
@@ -159,7 +177,6 @@ class _MyAppState extends State<MyApp> {
       try {
         final Web3AuthResponse response = await method();
         setState(() {
-          _result = response.toString();
           logoutVisible = true;
         });
       } on UserCancelledException {
@@ -186,6 +203,38 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
+  VoidCallback _privKey(Future<String?> Function() method) {
+    return () async {
+      try {
+        final String? response = await Web3AuthFlutter.getPrivKey();
+        setState(() {
+          _result = response!;
+          logoutVisible = true;
+        });
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
+  VoidCallback _userInfo(Future<TorusUserInfo> Function() method) {
+    return () async {
+      try {
+        final TorusUserInfo response = await Web3AuthFlutter.getUserInfo();
+        setState(() {
+          _result = response.toString();
+          logoutVisible = true;
+        });
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.login(LoginParams(
       loginProvider: Provider.google,
@@ -200,11 +249,18 @@ class _MyAppState extends State<MyApp> {
   Future<Web3AuthResponse> _withEmailPasswordless() {
     return Web3AuthFlutter.login(LoginParams(
         loginProvider: Provider.email_passwordless,
-        extraLoginOptions:
-            ExtraLoginOptions(login_hint: "gaurav@tor.us")));
+        extraLoginOptions: ExtraLoginOptions(login_hint: "gaurav@tor.us")));
   }
 
   Future<Web3AuthResponse> _withDiscord() {
     return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
+  }
+
+  Future<String?> _getPrivKey() {
+    return Web3AuthFlutter.getPrivKey();
+  }
+
+  Future<TorusUserInfo> _getUserInfo() {
+    return Web3AuthFlutter.getUserInfo();
   }
 }

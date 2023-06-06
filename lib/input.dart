@@ -188,14 +188,17 @@ class Web3AuthOptions {
   final Uri? redirectUrl;
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
+  final bool? useCoreKitKey;
+  final ChainNamespace? chainNamespace;
 
-  Web3AuthOptions({
-    required this.clientId,
-    required this.network,
-    this.redirectUrl,
-    this.whiteLabel,
-    this.loginConfig,
-  });
+  Web3AuthOptions(
+      {required this.clientId,
+      required this.network,
+      this.redirectUrl,
+      this.whiteLabel,
+      this.loginConfig,
+      this.useCoreKitKey,
+      this.chainNamespace});
 
   Map<String, dynamic> toJson() {
     return {
@@ -204,6 +207,8 @@ class Web3AuthOptions {
       'redirectUrl': redirectUrl?.toString(),
       'whiteLabel': whiteLabel?.toJson(),
       'loginConfig': loginConfig,
+      'useCoreKitKey': useCoreKitKey,
+      'chainNamespace': chainNamespace,
     };
   }
 }

@@ -1,4 +1,6 @@
-enum Network { mainnet, testnet, cyan, aqua, celeste }
+enum Network { mainnet, testnet, cyan, aqua }
+
+enum ChainNamespace { eip155, solana }
 
 enum Provider {
   google,

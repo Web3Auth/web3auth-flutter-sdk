@@ -55,4 +55,71 @@ class Web3AuthFlutter {
       }
     }
   }
+
+  static Future<void> initialize() async {
+    try {
+      await _channel.invokeMethod('initialize', jsonEncode({}));
+      return;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<String> getPrivKey() async {
+    try {
+      final String privKey =
+          await _channel.invokeMethod('getPrivKey', jsonEncode({}));
+      return privKey;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<String> getEd25519PrivKey() async {
+    try {
+      final String getEd25519PrivKey =
+          await _channel.invokeMethod('getEd25519PrivKey', jsonEncode({}));
+      return getEd25519PrivKey;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<TorusUserInfo> getUserInfo() async {
+    try {
+      final String torusUserInfo =
+          await _channel.invokeMethod('getUserInfo', jsonEncode({}));
+      return TorusUserInfo.fromJson(jsonDecode(torusUserInfo));
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
 }
