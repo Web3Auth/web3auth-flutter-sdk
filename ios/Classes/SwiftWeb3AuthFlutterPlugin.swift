@@ -10,14 +10,14 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
     }
 
     var web3auth: Web3Auth?
-    public var state: Web3AuthState?{
+    public var state: Web3AuthState? {
         return web3auth?.state
     }
     var decoder = JSONDecoder()
     var encoder = JSONEncoder()
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        Task{
+        Task {
             debugPrint(call, "calling args")
             guard let args = call.arguments as? String else {
                 result(FlutterError(
@@ -100,7 +100,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
             case "initialize":
                 do {
-                    try await web3auth?.initialize()
+                    // There is no initialize function in swift
                     result(nil)
                     return
                 } catch {
@@ -139,12 +139,11 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
             case "getUserInfo":
                 var resultMap: String = ""
-                do{
+                do {
                     let userInfo = try web3auth?.getUserInfo()
                     let resultData = try encoder.encode(userInfo)
                     resultMap = String(decoding: resultData, as: UTF8.self)
-                }
-                catch{
+                } catch {
                     result(FlutterError(
                         code: "GetUserInfoFailedException",
                         message: "Web3Auth getUserInfo failed",
@@ -154,7 +153,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                result(resultMap)
                 return
-                
+
             default:
                 result(FlutterMethodNotImplemented)
             }

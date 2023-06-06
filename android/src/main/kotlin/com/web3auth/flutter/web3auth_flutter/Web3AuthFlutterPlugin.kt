@@ -148,28 +148,26 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             "getPrivKey" -> {
                 val privKey = web3auth.getPrivkey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivKey")
-                if (privKey == null || privKey.isEmpty() == true) {
-                    throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
-                }
                 return privKey
             }
 
             "getEd25519PrivKey" -> {
                 val ed25519Key = web3auth.getEd25519PrivKey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
-                if (ed25519Key == null || ed25519Key.isEmpty() == true) {
-                    throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
-                }
                 return ed25519Key
             }
 
             "getUserInfo" -> {
-                val userInfoResult = web3auth.getUserInfo()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getUserInfo")
-                if (userInfoResult == null) {
-                    throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
-                }
-                return gson.toJson(userInfoResult)
+                try {
+                    val userInfoResult = web3auth.getUserInfo()
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getUserInfo")
+                    if (userInfoResult == null) {
+                        throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
+                    }
+                    return gson.toJson(userInfoResult)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }   
             }
         }
         throw NotImplementedError()

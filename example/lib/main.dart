@@ -56,9 +56,9 @@ class _MyAppState extends State<MyApp> {
 
     await Web3AuthFlutter.initialize();
 
-    final String? res = await Web3AuthFlutter.getPrivKey();
+    final String res = await Web3AuthFlutter.getPrivKey();
     print(res);
-    if (res != null && res.isNotEmpty) {
+    if (res.isNotEmpty) {
       setState(() {
         logoutVisible = true;
       });
