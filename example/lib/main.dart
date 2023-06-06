@@ -10,10 +10,12 @@ import 'dart:async';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -54,8 +56,9 @@ class _MyAppState extends State<MyApp> {
 
     await Web3AuthFlutter.initialize();
 
-    final String res = await Web3AuthFlutter.getPrivKey();
-    if (res.isNotEmpty) {
+    final String? res = await Web3AuthFlutter.getPrivKey();
+    print(res);
+    if (res != null && res.isNotEmpty) {
       setState(() {
         logoutVisible = true;
       });
@@ -142,8 +145,8 @@ class _MyAppState extends State<MyApp> {
                                   Colors.red[600] // This is what you need!
                               ),
                           onPressed: _logout(),
-                          child: Column(
-                            children: const [
+                          child: const Column(
+                            children: [
                               Text('Logout'),
                             ],
                           )),
@@ -200,12 +203,12 @@ class _MyAppState extends State<MyApp> {
     };
   }
 
-  VoidCallback _privKey(Future<String> Function() method) {
+  VoidCallback _privKey(Future<String?> Function() method) {
     return () async {
       try {
-        final String response = await Web3AuthFlutter.getPrivKey();
+        final String? response = await Web3AuthFlutter.getPrivKey();
         setState(() {
-          _result = response;
+          _result = response!;
           logoutVisible = true;
         });
       } on UserCancelledException {
@@ -253,7 +256,7 @@ class _MyAppState extends State<MyApp> {
     return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
   }
 
-  Future<String> _getPrivKey() {
+  Future<String?> _getPrivKey() {
     return Web3AuthFlutter.getPrivKey();
   }
 

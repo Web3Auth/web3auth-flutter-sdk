@@ -12,6 +12,7 @@ import com.web3auth.core.types.ErrorCode
 import com.web3auth.core.types.LoginParams
 import com.web3auth.core.types.Web3AuthError
 import com.web3auth.core.types.Web3AuthOptions
+import com.web3auth.core.types.Web3AuthResponse
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -23,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.lang.Exception
 
 
 class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
@@ -62,7 +64,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     }
 
     override fun onNewIntent(intent: Intent): Boolean {
-        if(this::web3auth.isInitialized) {
+        if (this::web3auth.isInitialized) {
             web3auth.setResultUrl(intent.data)
         }
         return true
@@ -91,8 +93,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
                 val redirectUrl = obj.get("redirectUrl")
+                val network = obj.get("network")
                 initParams.redirectUrl = Uri.parse(redirectUrl as String)
-                initParams.sdkUrl = "https://sdk.openlogin.com"
+                initParams.sdkUrl =
+                    if (network == "testnet") "https://dev-sdk.openlogin.com" else "https://sdk.openlogin.com"
                 initParams.context = activity!!
                 web3auth = Web3Auth(
                     initParams
@@ -105,70 +109,64 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             }
 
             "login" -> {
-                val loginArgs = call.arguments<String>() ?: return null
-                val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
-                val loginCF = web3auth.login(loginParams)
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
-                loginCF.join()
-                var loginResult: String? = null
-                loginCF.whenComplete { result, error ->
-                    if (error != null) {
-                        throw Error(error)
-                    } else {
-                        loginResult = gson.toJson(result)
-                    }
+                try {
+                    val loginArgs = call.arguments<String>() ?: return null
+                    val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
+                    val loginCF = web3auth.login(loginParams)
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
+                    var loginResult: Web3AuthResponse = loginCF.get()
+                    return gson.toJson(loginResult)
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
                 }
-                return loginResult
             }
 
             "logout" -> {
-                val logoutCF = web3auth.logout()
-                logoutCF.join()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#logout")
-
-                logoutCF.whenComplete { _, error ->
-                    if (error != null) {
-                        throw Error(error)
-                    }
+                try {
+                    val logoutCF = web3auth.logout()
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#logout")
+                    logoutCF.get()
+                    return null
+                } catch (e: Throwable) {
+                    throw Error(e)
                 }
-                return null
             }
 
             "initialize" -> {
-                val initializeCF = web3auth.initialize()
-                initializeCF.join()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#initialize")
-
-                initializeCF.whenComplete { _, error ->
-                    if (error != null) {
-                        throw Error(error)
-                    }
+                try {
+                    val initializeCF = web3auth.initialize()
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#initialize")
+                    initializeCF.get()
+                    return null
+                } catch (e: Throwable) {
+                    throw Error(e)
                 }
-                return null
             }
 
             "getPrivKey" -> {
                 val privKey = web3auth.getPrivkey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivKey")
-                if(privKey?.isEmpty() == true) {
+                if (privKey == null || privKey.isEmpty() == true) {
                     throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
                 }
                 return privKey
             }
 
             "getEd25519PrivKey" -> {
-                val getEd25519PrivKey = web3auth.getEd25519PrivKey()
+                val ed25519Key = web3auth.getEd25519PrivKey()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
-                if(getEd25519PrivKey?.isEmpty() == true) {
+                if (ed25519Key == null || ed25519Key.isEmpty() == true) {
                     throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
                 }
-                return getEd25519PrivKey
+                return ed25519Key
             }
 
             "getUserInfo" -> {
                 val userInfoResult = web3auth.getUserInfo()
                 Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getUserInfo")
-                if(userInfoResult == null) {
+                if (userInfoResult == null) {
                     throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
                 }
                 return gson.toJson(userInfoResult)
