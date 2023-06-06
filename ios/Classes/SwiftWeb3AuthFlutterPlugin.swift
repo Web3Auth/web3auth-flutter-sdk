@@ -98,6 +98,19 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
+            case "initialize":
+                do {
+                    try await web3auth?.initialize()
+                    result(nil)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "InitializeFailedException",
+                        message: "Web3Auth initialize failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
             case "getPrivKey":
                 do {
                     let privKey = try web3auth?.getPrivkey()
