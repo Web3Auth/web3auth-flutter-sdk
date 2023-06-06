@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
     await Web3AuthFlutter.initialize();
 
     final String res = await Web3AuthFlutter.getPrivKey();
-    if(res.isNotEmpty) {
+    if (res.isNotEmpty) {
       setState(() {
         logoutVisible = true;
       });
@@ -246,8 +246,7 @@ class _MyAppState extends State<MyApp> {
   Future<Web3AuthResponse> _withEmailPasswordless() {
     return Web3AuthFlutter.login(LoginParams(
         loginProvider: Provider.email_passwordless,
-        extraLoginOptions:
-            ExtraLoginOptions(login_hint: "shahbaz@web3auth.io")));
+        extraLoginOptions: ExtraLoginOptions(login_hint: "gaurav@tor.us")));
   }
 
   Future<Web3AuthResponse> _withDiscord() {
