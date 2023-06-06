@@ -41,7 +41,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^1.2.0
+  web3auth_flutter: ^2.0.0
 ```
 
 or
