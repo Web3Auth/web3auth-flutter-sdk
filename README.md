@@ -169,7 +169,7 @@ Future<void> initPlatformState() async {
   // call getEd25519PrivKey() function to get user ed25519 private key
   final String ed255199PrivKey = await Web3AuthFlutter.getEd25519PrivKey();
 
-  // call getUserInfo() function to get user information like name, email, verifier, verifierId etc.
+  // call getUserInfo() function to get user information like name, email, verifier, verifierId etc
   final TorusUserInfo userInfo = await Web3AuthFlutter.getUserInfo();
 }
 
