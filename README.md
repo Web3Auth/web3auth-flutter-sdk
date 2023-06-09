@@ -101,10 +101,23 @@ Future<void> initPlatformState() async {
       redirectUrl: redirectUrl,
       whiteLabel: WhiteLabelData(
           dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
+
+  // Call initialize() function to get privKey and user information without relogging in user if a user has an active session
+  await Web3AuthFlutter.initialize();
+
+  // call getPrivKey() function to get user private key
+  final String privKey = await Web3AuthFlutter.getPrivKey();
+
+  // call getEd25519PrivKey() function to get user ed25519 private key
+  final String ed255199PrivKey = await Web3AuthFlutter.getEd25519PrivKey();
+
+  // call getUserInfo() function to get user information like name, email, verifier, verifierId etc.
+  final TorusUserInfo userInfo = await Web3AuthFlutter.getUserInfo();
+  
 }
 
 // Login
-final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
+await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
 
 // Logout
 await Web3AuthFlutter.logout();
@@ -146,10 +159,22 @@ Future<void> initPlatformState() async {
       whiteLabel: WhiteLabelData(
           dark: true, name: "Web3Auth Flutter App", theme: themeMap),
       loginConfig: loginConfig));
+
+  // Call initialize() function to get privKey and user information without relogging in user if a user has an active session
+  await Web3AuthFlutter.initialize();
+
+  // call getPrivKey() function to get user private key
+  final String privKey = await Web3AuthFlutter.getPrivKey();
+
+  // call getEd25519PrivKey() function to get user ed25519 private key
+  final String ed255199PrivKey = await Web3AuthFlutter.getEd25519PrivKey();
+
+  // call getUserInfo() function to get user information like name, email, verifier, verifierId etc.
+  final TorusUserInfo userInfo = await Web3AuthFlutter.getUserInfo();
 }
 
 // Login
-final Web3AuthResponse response = await Web3AuthFlutter.login(LoginParams(
+await Web3AuthFlutter.login(LoginParams(
   loginProvider: Provider.jwt,
   extraLoginOptions: ExtraLoginOptions(
       id_token: "{YOUR_JWT_TOKEN}", domain: "{YOUR-DOMAIN}")
