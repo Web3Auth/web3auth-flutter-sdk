@@ -145,8 +145,8 @@ class _MyAppState extends State<MyApp> {
                                   Colors.red[600] // This is what you need!
                               ),
                           onPressed: _logout(),
-                          child: const Column(
-                            children: [
+                          child: Column(
+                            children: const [
                               Text('Logout'),
                             ],
                           )),
