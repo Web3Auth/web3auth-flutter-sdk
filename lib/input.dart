@@ -185,6 +185,7 @@ class WhiteLabelData {
 class Web3AuthOptions {
   final String clientId;
   final Network network;
+  final BuildEnv buildEnv;
   final Uri? redirectUrl;
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
@@ -194,6 +195,7 @@ class Web3AuthOptions {
   Web3AuthOptions(
       {required this.clientId,
       required this.network,
+      required this.buildEnv,
       this.redirectUrl,
       this.whiteLabel,
       this.loginConfig,
@@ -204,6 +206,7 @@ class Web3AuthOptions {
     return {
       'clientId': clientId,
       'network': network.name,
+      'buildEnv': buildEnv.name,
       'redirectUrl': redirectUrl?.toString(),
       'whiteLabel': whiteLabel?.toJson(),
       'loginConfig': loginConfig,

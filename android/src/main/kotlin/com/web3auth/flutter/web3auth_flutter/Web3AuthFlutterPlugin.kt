@@ -8,11 +8,7 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.google.gson.Gson
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.ErrorCode
-import com.web3auth.core.types.LoginParams
-import com.web3auth.core.types.Web3AuthError
-import com.web3auth.core.types.Web3AuthOptions
-import com.web3auth.core.types.Web3AuthResponse
+import com.web3auth.core.types.*
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -24,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.lang.Exception
 
 
 class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
@@ -94,9 +89,9 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val obj = JSONObject(initArgs)
                 val redirectUrl = obj.get("redirectUrl")
                 val network = obj.get("network")
+                val buildEnv = obj.get("buildEnv") as String
                 initParams.redirectUrl = Uri.parse(redirectUrl as String)
-                initParams.sdkUrl =
-                    if (network == "testnet") "https://dev-sdk.openlogin.com" else "https://sdk.openlogin.com"
+                initParams.sdkUrl = getSdkUrl(buildEnv)
                 initParams.context = activity!!
                 web3auth = Web3Auth(
                     initParams
@@ -167,9 +162,26 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     return gson.toJson(userInfoResult)
                 } catch (e: Throwable) {
                     throw Error(e)
-                }   
+                }
             }
         }
         throw NotImplementedError()
     }
+
+    private fun getSdkUrl(buildEnv: String): String {
+        val sdkUrl: String = when (buildEnv) {
+            "staging" -> {
+                "https://staging-auth.web3auth.io/$openLoginVersion"
+            }
+            "testing" -> {
+                "https://develop-auth.web3auth.io"
+            }
+            else -> {
+                "https://auth.web3auth.io/$openLoginVersion"
+            }
+        }
+        return sdkUrl
+    }
 }
+
+const val openLoginVersion = "v5"
