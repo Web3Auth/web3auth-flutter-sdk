@@ -155,29 +155,77 @@ class ExtraLoginOptions {
 }
 
 class WhiteLabelData {
-  final String? name;
+  final String? appName;
   final String? logoLight;
   final String? logoDark;
   final String? defaultLanguage;
-  final bool? dark;
+  final String? mode;
   final HashMap? theme;
+  final Stream? appUrl;
+  final bool? useLogoLoader;
 
   WhiteLabelData(
-      {this.name,
+      {this.appName,
       this.logoLight,
       this.logoDark,
       this.defaultLanguage,
-      this.dark,
-      this.theme});
+      this.mode,
+      this.theme,
+      this.appUrl,
+      this.useLogoLoader});
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'name': appName,
       'logoLight': logoLight,
       'logoDark': logoDark,
       'defaultLanguage': defaultLanguage,
-      'dark': dark,
-      'theme': theme
+      'mode': mode,
+      'theme': theme,
+      'appUrl': appUrl,
+      'useLogoLoader': useLogoLoader
+    };
+  }
+}
+
+class MfaSetting {
+  final bool? enable;
+  final int? priority;
+  final bool? mandatory;
+
+  MfaSetting(
+      { this.enable,
+        this.priority,
+        this.mandatory});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'enable': enable,
+      'priority': priority,
+      'mandatory': mandatory
+    };
+  }
+}
+
+class MfaSettings {
+  final MfaSetting? deviceShareFactor;
+  final MfaSetting? backUpShareFactor;
+  final MfaSetting? socialBackupFactor;
+  final MfaSetting? passwordFactor;
+
+  MfaSettings(
+      { this.deviceShareFactor,
+        this.backUpShareFactor,
+        this.socialBackupFactor,
+        this.passwordFactor
+      });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'deviceShareFactor': deviceShareFactor,
+      'backUpShareFactor': backUpShareFactor,
+      'socialBackupFactor': socialBackupFactor,
+      'passwordFactor': passwordFactor
     };
   }
 }
@@ -191,6 +239,7 @@ class Web3AuthOptions {
   final HashMap<String, LoginConfigItem>? loginConfig;
   final bool? useCoreKitKey;
   final ChainNamespace? chainNamespace;
+  final MfaSettings? mfaSettings;
 
   Web3AuthOptions(
       {required this.clientId,
@@ -200,7 +249,8 @@ class Web3AuthOptions {
       this.whiteLabel,
       this.loginConfig,
       this.useCoreKitKey,
-      this.chainNamespace});
+      this.chainNamespace,
+      this.mfaSettings});
 
   Map<String, dynamic> toJson() {
     return {
@@ -212,6 +262,7 @@ class Web3AuthOptions {
       'loginConfig': loginConfig,
       'useCoreKitKey': useCoreKitKey,
       'chainNamespace': chainNamespace,
+      'mfaSettings': mfaSettings
     };
   }
 }

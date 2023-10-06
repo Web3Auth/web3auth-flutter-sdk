@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
         buildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
-            dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
+            mode: ThemeModes.light.name,defaultLanguage: Language.en.name, appName: "Web3Auth Flutter App", theme: themeMap)));
 
     await Web3AuthFlutter.initialize();
 

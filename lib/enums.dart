@@ -4,6 +4,10 @@ enum BuildEnv { production, staging, testing }
 
 enum ChainNamespace { eip155, solana }
 
+enum Language { en, de, ja, ko, zh, es, fr, pt, nl }
+
+enum ThemeModes { light, dark, auto }
+
 enum Provider {
   google,
   facebook,
