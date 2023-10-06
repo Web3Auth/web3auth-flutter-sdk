@@ -189,12 +189,12 @@ class WhiteLabelData {
 }
 
 class MfaSetting {
-  final bool? enable;
+  final bool enable;
   final int? priority;
   final bool? mandatory;
 
   MfaSetting(
-      { this.enable,
+      { required this.enable,
         this.priority,
         this.mandatory});
 
