@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
 
@@ -5,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/input.dart';
 import 'package:web3auth_flutter/output.dart';
-import 'dart:async';
-
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
@@ -53,7 +52,10 @@ class _MyAppState extends State<MyApp> {
         buildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
-            mode: ThemeModes.light.name,defaultLanguage: Language.en.name, appName: "Web3Auth Flutter App", theme: themeMap)));
+            mode: ThemeModes.light,
+            defaultLanguage: Language.en,
+            appName: "Web3Auth Flutter App",
+            theme: themeMap)));
 
     await Web3AuthFlutter.initialize();
 
@@ -76,98 +78,98 @@ class _MyAppState extends State<MyApp> {
         body: SingleChildScrollView(
           child: Center(
               child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-              ),
-              Visibility(
-                visible: !logoutVisible,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 50,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                  ),
+                  Visibility(
+                    visible: !logoutVisible,
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        const Icon(
+                          Icons.flutter_dash,
+                          size: 80,
+                          color: Color(0xFF1389fd),
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        const Text(
+                          'Web3Auth',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 36,
+                              color: Color(0xFF0364ff)),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Text(
+                          'Welcome to Web3Auth x Flutter Demo',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          'Login with',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ElevatedButton(
+                            onPressed: _login(_withGoogle),
+                            child: const Text('Google')),
+                        ElevatedButton(
+                            onPressed: _login(_withFacebook),
+                            child: const Text('Facebook')),
+                        ElevatedButton(
+                            onPressed: _login(_withEmailPasswordless),
+                            child: const Text('Email Passwordless')),
+                        ElevatedButton(
+                            onPressed: _login(_withDiscord),
+                            child: const Text('Discord')),
+                      ],
                     ),
-                    const Icon(
-                      Icons.flutter_dash,
-                      size: 80,
-                      color: Color(0xFF1389fd),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    const Text(
-                      'Web3Auth',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 36,
-                          color: Color(0xFF0364ff)),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      'Welcome to Web3Auth x Flutter Demo',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      'Login with',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                        onPressed: _login(_withGoogle),
-                        child: const Text('Google')),
-                    ElevatedButton(
-                        onPressed: _login(_withFacebook),
-                        child: const Text('Facebook')),
-                    ElevatedButton(
-                        onPressed: _login(_withEmailPasswordless),
-                        child: const Text('Email Passwordless')),
-                    ElevatedButton(
-                        onPressed: _login(_withDiscord),
-                        child: const Text('Discord')),
-                  ],
-                ),
-              ),
-              Visibility(
-                // ignore: sort_child_properties_last
-                child: Column(
-                  children: [
-                    Center(
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
+                  ),
+                  Visibility(
+                    // ignore: sort_child_properties_last
+                    child: Column(
+                      children: [
+                        Center(
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
                                   Colors.red[600] // This is what you need!
                               ),
-                          onPressed: _logout(),
-                          child: Column(
-                            children: const [
-                              Text('Logout'),
-                            ],
-                          )),
+                              onPressed: _logout(),
+                              child: Column(
+                                children: const [
+                                  Text('Logout'),
+                                ],
+                              )),
+                        ),
+                        ElevatedButton(
+                            onPressed: _privKey(_getPrivKey),
+                            child: const Text('Get PrivKey')),
+                        ElevatedButton(
+                            onPressed: _userInfo(_getUserInfo),
+                            child: const Text('Get UserInfo')),
+                      ],
                     ),
-                    ElevatedButton(
-                        onPressed: _privKey(_getPrivKey),
-                        child: const Text('Get PrivKey')),
-                    ElevatedButton(
-                        onPressed: _userInfo(_getUserInfo),
-                        child: const Text('Get UserInfo')),
-                  ],
-                ),
-                visible: logoutVisible,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(_result),
-              )
-            ],
-          )),
+                    visible: logoutVisible,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(_result),
+                  )
+                ],
+              )),
         ),
       ),
     );

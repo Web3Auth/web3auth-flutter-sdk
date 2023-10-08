@@ -158,8 +158,8 @@ class WhiteLabelData {
   final String? appName;
   final String? logoLight;
   final String? logoDark;
-  final String? defaultLanguage;
-  final String? mode;
+  final Language? defaultLanguage;
+  final ThemeModes? mode;
   final HashMap? theme;
   final Stream? appUrl;
   final bool? useLogoLoader;
@@ -179,8 +179,8 @@ class WhiteLabelData {
       'name': appName,
       'logoLight': logoLight,
       'logoDark': logoDark,
-      'defaultLanguage': defaultLanguage,
-      'mode': mode,
+      'defaultLanguage': defaultLanguage.toString().split('.').last,
+      'mode': mode.toString().split('.').last,
       'theme': theme,
       'appUrl': appUrl,
       'useLogoLoader': useLogoLoader
