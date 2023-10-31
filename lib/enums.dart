@@ -1,6 +1,12 @@
-enum Network { mainnet, testnet, cyan, aqua }
+enum Network { mainnet, testnet, cyan, aqua, sapphire_devnet, sapphire_mainnet }
+
+enum BuildEnv { production, staging, testing }
 
 enum ChainNamespace { eip155, solana }
+
+enum Language { en, de, ja, ko, zh, es, fr, pt, nl }
+
+enum ThemeModes { light, dark, auto }
 
 enum Provider {
   google,

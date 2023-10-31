@@ -37,9 +37,9 @@ class LoginParams {
 class LoginConfigItem {
   final String verifier;
   final TypeOfLogin typeOfLogin;
+  final String clientId;
   final String? name;
   final String? description;
-  final String? clientId;
   final String? verifierSubIdentifier;
   final String? logoHover;
   final String? logoLight;
@@ -52,9 +52,9 @@ class LoginConfigItem {
   LoginConfigItem(
       {required this.verifier,
       required this.typeOfLogin,
+      required this.clientId,
       this.name,
       this.description,
-      this.clientId,
       this.verifierSubIdentifier,
       this.logoHover,
       this.logoLight,
@@ -68,9 +68,9 @@ class LoginConfigItem {
     return {
       'verifier': verifier,
       'typeOfLogin': typeOfLogin.name,
+      'clientId': clientId,
       'name': name,
       'description': description,
-      'clientId': clientId,
       'verifierSubIdentifier': verifierSubIdentifier,
       'logoHover': logoHover,
       'logoLight': logoLight,
@@ -155,29 +155,69 @@ class ExtraLoginOptions {
 }
 
 class WhiteLabelData {
-  final String? name;
+  final String? appName;
   final String? logoLight;
   final String? logoDark;
-  final String? defaultLanguage;
-  final bool? dark;
+  final Language? defaultLanguage;
+  final ThemeModes? mode;
   final HashMap? theme;
+  final Stream? appUrl;
+  final bool? useLogoLoader;
 
   WhiteLabelData(
-      {this.name,
+      {this.appName,
       this.logoLight,
       this.logoDark,
-      this.defaultLanguage,
-      this.dark,
-      this.theme});
+      this.defaultLanguage = Language.en,
+      this.mode = ThemeModes.auto,
+      this.theme,
+      this.appUrl,
+      this.useLogoLoader});
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
+      'name': appName,
       'logoLight': logoLight,
       'logoDark': logoDark,
-      'defaultLanguage': defaultLanguage,
-      'dark': dark,
-      'theme': theme
+      'defaultLanguage': defaultLanguage.toString().split('.').last,
+      'mode': mode.toString().split('.').last,
+      'theme': theme,
+      'appUrl': appUrl,
+      'useLogoLoader': useLogoLoader
+    };
+  }
+}
+
+class MfaSetting {
+  final bool enable;
+  final int? priority;
+  final bool? mandatory;
+
+  MfaSetting({required this.enable, this.priority, this.mandatory});
+
+  Map<String, dynamic> toJson() {
+    return {'enable': enable, 'priority': priority, 'mandatory': mandatory};
+  }
+}
+
+class MfaSettings {
+  final MfaSetting? deviceShareFactor;
+  final MfaSetting? backUpShareFactor;
+  final MfaSetting? socialBackupFactor;
+  final MfaSetting? passwordFactor;
+
+  MfaSettings(
+      {this.deviceShareFactor,
+      this.backUpShareFactor,
+      this.socialBackupFactor,
+      this.passwordFactor});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'deviceShareFactor': deviceShareFactor,
+      'backUpShareFactor': backUpShareFactor,
+      'socialBackupFactor': socialBackupFactor,
+      'passwordFactor': passwordFactor
     };
   }
 }
@@ -185,30 +225,40 @@ class WhiteLabelData {
 class Web3AuthOptions {
   final String clientId;
   final Network network;
+  final BuildEnv? buildEnv;
+  final String? sdkUrl;
   final Uri? redirectUrl;
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
   final bool? useCoreKitKey;
   final ChainNamespace? chainNamespace;
+  final MfaSettings? mfaSettings;
 
   Web3AuthOptions(
       {required this.clientId,
       required this.network,
+      this.buildEnv = BuildEnv.production,
+      String? sdkUrl,
       this.redirectUrl,
       this.whiteLabel,
       this.loginConfig,
       this.useCoreKitKey,
-      this.chainNamespace});
+      this.chainNamespace = ChainNamespace.eip155,
+      this.mfaSettings})
+      : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
       'network': network.name,
+      'sdkUrl': sdkUrl,
+      'buildEnv': buildEnv?.name,
       'redirectUrl': redirectUrl?.toString(),
       'whiteLabel': whiteLabel?.toJson(),
       'loginConfig': loginConfig,
       'useCoreKitKey': useCoreKitKey,
-      'chainNamespace': chainNamespace,
+      'chainNamespace': chainNamespace?.name,
+      'mfaSettings': mfaSettings
     };
   }
 }
@@ -219,4 +269,17 @@ class UnKnownException implements Exception {
   final String? message;
 
   UnKnownException(this.message);
+}
+
+String getSdkUrl(BuildEnv? buildEnv) {
+  const String version = "v5";
+  switch (buildEnv) {
+    case BuildEnv.staging:
+      return "https://staging-auth.web3auth.io/$version";
+    case BuildEnv.testing:
+      return "https://develop-auth.web3auth.io";
+    case BuildEnv.production:
+    default:
+      return "https://auth.web3auth.io/$version";
+  }
 }

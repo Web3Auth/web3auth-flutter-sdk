@@ -57,20 +57,21 @@ class TorusUserInfo {
   final String? idToken;
   final String? oAuthIdToken;
   final String? oAuthAccessToken;
+  final bool? isMfaEnabled;
 
-  const TorusUserInfo({
-    this.email,
-    this.name,
-    this.profileImage,
-    this.verifier,
-    this.verifierId,
-    this.typeOfLogin,
-    this.aggregateVerifier,
-    this.dappShare,
-    this.idToken,
-    this.oAuthIdToken,
-    this.oAuthAccessToken,
-  });
+  const TorusUserInfo(
+      {this.email,
+      this.name,
+      this.profileImage,
+      this.verifier,
+      this.verifierId,
+      this.typeOfLogin,
+      this.aggregateVerifier,
+      this.dappShare,
+      this.idToken,
+      this.oAuthIdToken,
+      this.oAuthAccessToken,
+      this.isMfaEnabled});
 
   @override
   String toString() {
@@ -90,7 +91,8 @@ class TorusUserInfo {
       'dappShare': dappShare,
       'idToken': idToken,
       'oAuthIdToken': oAuthIdToken,
-      'oAuthAccessToken': oAuthAccessToken
+      'oAuthAccessToken': oAuthAccessToken,
+      'isMfaEnabled': isMfaEnabled
     };
   }
 
@@ -105,5 +107,6 @@ class TorusUserInfo {
         dappShare = json['dappShare'],
         idToken = json['idToken'],
         oAuthIdToken = json['oAuthIdToken'],
-        oAuthAccessToken = json['oAuthAccessToken'];
+        oAuthAccessToken = json['oAuthAccessToken'],
+        isMfaEnabled = json['isMfaEnabled'];
 }

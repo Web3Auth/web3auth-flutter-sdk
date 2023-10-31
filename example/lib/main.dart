@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
 
@@ -5,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/input.dart';
 import 'package:web3auth_flutter/output.dart';
-import 'dart:async';
-
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 void main() {
@@ -41,18 +40,22 @@ class _MyAppState extends State<MyApp> {
           'torusapp://org.torusresearch.flutter.web3authexample/auth');
     } else if (Platform.isIOS) {
       redirectUrl =
-          Uri.parse('com.web3auth.flutter.web3authFlutterExample://openlogin');
+          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
     } else {
       throw UnKnownException('Unknown platform');
     }
 
     await Web3AuthFlutter.init(Web3AuthOptions(
         clientId:
-            'BHZPoRIHdrfrdXj5E8G5Y72LGnh7L8UFuM8O0KrZSOs4T8lgiZnebB5Oc6cbgYSo3qSz7WBZXIs8fs6jgZqFFgw',
-        network: Network.testnet,
+            'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
+        network: Network.sapphire_devnet,
+        buildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
-            dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
+            mode: ThemeModes.dark,
+            defaultLanguage: Language.en,
+            appName: "Web3Auth Flutter App",
+            theme: themeMap)));
 
     await Web3AuthFlutter.initialize();
 
@@ -145,8 +148,8 @@ class _MyAppState extends State<MyApp> {
                                   Colors.red[600] // This is what you need!
                               ),
                           onPressed: _logout(),
-                          child: Column(
-                            children: const [
+                          child: const Column(
+                            children: [
                               Text('Logout'),
                             ],
                           )),
@@ -206,9 +209,9 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _privKey(Future<String?> Function() method) {
     return () async {
       try {
-        final String? response = await Web3AuthFlutter.getPrivKey();
+        final String response = await Web3AuthFlutter.getPrivKey();
         setState(() {
-          _result = response!;
+          _result = response;
           logoutVisible = true;
         });
       } on UserCancelledException {
@@ -236,10 +239,20 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
+    Uri redirectUrl;
+    if (Platform.isAndroid) {
+      redirectUrl = Uri.parse(
+          'torusapp://org.torusresearch.flutter.web3authexample/auth');
+    } else if (Platform.isIOS) {
+      redirectUrl =
+          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
+    } else {
+      throw UnKnownException('Unknown platform');
+    }
     return Web3AuthFlutter.login(LoginParams(
-      loginProvider: Provider.google,
-      mfaLevel: MFALevel.NONE,
-    ));
+        loginProvider: Provider.google,
+        mfaLevel: MFALevel.NONE,
+        redirectUrl: redirectUrl));
   }
 
   Future<Web3AuthResponse> _withFacebook() {

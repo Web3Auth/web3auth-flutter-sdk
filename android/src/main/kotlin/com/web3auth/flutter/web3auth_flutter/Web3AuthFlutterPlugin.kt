@@ -8,11 +8,7 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.google.gson.Gson
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.ErrorCode
-import com.web3auth.core.types.LoginParams
-import com.web3auth.core.types.Web3AuthError
-import com.web3auth.core.types.Web3AuthOptions
-import com.web3auth.core.types.Web3AuthResponse
+import com.web3auth.core.types.*
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -24,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.lang.Exception
 
 
 class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
@@ -92,12 +87,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val initParams = gson.fromJson(initArgs, Web3AuthOptions::class.java)
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
-                val redirectUrl = obj.get("redirectUrl")
-                val network = obj.get("network")
-                initParams.redirectUrl = Uri.parse(redirectUrl as String)
-                initParams.sdkUrl =
-                    if (network == "testnet") "https://dev-sdk.openlogin.com" else "https://sdk.openlogin.com"
+                val redirectUrl = obj.get("redirectUrl") as String?
+                if (!redirectUrl.isNullOrEmpty()) initParams.redirectUrl = Uri.parse(redirectUrl)
                 initParams.context = activity!!
+                // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
                     initParams
                 )
@@ -112,7 +105,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
+                    val obj = JSONObject(loginArgs)
+                    val redirectUrl = obj.get("redirectUrl") as String?
+                    if (!redirectUrl.isNullOrEmpty()) loginParams.redirectUrl = Uri.parse(redirectUrl)
                     val loginCF = web3auth.login(loginParams)
+                    // Log.d(loginParams.toString(), "#loginParams")
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
                     var loginResult: Web3AuthResponse = loginCF.get()
                     return gson.toJson(loginResult)
@@ -167,7 +164,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     return gson.toJson(userInfoResult)
                 } catch (e: Throwable) {
                     throw Error(e)
-                }   
+                }
             }
         }
         throw NotImplementedError()

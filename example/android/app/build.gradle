@@ -43,7 +43,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        compileSdkVersion 33
+        compileSdkVersion 34
         applicationId "com.web3auth.flutter.web3auth_flutter_example"
         minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
