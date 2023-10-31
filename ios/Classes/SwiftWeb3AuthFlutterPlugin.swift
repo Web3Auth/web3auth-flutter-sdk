@@ -18,7 +18,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         Task {
-            debugPrint(call, "calling args")
+            // print(call, "calling args")
             guard let args = call.arguments as? String else {
                 result(FlutterError(
                     code: "INVALID_ARGUMENTS",
@@ -33,18 +33,19 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     details: nil))
                 return
             }
+            // print("call data", data)
             switch call.method {
             case "init":
                 let initParams: W3AInitParams
                 do {
                     initParams = try decoder.decode(W3AInitParams.self, from: data)
-                    debugPrint(initParams, "params")
+                    // print(initParams, "params")
                 } catch {
-                    debugPrint(error)
+                    // print(error)
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
-                        message: "Invalid Flutter iOS plugin init params",
-                        details: nil))
+                        message: "Invalid Flutter decode init params",
+                        details: data))
                     return
                 }
                 let web3auth = await Web3Auth(initParams)

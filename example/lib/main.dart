@@ -40,14 +40,14 @@ class _MyAppState extends State<MyApp> {
           'torusapp://org.torusresearch.flutter.web3authexample/auth');
     } else if (Platform.isIOS) {
       redirectUrl =
-          Uri.parse('com.web3auth.flutter.web3authFlutterExample://openlogin');
+          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
     } else {
       throw UnKnownException('Unknown platform');
     }
 
     await Web3AuthFlutter.init(Web3AuthOptions(
         clientId:
-            'BG4pe3aBso5SjVbpotFQGnXVHgxhgOxnqnNBKyjfEJ3izFvIVWUaMIzoCrAfYag8O6t6a6AOvdLcS4JR2sQMjR4',
+            'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
         network: Network.sapphire_devnet,
         buildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
@@ -245,7 +245,7 @@ class _MyAppState extends State<MyApp> {
           'torusapp://org.torusresearch.flutter.web3authexample/auth');
     } else if (Platform.isIOS) {
       redirectUrl =
-          Uri.parse('com.web3auth.flutter.web3authFlutterExample://openlogin');
+          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
     } else {
       throw UnKnownException('Unknown platform');
     }
