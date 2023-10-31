@@ -87,12 +87,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val initParams = gson.fromJson(initArgs, Web3AuthOptions::class.java)
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
-                val redirectUrl = obj.get("redirectUrl")
-                val network = obj.get("network")
-                val buildEnv = obj.get("buildEnv") as String
-                initParams.redirectUrl = Uri.parse(redirectUrl as String)
-                initParams.sdkUrl = getSdkUrl(buildEnv)
+                val redirectUrl = obj.get("redirectUrl") as String?
+                if (!redirectUrl.isNullOrEmpty()) initParams.redirectUrl = Uri.parse(redirectUrl)
                 initParams.context = activity!!
+                // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
                     initParams
                 )
@@ -107,7 +105,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
+                    val obj = JSONObject(loginArgs)
+                    val redirectUrl = obj.get("redirectUrl") as String?
+                    if (!redirectUrl.isNullOrEmpty()) loginParams.redirectUrl = Uri.parse(redirectUrl)
                     val loginCF = web3auth.login(loginParams)
+                    // Log.d(loginParams.toString(), "#loginParams")
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
                     var loginResult: Web3AuthResponse = loginCF.get()
                     return gson.toJson(loginResult)
@@ -167,21 +169,4 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
         }
         throw NotImplementedError()
     }
-
-    private fun getSdkUrl(buildEnv: String): String {
-        val sdkUrl: String = when (buildEnv) {
-            "staging" -> {
-                "https://staging-auth.web3auth.io/$openLoginVersion"
-            }
-            "testing" -> {
-                "https://develop-auth.web3auth.io"
-            }
-            else -> {
-                "https://auth.web3auth.io/$openLoginVersion"
-            }
-        }
-        return sdkUrl
-    }
 }
-
-const val openLoginVersion = "v5"

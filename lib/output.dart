@@ -59,20 +59,19 @@ class TorusUserInfo {
   final String? oAuthAccessToken;
   final bool? isMfaEnabled;
 
-  const TorusUserInfo({
-    this.email,
-    this.name,
-    this.profileImage,
-    this.verifier,
-    this.verifierId,
-    this.typeOfLogin,
-    this.aggregateVerifier,
-    this.dappShare,
-    this.idToken,
-    this.oAuthIdToken,
-    this.oAuthAccessToken,
-    this.isMfaEnabled
-  });
+  const TorusUserInfo(
+      {this.email,
+      this.name,
+      this.profileImage,
+      this.verifier,
+      this.verifierId,
+      this.typeOfLogin,
+      this.aggregateVerifier,
+      this.dappShare,
+      this.idToken,
+      this.oAuthIdToken,
+      this.oAuthAccessToken,
+      this.isMfaEnabled});
 
   @override
   String toString() {
