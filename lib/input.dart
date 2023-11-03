@@ -161,7 +161,7 @@ class WhiteLabelData {
   final Language? defaultLanguage;
   final ThemeModes? mode;
   final HashMap? theme;
-  final Stream? appUrl;
+  final String? appUrl;
   final bool? useLogoLoader;
 
   WhiteLabelData(
