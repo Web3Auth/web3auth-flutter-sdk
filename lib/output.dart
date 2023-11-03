@@ -76,7 +76,7 @@ class TorusUserInfo {
   @override
   String toString() {
     return "{email=$email, name=$name, profileImage=$profileImage, verifier=$verifier,"
-        "verifierId=$verifierId, typeOfLogin=$typeOfLogin, dappShare=$dappShare, idToken=$idToken, oAuthIdToken=$oAuthIdToken, oAuthAccessToken=$oAuthAccessToken}";
+        "verifierId=$verifierId, typeOfLogin=$typeOfLogin, dappShare=$dappShare, idToken=$idToken, oAuthIdToken=$oAuthIdToken, oAuthAccessToken=$oAuthAccessToken, isMfaEnabled=$isMfaEnabled}";
   }
 
   Map<String, dynamic> toJson() {
