@@ -5,7 +5,6 @@ import 'package:web3auth_flutter/enums.dart';
 class LoginParams {
   final Provider loginProvider;
   final String? dappShare;
-  final int? sessionTime;
   final Curve? curve;
   final ExtraLoginOptions? extraLoginOptions;
   final Uri? redirectUrl;
@@ -15,7 +14,6 @@ class LoginParams {
   LoginParams(
       {required this.loginProvider,
       this.dappShare,
-      this.sessionTime,
       this.curve,
       this.extraLoginOptions,
       this.redirectUrl,
@@ -25,7 +23,6 @@ class LoginParams {
   Map<String, dynamic> toJson() => {
         "loginProvider": loginProvider.name,
         "dappShare": dappShare,
-        "sessionTime": sessionTime,
         "curve": curve?.name,
         "extraLoginOptions": extraLoginOptions?.toJson(),
         "redirectUrl": redirectUrl?.toString(),
@@ -233,6 +230,7 @@ class Web3AuthOptions {
   final bool? useCoreKitKey;
   final ChainNamespace? chainNamespace;
   final MfaSettings? mfaSettings;
+  final int? sessionTime;
 
   Web3AuthOptions(
       {required this.clientId,
@@ -244,6 +242,7 @@ class Web3AuthOptions {
       this.loginConfig,
       this.useCoreKitKey,
       this.chainNamespace = ChainNamespace.eip155,
+      this.sessionTime = 86400,
       this.mfaSettings})
       : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production);
 
@@ -258,7 +257,8 @@ class Web3AuthOptions {
       'loginConfig': loginConfig,
       'useCoreKitKey': useCoreKitKey,
       'chainNamespace': chainNamespace?.name,
-      'mfaSettings': mfaSettings
+      'mfaSettings': mfaSettings,
+      "sessionTime": sessionTime
     };
   }
 }
