@@ -14,7 +14,7 @@ class LoginParams {
   LoginParams(
       {required this.loginProvider,
       this.dappShare,
-      this.curve,
+      this.curve = Curve.secp256k1,
       this.extraLoginOptions,
       this.redirectUrl,
       this.appState,
