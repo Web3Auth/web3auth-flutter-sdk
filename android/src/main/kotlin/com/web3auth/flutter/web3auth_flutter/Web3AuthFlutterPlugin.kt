@@ -30,6 +30,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     private lateinit var context: Context
     private lateinit var web3auth: Web3Auth
     private var gson: Gson = Gson()
+    private var redirectUrl: String? = String()
 
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(binding.binaryMessenger, "web3auth_flutter")
@@ -87,7 +88,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val initParams = gson.fromJson(initArgs, Web3AuthOptions::class.java)
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
-                val redirectUrl = obj.get("redirectUrl") as String?
+                redirectUrl = obj.get("redirectUrl") as String?
                 if (!redirectUrl.isNullOrEmpty()) initParams.redirectUrl = Uri.parse(redirectUrl)
                 initParams.context = activity!!
                 // Log.d(initParams.toString(), "#initParams")
@@ -105,8 +106,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
-                    val obj = JSONObject(loginArgs)
-                    val redirectUrl = obj.get("redirectUrl") as String?
                     if (!redirectUrl.isNullOrEmpty()) loginParams.redirectUrl = Uri.parse(redirectUrl)
                     val loginCF = web3auth.login(loginParams)
                     // Log.d(loginParams.toString(), "#loginParams")

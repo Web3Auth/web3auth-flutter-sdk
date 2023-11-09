@@ -224,7 +224,7 @@ class Web3AuthOptions {
   final Network network;
   final BuildEnv? buildEnv;
   final String? sdkUrl;
-  final Uri? redirectUrl;
+  final Uri redirectUrl;
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
   final bool? useCoreKitKey;
@@ -237,7 +237,7 @@ class Web3AuthOptions {
       required this.network,
       this.buildEnv = BuildEnv.production,
       String? sdkUrl,
-      this.redirectUrl,
+      required this.redirectUrl,
       this.whiteLabel,
       this.loginConfig,
       this.useCoreKitKey,
@@ -252,7 +252,7 @@ class Web3AuthOptions {
       'network': network.name,
       'sdkUrl': sdkUrl,
       'buildEnv': buildEnv?.name,
-      'redirectUrl': redirectUrl?.toString(),
+      'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
       'loginConfig': loginConfig,
       'useCoreKitKey': useCoreKitKey,
