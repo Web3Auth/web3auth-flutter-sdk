@@ -239,20 +239,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
-    Uri redirectUrl;
-    if (Platform.isAndroid) {
-      redirectUrl = Uri.parse(
-          'torusapp://org.torusresearch.flutter.web3authexample/auth');
-    } else if (Platform.isIOS) {
-      redirectUrl =
-          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
-    } else {
-      throw UnKnownException('Unknown platform');
-    }
-    return Web3AuthFlutter.login(LoginParams(
-        loginProvider: Provider.google,
-        mfaLevel: MFALevel.NONE,
-        redirectUrl: redirectUrl));
+    return Web3AuthFlutter.login(
+        LoginParams(loginProvider: Provider.google, mfaLevel: MFALevel.NONE));
   }
 
   Future<Web3AuthResponse> _withFacebook() {
