@@ -41,7 +41,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^2.0.0
+  web3auth_flutter: ^3.1.0
 ```
 
 or
@@ -113,7 +113,7 @@ Future<void> initPlatformState() async {
 
   // call getUserInfo() function to get user information like name, email, verifier, verifierId etc.
   final TorusUserInfo userInfo = await Web3AuthFlutter.getUserInfo();
-  
+
 }
 
 // Login
