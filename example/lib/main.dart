@@ -45,6 +45,13 @@ class _MyAppState extends State<MyApp> {
       throw UnKnownException('Unknown platform');
     }
 
+    final loginConfig = HashMap<String, LoginConfigItem>();
+    loginConfig['jwt'] = LoginConfigItem(
+        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
+        typeOfLogin: TypeOfLogin.jwt,
+        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
+        );
+
     await Web3AuthFlutter.init(Web3AuthOptions(
         clientId:
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
@@ -55,7 +62,8 @@ class _MyAppState extends State<MyApp> {
             mode: ThemeModes.dark,
             defaultLanguage: Language.en,
             appName: "Web3Auth Flutter App",
-            theme: themeMap)));
+            theme: themeMap),
+        loginConfig: loginConfig));
 
     await Web3AuthFlutter.initialize();
 
@@ -160,6 +168,11 @@ class _MyAppState extends State<MyApp> {
                     ElevatedButton(
                         onPressed: _userInfo(_getUserInfo),
                         child: const Text('Get UserInfo')),
+                    ElevatedButton(
+                        onPressed: _launchWalletServices(),
+                        child: const Text('Launch Wallet Services')),
+                    ElevatedButton(
+                        onPressed: _setupMFA(), child: const Text('Setup MFA')),
                   ],
                 ),
                 visible: logoutVisible,
@@ -263,5 +276,31 @@ class _MyAppState extends State<MyApp> {
 
   Future<TorusUserInfo> _getUserInfo() {
     return Web3AuthFlutter.getUserInfo();
+  }
+
+  VoidCallback _launchWalletServices() {
+    return () async {
+      try {
+        await Web3AuthFlutter.launchWalletServices(
+            LoginParams(loginProvider: Provider.google));
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
+  VoidCallback _setupMFA() {
+    return () async {
+      try {
+        await Web3AuthFlutter.setupMFA(
+            LoginParams(loginProvider: Provider.google));
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
   }
 }
