@@ -167,7 +167,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
             "launchWalletServices" -> {
                 try {
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     Log.d(loginParams.toString(), "#loginParams")
@@ -177,7 +176,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val launchWalletCF = web3auth.launchWalletServices(loginParams)
                     Log.d(
                         "${Web3AuthFlutterPlugin::class.qualifiedName}",
-                        "#launchWalletServices_1"
+                        "#launchWalletServices"
                     )
                     launchWalletCF.get()
                     return null

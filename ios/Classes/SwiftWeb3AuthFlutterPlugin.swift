@@ -138,6 +138,51 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
+            case "launchWalletServices":
+                let loginParams: W3ALoginParams
+                do {
+                    loginParams = try decoder.decode(W3ALoginParams.self, from: data)
+                } catch {
+                    result(FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid Login Params",
+                        details: nil))
+                        return
+                }
+                var resultMap: String = ""
+                do {
+                    try await web3auth.launchWalletServices(loginParams)
+                    result(nil)
+                    return
+                } catch {
+                     result(FlutterError(
+                         code: "WalletServicesFailedFailedException",
+                         message: "Web3Auth wallet services launch failed",
+                         details: error.localizedDescription))
+                     return
+                }
+            case "setupMFA":
+                let loginParams: W3ALoginParams
+                do {
+                    loginParams = try decoder.decode(W3ALoginParams.self, from: data)
+                } catch {
+                    result(FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid Login Params",
+                        details: nil))
+                    return
+                }
+                do {
+                    let setupMFAResult = try web3auth?.setupMFA(loginParams)
+                    result(setupMFAResult)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "setUpMFAFailedException",
+                        message: "Web3Auth setupMFA failed",
+                        details: ""))
+                    return
+                }
             case "getUserInfo":
                 var resultMap: String = ""
                 do {
