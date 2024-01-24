@@ -161,19 +161,20 @@ class WhiteLabelData {
   final String? appUrl;
   final bool? useLogoLoader;
 
-  WhiteLabelData(
-      {this.appName,
-      this.logoLight,
-      this.logoDark,
-      this.defaultLanguage = Language.en,
-      this.mode = ThemeModes.auto,
-      this.theme,
-      this.appUrl,
-      this.useLogoLoader});
+  WhiteLabelData({
+    this.appName,
+    this.logoLight,
+    this.logoDark,
+    this.defaultLanguage = Language.en,
+    this.mode = ThemeModes.auto,
+    this.theme,
+    this.appUrl,
+    this.useLogoLoader,
+  });
 
   Map<String, dynamic> toJson() {
     return {
-      'name': appName,
+      'appName': appName,
       'logoLight': logoLight,
       'logoDark': logoDark,
       'defaultLanguage': defaultLanguage.toString().split('.').last,
