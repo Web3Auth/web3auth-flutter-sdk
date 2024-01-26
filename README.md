@@ -1,14 +1,10 @@
 # Web3Auth Flutter SDK
 
-Web3Auth is where passwordless auth meets non-custodial key infrastructure for
-Web3 apps and wallets. By aggregating OAuth (Google, Twitter, Discord) logins,
-different wallets and innovative Multi Party Computation (MPC) - Web3Auth
-provides a seamless login experience to every user on your application.
+Web3Auth is where passwordless auth meets non-custodial key infrastructure for Web3 apps and wallets. By aggregating OAuth (Google, Twitter, Discord) logins, different wallets and innovative Multi Party Computation (MPC) - Web3Auth provides a seamless login experience to every user on your application.
 
 ## 📖 Documentation
 
-Checkout the official [Web3Auth Documentation](https://web3auth.io/docs) and
-[SDK Reference](https://web3auth.io/docs/sdk/flutter/) to get started!
+Checkout the official [Web3Auth Documentation](https://web3auth.io/docs) and [SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter) to get started!
 
 ## 💡 Features
 
@@ -29,10 +25,10 @@ Checkout the official [Web3Auth Documentation](https://web3auth.io/docs) and
 - For iOS, only iOS 12+ supported since we requires ASWebAuthenticationSession.
   - Xcode 11.4+ / 12.x
   - Swift 4.x / 5.x
-  - For iOS build: `platform :ios` needs to be `13.0`. Check `ios/Podfile` in
+  - For iOS build: `platform :ios` needs to be `14.0`. Check `ios/Podfile` in
     your Flutter project to change it.
 - For Android, API version 24 or newer is supported.
-  - For Android build: compileSdkVersion needs to be 32.
+  - For Android build: compileSdkVersion needs to be 34.
   - Check `android/app/build.gradle` in your Flutter project to change it.
 
 ## ⚡ Installation
@@ -41,7 +37,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^3.1.0
+  web3auth_flutter: ^3.1.3
 ```
 
 or
@@ -52,7 +48,7 @@ flutter pub add web3auth_flutter
 
 ## 🌟 Configuration
 
-Checkout https://web3auth.io/docs/sdk/flutter to configure for Android and iOS
+Checkout [SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter/install) to configure for Android and iOS
 builds.
 
 #### Register the URL scheme you intended to use for redirection
@@ -86,32 +82,39 @@ Future<void> initPlatformState() async {
   Uri redirectUrl;
   if (Platform.isAndroid) {
     redirectUrl = Uri.parse(
-        'torusapp://org.torusresearch.flutter.web3authexample/auth');
+      'torusapp://org.torusresearch.flutter.web3authexample/auth',
+    );
   } else if (Platform.isIOS) {
     redirectUrl =
         Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
   } else {
     throw UnKnownException('Unknown platform');
   }
-
-  await Web3AuthFlutter.init(Web3AuthOptions(
+  
+  await Web3AuthFlutter.init(
+    Web3AuthOptions(
       clientId:
-          'BCtbnOamqh0cJFEUYA0NB5YkvBECZ3HLZsKfvSRBvew2EiiKW3UxpyQASSR0artjQkiUOCHeZ_ZeygXpYpxZjOs',
-      network: Network.cyan,
+          'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
+      network: Network.sapphire_devnet,
       redirectUrl: redirectUrl,
       whiteLabel: WhiteLabelData(
-          dark: true, name: "Web3Auth Flutter App", theme: themeMap)));
+        mode: ThemeModes.dark,
+        appName: "Web3Auth Flutter App",
+        theme: themeMap,
+      ),
+    ),
+  );
 
   // Call initialize() function to get privKey and user information without relogging in user if a user has an active session
   await Web3AuthFlutter.initialize();
 
-  // call getPrivKey() function to get user private key
+  // Call getPrivKey() function to get user private key
   final String privKey = await Web3AuthFlutter.getPrivKey();
 
-  // call getEd25519PrivKey() function to get user ed25519 private key
+  // Call getEd25519PrivKey() function to get user ed25519 private key
   final String ed255199PrivKey = await Web3AuthFlutter.getEd25519PrivKey();
 
-  // call getUserInfo() function to get user information like name, email, verifier, verifierId etc.
+  // Call getUserInfo() function to get user information like name, email, verifier, verifierId etc.
   final TorusUserInfo userInfo = await Web3AuthFlutter.getUserInfo();
 
 }
@@ -135,7 +138,8 @@ Future<void> initPlatformState() async {
   Uri redirectUrl;
   if (Platform.isAndroid) {
     redirectUrl = Uri.parse(
-        'torusapp://org.torusresearch.flutter.web3authexample/auth');
+      'torusapp://org.torusresearch.flutter.web3authexample/auth',
+    );
   } else if (Platform.isIOS) {
     redirectUrl =
         Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
@@ -151,14 +155,20 @@ Future<void> initPlatformState() async {
     clientId: "web3auth_client_id" // web3auth's plug and play client id
   );
 
-  await Web3AuthFlutter.init(Web3AuthOptions(
-      clientId:
-          'BCtbnOamqh0cJFEUYA0NB5YkvBECZ3HLZsKfvSRBvew2EiiKW3UxpyQASSR0artjQkiUOCHeZ_ZeygXpYpxZjOs',
-      network: Network.cyan,
-      redirectUrl: redirectUrl,
-      whiteLabel: WhiteLabelData(
-          dark: true, name: "Web3Auth Flutter App", theme: themeMap),
-      loginConfig: loginConfig));
+   await Web3AuthFlutter.init(
+      Web3AuthOptions(
+        clientId:
+            'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
+        network: Network.sapphire_devnet,
+        redirectUrl: redirectUrl,
+        whiteLabel: WhiteLabelData(
+          mode: ThemeModes.dark,
+          appName: "Web3Auth Flutter App",
+          theme: themeMap,
+        ),
+        loginConfig: loginConfig,
+      ),
+    );
 
   // Call initialize() function to get privKey and user information without relogging in user if a user has an active session
   await Web3AuthFlutter.initialize();
@@ -174,11 +184,15 @@ Future<void> initPlatformState() async {
 }
 
 // Login
-await Web3AuthFlutter.login(LoginParams(
-  loginProvider: Provider.jwt,
-  extraLoginOptions: ExtraLoginOptions(
-      id_token: "{YOUR_JWT_TOKEN}", domain: "{YOUR-DOMAIN}")
-));
+await Web3AuthFlutter.login(
+   LoginParams(
+    loginProvider: Provider.jwt,
+    extraLoginOptions: ExtraLoginOptions(
+      id_token: "{YOUR_JWT_TOKEN}",
+      domain: "{YOUR-DOMAIN}",
+    ),
+  ),
+);
 
 // Logout
 await Web3AuthFlutter.logout();
@@ -187,12 +201,11 @@ await Web3AuthFlutter.logout();
 
 ## 🌐 Demo
 
-Checkout the [Web3Auth Demo](https://demo-app.web3auth.io/) to see how Web3Auth
-can be used in an application.
+Checkout the [Web3Auth Demo](https://demo-app.web3auth.io/) to see how Web3Auth can be used in an application.
 
-Further checkout the
-[example folder](https://github.com/Web3Auth/web3auth-flutter-sdk/tree/master/example)
-within this repository, which contains a sample app.
+Have a look at our [Web3Auth PnP Flutter Quick Start](https://web3auth.io/docs/quick-start?product=PNP&sdk=PNP_FLUTTER&framework=IOS&stepIndex=0) to help you quickly integrate a basic instance of Web3Auth Plug and Play in your Flutter app.
+
+Further checkout the [example folder](https://github.com/Web3Auth/web3auth-flutter-sdk/tree/master/example) within this repository, which contains a sample app.
 
 ## 💬 Troubleshooting and Support
 
