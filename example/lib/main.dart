@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -45,22 +46,26 @@ class _MyAppState extends State<MyApp> {
       throw UnKnownException('Unknown platform');
     }
 
-    await Web3AuthFlutter.init(Web3AuthOptions(
+    await Web3AuthFlutter.init(
+      Web3AuthOptions(
         clientId:
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
         network: Network.sapphire_devnet,
         buildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
-            mode: ThemeModes.dark,
-            defaultLanguage: Language.en,
-            appName: "Web3Auth Flutter App",
-            theme: themeMap)));
+          mode: ThemeModes.dark,
+          defaultLanguage: Language.en,
+          appName: "Web3Auth Flutter App",
+          theme: themeMap,
+        ),
+      ),
+    );
 
     await Web3AuthFlutter.initialize();
 
     final String res = await Web3AuthFlutter.getPrivKey();
-    print(res);
+    log(res);
     if (res.isNotEmpty) {
       setState(() {
         logoutVisible = true;
@@ -123,22 +128,26 @@ class _MyAppState extends State<MyApp> {
                       height: 20,
                     ),
                     ElevatedButton(
-                        onPressed: _login(_withGoogle),
-                        child: const Text('Google')),
+                      onPressed: _login(_withGoogle),
+                      child: const Text('Google'),
+                    ),
                     ElevatedButton(
-                        onPressed: _login(_withFacebook),
-                        child: const Text('Facebook')),
+                      onPressed: _login(_withFacebook),
+                      child: const Text('Facebook'),
+                    ),
                     ElevatedButton(
-                        onPressed: _login(_withEmailPasswordless),
-                        child: const Text('Email Passwordless')),
+                      onPressed: _login(_withEmailPasswordless),
+                      child: const Text('Email Passwordless'),
+                    ),
                     ElevatedButton(
-                        onPressed: _login(_withDiscord),
-                        child: const Text('Discord')),
+                      onPressed: _login(_withDiscord),
+                      child: const Text('Discord'),
+                    ),
                   ],
                 ),
               ),
               Visibility(
-                // ignore: sort_child_properties_last
+                visible: logoutVisible,
                 child: Column(
                   children: [
                     Center(
@@ -155,14 +164,15 @@ class _MyAppState extends State<MyApp> {
                           )),
                     ),
                     ElevatedButton(
-                        onPressed: _privKey(_getPrivKey),
-                        child: const Text('Get PrivKey')),
+                      onPressed: _privKey(_getPrivKey),
+                      child: const Text('Get PrivKey'),
+                    ),
                     ElevatedButton(
-                        onPressed: _userInfo(_getUserInfo),
-                        child: const Text('Get UserInfo')),
+                      onPressed: _userInfo(_getUserInfo),
+                      child: const Text('Get UserInfo'),
+                    ),
                   ],
                 ),
-                visible: logoutVisible,
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -178,14 +188,14 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _login(Future<Web3AuthResponse> Function() method) {
     return () async {
       try {
-        final Web3AuthResponse response = await method();
+        final Web3AuthResponse _ = await method();
         setState(() {
           logoutVisible = true;
         });
       } on UserCancelledException {
-        print("User cancelled.");
+        log("User cancelled.");
       } on UnKnownException {
-        print("Unknown exception occurred");
+        log("Unknown exception occurred");
       }
     };
   }
@@ -199,9 +209,9 @@ class _MyAppState extends State<MyApp> {
           logoutVisible = false;
         });
       } on UserCancelledException {
-        print("User cancelled.");
+        log("User cancelled.");
       } on UnKnownException {
-        print("Unknown exception occurred");
+        log("Unknown exception occurred");
       }
     };
   }
@@ -215,9 +225,9 @@ class _MyAppState extends State<MyApp> {
           logoutVisible = true;
         });
       } on UserCancelledException {
-        print("User cancelled.");
+        log("User cancelled.");
       } on UnKnownException {
-        print("Unknown exception occurred");
+        log("Unknown exception occurred");
       }
     };
   }
@@ -231,16 +241,17 @@ class _MyAppState extends State<MyApp> {
           logoutVisible = true;
         });
       } on UserCancelledException {
-        print("User cancelled.");
+        log("User cancelled.");
       } on UnKnownException {
-        print("Unknown exception occurred");
+        log("Unknown exception occurred");
       }
     };
   }
 
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.login(
-        LoginParams(loginProvider: Provider.google, mfaLevel: MFALevel.NONE));
+      LoginParams(loginProvider: Provider.google, mfaLevel: MFALevel.NONE),
+    );
   }
 
   Future<Web3AuthResponse> _withFacebook() {
@@ -248,9 +259,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<Web3AuthResponse> _withEmailPasswordless() {
-    return Web3AuthFlutter.login(LoginParams(
+    return Web3AuthFlutter.login(
+      LoginParams(
         loginProvider: Provider.email_passwordless,
-        extraLoginOptions: ExtraLoginOptions(login_hint: "gaurav@tor.us")));
+        extraLoginOptions: ExtraLoginOptions(
+          login_hint: "gaurav@tor.us",
+        ),
+      ),
+    );
   }
 
   Future<Web3AuthResponse> _withDiscord() {
