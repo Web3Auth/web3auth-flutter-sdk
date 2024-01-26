@@ -11,14 +11,15 @@ class LoginParams {
   final String? appState;
   final MFALevel? mfaLevel;
 
-  LoginParams(
-      {required this.loginProvider,
-      this.dappShare,
-      this.curve = Curve.secp256k1,
-      this.extraLoginOptions,
-      this.redirectUrl,
-      this.appState,
-      this.mfaLevel});
+  LoginParams({
+    required this.loginProvider,
+    this.dappShare,
+    this.curve = Curve.secp256k1,
+    this.extraLoginOptions,
+    this.redirectUrl,
+    this.appState,
+    this.mfaLevel,
+  });
 
   Map<String, dynamic> toJson() => {
         "loginProvider": loginProvider.name,
@@ -46,20 +47,21 @@ class LoginConfigItem {
   final bool? showOnDesktop;
   final bool? showOnMobile;
 
-  LoginConfigItem(
-      {required this.verifier,
-      required this.typeOfLogin,
-      required this.clientId,
-      this.name,
-      this.description,
-      this.verifierSubIdentifier,
-      this.logoHover,
-      this.logoLight,
-      this.logoDark,
-      this.mainOption,
-      this.showOnModal,
-      this.showOnDesktop,
-      this.showOnMobile});
+  LoginConfigItem({
+    required this.verifier,
+    required this.typeOfLogin,
+    required this.clientId,
+    this.name,
+    this.description,
+    this.verifierSubIdentifier,
+    this.logoHover,
+    this.logoLight,
+    this.logoDark,
+    this.mainOption,
+    this.showOnModal,
+    this.showOnDesktop,
+    this.showOnMobile,
+  });
 
   Map<String, dynamic> toJson() {
     return {
@@ -103,28 +105,29 @@ class ExtraLoginOptions {
   final String? nonce;
   final String? redirect_uri;
 
-  ExtraLoginOptions(
-      {this.additionalParams = const {},
-      this.domain,
-      this.client_id,
-      this.leeway,
-      this.verifierIdField,
-      this.isVerifierIdCaseSensitive,
-      this.display,
-      this.prompt,
-      this.max_age,
-      this.ui_locales,
-      this.id_token_hint,
-      this.id_token,
-      this.login_hint,
-      this.acr_values,
-      this.scope,
-      this.audience,
-      this.connection,
-      this.state,
-      this.response_type,
-      this.nonce,
-      this.redirect_uri});
+  ExtraLoginOptions({
+    this.additionalParams = const {},
+    this.domain,
+    this.client_id,
+    this.leeway,
+    this.verifierIdField,
+    this.isVerifierIdCaseSensitive,
+    this.display,
+    this.prompt,
+    this.max_age,
+    this.ui_locales,
+    this.id_token_hint,
+    this.id_token,
+    this.login_hint,
+    this.acr_values,
+    this.scope,
+    this.audience,
+    this.connection,
+    this.state,
+    this.response_type,
+    this.nonce,
+    this.redirect_uri,
+  });
 
   Map<String, dynamic> toJson() => {
         "additionalParams": additionalParams,
@@ -161,23 +164,24 @@ class WhiteLabelData {
   final String? appUrl;
   final bool? useLogoLoader;
 
-  WhiteLabelData(
-      {this.appName,
-      this.logoLight,
-      this.logoDark,
-      this.defaultLanguage = Language.en,
-      this.mode = ThemeModes.auto,
-      this.theme,
-      this.appUrl,
-      this.useLogoLoader});
+  WhiteLabelData({
+    this.appName,
+    this.logoLight,
+    this.logoDark,
+    this.defaultLanguage = Language.en,
+    this.mode = ThemeModes.auto,
+    this.theme,
+    this.appUrl,
+    this.useLogoLoader,
+  });
 
   Map<String, dynamic> toJson() {
     return {
-      'name': appName,
+      'appName': appName,
       'logoLight': logoLight,
       'logoDark': logoDark,
-      'defaultLanguage': defaultLanguage.toString().split('.').last,
-      'mode': mode.toString().split('.').last,
+      'defaultLanguage': defaultLanguage?.name,
+      'mode': mode?.name,
       'theme': theme,
       'appUrl': appUrl,
       'useLogoLoader': useLogoLoader
