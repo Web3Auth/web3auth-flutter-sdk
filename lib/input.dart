@@ -228,6 +228,7 @@ class Web3AuthOptions {
   final Network network;
   final BuildEnv? buildEnv;
   final String? sdkUrl;
+  final String? walletSdkUrl;
   final Uri redirectUrl;
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
@@ -236,25 +237,29 @@ class Web3AuthOptions {
   final MfaSettings? mfaSettings;
   final int? sessionTime;
 
-  Web3AuthOptions({
-    required this.clientId,
-    required this.network,
-    this.buildEnv = BuildEnv.production,
-    String? sdkUrl,
-    required this.redirectUrl,
-    this.whiteLabel,
-    this.loginConfig,
-    this.useCoreKitKey,
-    this.chainNamespace = ChainNamespace.eip155,
-    this.sessionTime = 86400,
-    this.mfaSettings,
-  }) : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production);
+  Web3AuthOptions(
+      {required this.clientId,
+      required this.network,
+      this.buildEnv = BuildEnv.production,
+      String? sdkUrl,
+      String? walletSdkUrl,
+      required this.redirectUrl,
+      this.whiteLabel,
+      this.loginConfig,
+      this.useCoreKitKey,
+      this.chainNamespace = ChainNamespace.eip155,
+      this.sessionTime = 86400,
+      this.mfaSettings})
+      : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
+        walletSdkUrl =
+            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
       'network': network.name,
       'sdkUrl': sdkUrl,
+      'walletSdkUrl': walletSdkUrl,
       'buildEnv': buildEnv?.name,
       'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
@@ -285,5 +290,17 @@ String getSdkUrl(BuildEnv? buildEnv) {
     case BuildEnv.production:
     default:
       return "https://auth.web3auth.io/$version";
+  }
+}
+
+String getWalletSdkUrl(BuildEnv? buildEnv) {
+  switch (buildEnv) {
+    case BuildEnv.staging:
+      return "https://staging-wallet.web3auth.io";
+    case BuildEnv.testing:
+      return "https://develop-wallet.web3auth.io";
+    case BuildEnv.production:
+    default:
+      return "https://wallet.web3auth.io";
   }
 }
