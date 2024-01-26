@@ -179,16 +179,12 @@ class _MyAppState extends State<MyApp> {
                       child: const Text('Get UserInfo'),
                     ),
                     ElevatedButton(
-                        onPressed: _userInfo(_getUserInfo),
-                        child: const Text('Get UserInfo')),
-                    ElevatedButton(
                         onPressed: _launchWalletServices(),
                         child: const Text('Launch Wallet Services')),
                     ElevatedButton(
                         onPressed: _setupMFA(), child: const Text('Setup MFA')),
                   ],
                 ),
-                visible: logoutVisible,
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
