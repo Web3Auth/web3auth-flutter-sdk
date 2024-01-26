@@ -61,6 +61,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       throw UnKnownException('Unknown platform');
     }
 
+    final loginConfig = HashMap<String, LoginConfigItem>();
+    loginConfig['jwt'] = LoginConfigItem(
+        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
+        typeOfLogin: TypeOfLogin.jwt,
+        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
+        );
+
     await Web3AuthFlutter.init(
       Web3AuthOptions(
         clientId:
@@ -186,6 +193,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       onPressed: _userInfo(_getUserInfo),
                       child: const Text('Get UserInfo'),
                     ),
+                    ElevatedButton(
+                        onPressed: _userInfo(_getUserInfo),
+                        child: const Text('Get UserInfo')),
+                    ElevatedButton(
+                        onPressed: _launchWalletServices(),
+                        child: const Text('Launch Wallet Services')),
+                    ElevatedButton(
+                        onPressed: _setupMFA(), child: const Text('Setup MFA')),
                   ],
                 ),
               ),
@@ -296,5 +311,31 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<TorusUserInfo> _getUserInfo() {
     return Web3AuthFlutter.getUserInfo();
+  }
+
+  VoidCallback _launchWalletServices() {
+    return () async {
+      try {
+        await Web3AuthFlutter.launchWalletServices(
+            LoginParams(loginProvider: Provider.google));
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
+  VoidCallback _setupMFA() {
+    return () async {
+      try {
+        await Web3AuthFlutter.setupMFA(
+            LoginParams(loginProvider: Provider.google));
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
   }
 }

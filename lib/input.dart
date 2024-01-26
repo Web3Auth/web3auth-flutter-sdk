@@ -7,9 +7,9 @@ class LoginParams {
   /// [loginProvider] sets the oAuth login method to be used. You can use any of the
   /// valid [Provider] from the supported list.
   final Provider loginProvider;
-  
-  /// Custom verifier logins can get a dapp share returned to them post successful login. 
-  /// This is useful if the dapps want to use this share to allow users to login seamlessly. 
+
+  /// Custom verifier logins can get a dapp share returned to them post successful login.
+  /// This is useful if the dapps want to use this share to allow users to login seamlessly.
   final String? dappShare;
 
   /// [curve] will be used to determine the public key encoded in the jwt token which returned in
@@ -179,7 +179,7 @@ class ExtraLoginOptions {
 
   final String? acr_values;
 
-  /// The default scope to be used on authentication requests. The defaultScope 
+  /// The default scope to be used on authentication requests. The defaultScope
   /// defined in the Auth0Client is included along with this scope.
   final String? scope;
 
@@ -187,7 +187,7 @@ class ExtraLoginOptions {
   /// defines the intended consumer of the token.
   final String? audience;
 
-  /// The name of the connection configured for your application. If null, it will redirect to 
+  /// The name of the connection configured for your application. If null, it will redirect to
   /// the Auth0 Login Page and show the Login Widget.
   final String? connection;
 
@@ -368,12 +368,13 @@ class Web3AuthOptions {
   final Network network;
 
   /// [buildEnv] is used for internal testing purposes. This buildEnv
-  /// signifies the enviroment for Web3Auth, and doesn't signifies 
-  /// the enviorment of the application. 
+  /// signifies the enviroment for Web3Auth, and doesn't signifies
+  /// the enviorment of the application.
   final BuildEnv? buildEnv;
 
   /// Define the desired Web3Auth service url.
   final String? sdkUrl;
+  final String? walletSdkUrl;
 
   /// Deeplinking for the application where user will be redirected after login.
   /// Ideally, it should be bundleId and package name for iOS and Android respectively.
@@ -406,25 +407,29 @@ class Web3AuthOptions {
   /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 7 days.
   final int? sessionTime;
 
-  Web3AuthOptions({
-    required this.clientId,
-    required this.network,
-    this.buildEnv = BuildEnv.production,
-    String? sdkUrl,
-    required this.redirectUrl,
-    this.whiteLabel,
-    this.loginConfig,
-    this.useCoreKitKey,
-    this.chainNamespace = ChainNamespace.eip155,
-    this.sessionTime = 86400,
-    this.mfaSettings,
-  }) : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production);
+  Web3AuthOptions(
+      {required this.clientId,
+      required this.network,
+      this.buildEnv = BuildEnv.production,
+      String? sdkUrl,
+      String? walletSdkUrl,
+      required this.redirectUrl,
+      this.whiteLabel,
+      this.loginConfig,
+      this.useCoreKitKey,
+      this.chainNamespace = ChainNamespace.eip155,
+      this.sessionTime = 86400,
+      this.mfaSettings})
+      : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
+        walletSdkUrl =
+            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
       'network': network.name,
       'sdkUrl': sdkUrl,
+      'walletSdkUrl': walletSdkUrl,
       'buildEnv': buildEnv?.name,
       'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
@@ -455,5 +460,17 @@ String getSdkUrl(BuildEnv? buildEnv) {
     case BuildEnv.production:
     default:
       return "https://auth.web3auth.io/$version";
+  }
+}
+
+String getWalletSdkUrl(BuildEnv? buildEnv) {
+  switch (buildEnv) {
+    case BuildEnv.staging:
+      return "https://staging-wallet.web3auth.io";
+    case BuildEnv.testing:
+      return "https://develop-wallet.web3auth.io";
+    case BuildEnv.production:
+    default:
+      return "https://wallet.web3auth.io";
   }
 }
