@@ -6,19 +6,33 @@ class Web3AuthResponse {
   final String? error;
   final String? coreKitKey;
   final String? coreKitEd25519PrivKey;
+  final String? factorKey;
+  final List<String>? signatures;
+  final int? tssShareIndex;
+  final String? tssPubKey;
+  final String? tssShare;
+  final int? tssNonce;
 
-  Web3AuthResponse(
-      {this.privKey,
-      this.userInfo,
-      this.error,
-      this.ed25519PrivKey,
-      this.sessionId,
-      this.coreKitKey,
-      this.coreKitEd25519PrivKey});
+  Web3AuthResponse({
+    this.privKey,
+    this.userInfo,
+    this.error,
+    this.ed25519PrivKey,
+    this.sessionId,
+    this.coreKitKey,
+    this.coreKitEd25519PrivKey,
+    this.factorKey,
+    this.signatures,
+    this.tssShareIndex,
+    this.tssPubKey,
+    this.tssShare,
+    this.tssNonce,
+  });
 
   @override
   String toString() {
-    return "{privKey=$privKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error}";
+    return "{privKey=$privKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error,"
+        "factorKey=$factorKey, signatures=$signatures, tssShareIndex=$tssShareIndex, tssPubKey=$tssPubKey, tssShare=$tssShare, tssNonce=$tssNonce}";
   }
 
   Map<String, dynamic> toJson() {
@@ -29,7 +43,13 @@ class Web3AuthResponse {
       'sessionId': sessionId,
       'error': error,
       'coreKitKey': coreKitKey,
-      'coreKitEd25519PrivKey': coreKitEd25519PrivKey
+      'coreKitEd25519PrivKey': coreKitEd25519PrivKey,
+      'factorKey': factorKey,
+      'signatures': signatures,
+      'tssShareIndex': tssShareIndex,
+      'tssPubKey': tssPubKey,
+      'tssShare': tssShare,
+      'tssNonce': tssNonce
     };
   }
 
@@ -42,7 +62,15 @@ class Web3AuthResponse {
         sessionId = json['sessionId'],
         coreKitKey = json['coreKitKey'],
         coreKitEd25519PrivKey = json['coreKitEd25519PrivKey'],
-        error = json['error'];
+        error = json['error'],
+        factorKey = json['factorKey'],
+        signatures = json['signatures'] != null
+            ? List<String>.from(json['signatures'])
+            : null,
+        tssShareIndex = json['tssShareIndex'],
+        tssPubKey = json['tssPubKey'],
+        tssShare = json['tssShare'],
+        tssNonce = json['tssNonce'];
 }
 
 class TorusUserInfo {

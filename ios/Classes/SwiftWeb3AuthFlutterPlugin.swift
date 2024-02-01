@@ -197,7 +197,24 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
-               result(resultMap)
+                result(resultMap)
+                return
+
+            case "getWeb3AuthResponse":
+                var resultMap: String = ""
+                do {
+                    let web3AuthResult = try web3auth?.getWeb3AuthResponse()
+                    let resultData = try encoder.encode(web3AuthResult)
+                    resultMap = String(decoding: resultData, as: UTF8.self)
+                } catch {
+                    result(FlutterError(
+                        code: "GetWeb3AuthResponseFailedException",
+                        message: "Web3Auth getUserInfo failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+                result(resultMap)
                 return
 
             default:

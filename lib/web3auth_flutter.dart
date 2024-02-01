@@ -160,4 +160,21 @@ class Web3AuthFlutter {
       }
     }
   }
+
+  static Future<Web3AuthResponse> getWeb3AuthResponse() async {
+    try {
+      final String web3AuthResponse =
+          await _channel.invokeMethod('getWeb3AuthResponse', jsonEncode({}));
+      return Web3AuthResponse.fromJson(jsonDecode(web3AuthResponse));
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
 }

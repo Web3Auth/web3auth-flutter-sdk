@@ -48,15 +48,18 @@ class _MyAppState extends State<MyApp> {
 
     final loginConfig = HashMap<String, LoginConfigItem>();
     loginConfig['jwt'] = LoginConfigItem(
-        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
+        verifier: "web3auth-auth0-email-passwordless-sapphire-devnet",
+        // get it from web3auth dashboard
         typeOfLogin: TypeOfLogin.jwt,
-        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
+        clientId: "d84f6xvbdV75VTGmHiMWfZLeSPk8M07C" // auth0 client id
         );
 
     await Web3AuthFlutter.init(
       Web3AuthOptions(
         clientId:
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
+        sdkUrl: 'https://mocaverse-auth.web3auth.com',
+        walletSdkUrl: 'https://mocaverse-auth.web3auth.com',
         network: Network.sapphire_devnet,
         buildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
@@ -66,14 +69,14 @@ class _MyAppState extends State<MyApp> {
           appName: "Web3Auth Flutter App",
           theme: themeMap,
         ),
+        loginConfig: loginConfig,
       ),
     );
 
     await Web3AuthFlutter.initialize();
 
-    final String res = await Web3AuthFlutter.getPrivKey();
-    log(res);
-    if (res.isNotEmpty) {
+    final Web3AuthResponse res = await Web3AuthFlutter.getWeb3AuthResponse();
+    if (res.privKey!.isNotEmpty || res.factorKey!.isNotEmpty) {
       setState(() {
         logoutVisible = true;
       });
@@ -275,7 +278,7 @@ class _MyAppState extends State<MyApp> {
       LoginParams(
         loginProvider: Provider.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
-          login_hint: "gaurav@tor.us",
+          login_hint: "testtkey@gmail.com",
         ),
       ),
     );
@@ -309,8 +312,8 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _setupMFA() {
     return () async {
       try {
-        await Web3AuthFlutter.setupMFA(
-            LoginParams(loginProvider: Provider.google));
+        await Web3AuthFlutter.setupMFA(LoginParams(
+            loginProvider: Provider.google, mfaLevel: MFALevel.MANDATORY));
       } on UserCancelledException {
         print("User cancelled.");
       } on UnKnownException {
