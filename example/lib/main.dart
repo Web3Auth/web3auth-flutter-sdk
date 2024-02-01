@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(final AppLifecycleState state) {
-    // This is important to detct the user cancellation on Android.
+    // This is important to trigger the user cancellation on Android.
     if (state == AppLifecycleState.resumed) {
       Web3AuthFlutter.setResultUrl();
     }
