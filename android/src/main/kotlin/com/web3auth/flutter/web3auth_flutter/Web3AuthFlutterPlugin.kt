@@ -164,6 +164,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     throw Error(e)
                 }
             }
+
+            "setResultUrl" -> {
+                web3auth.setResultUrl(null)
+                return null
+            }
         }
         throw NotImplementedError()
     }

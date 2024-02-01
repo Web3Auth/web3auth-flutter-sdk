@@ -20,7 +20,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String _result = '';
   bool logoutVisible = false;
 
@@ -28,6 +28,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
+    // This is important to detct the user cancellation on Android.
+    if (state == AppLifecycleState.resumed) {
+      Web3AuthFlutter.setResultUrl();
+    }
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -196,6 +211,8 @@ class _MyAppState extends State<MyApp> {
         log("User cancelled.");
       } on UnKnownException {
         log("Unknown exception occurred");
+      } catch (e) {
+        log(e.toString());
       }
     };
   }
@@ -263,7 +280,7 @@ class _MyAppState extends State<MyApp> {
       LoginParams(
         loginProvider: Provider.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
-          login_hint: "gaurav@tor.us",
+          login_hint: "ayush@tor.us",
         ),
       ),
     );
