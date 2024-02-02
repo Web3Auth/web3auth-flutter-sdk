@@ -18,8 +18,7 @@ class LoginParams {
     this.extraLoginOptions,
     this.redirectUrl,
     this.appState,
-    this.mfaLevel,
-  });
+    this.mfaLevel});
 
   Map<String, dynamic> toJson() => {
         "loginProvider": loginProvider.name,
@@ -28,7 +27,7 @@ class LoginParams {
         "extraLoginOptions": extraLoginOptions?.toJson(),
         "redirectUrl": redirectUrl?.toString(),
         "appState": appState,
-        "mfaLevel": mfaLevel?.type,
+    "mfaLevel": mfaLevel?.type
       };
 }
 
@@ -207,11 +206,12 @@ class MfaSettings {
   final MfaSetting? socialBackupFactor;
   final MfaSetting? passwordFactor;
 
-  MfaSettings(
-      {this.deviceShareFactor,
-      this.backUpShareFactor,
-      this.socialBackupFactor,
-      this.passwordFactor});
+  MfaSettings({
+    this.deviceShareFactor,
+    this.backUpShareFactor,
+    this.socialBackupFactor,
+    this.passwordFactor
+  });
 
   Map<String, dynamic> toJson() {
     return {
@@ -219,6 +219,44 @@ class MfaSettings {
       'backUpShareFactor': backUpShareFactor,
       'socialBackupFactor': socialBackupFactor,
       'passwordFactor': passwordFactor
+    };
+  }
+}
+
+class ChainConfig {
+  final ChainNamespace? chainNamespace;
+  final int decimals;
+  final String? blockExplorerUrl;
+  final String chainId;
+  final String? displayName;
+  final String? logo;
+  final String rpcTarget;
+  final String ticker;
+  final String? tickerName;
+
+  ChainConfig({
+    this.chainNamespace = ChainNamespace.eip155,
+    this.decimals = 18,
+    this.blockExplorerUrl,
+    required this.chainId,
+    this.displayName,
+    this.logo,
+    required this.rpcTarget,
+    required this.ticker,
+    this.tickerName,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'chainNamespace': chainNamespace?.name,
+      'decimals': decimals,
+      'blockExplorerUrl': blockExplorerUrl,
+      'chainId': chainId,
+      'displayName': displayName,
+      'logo': logo,
+      'rpcTarget': rpcTarget,
+      'ticker': ticker,
+      'tickerName': tickerName
     };
   }
 }
@@ -236,20 +274,23 @@ class Web3AuthOptions {
   final ChainNamespace? chainNamespace;
   final MfaSettings? mfaSettings;
   final int? sessionTime;
+  final ChainConfig chainConfig;
 
-  Web3AuthOptions(
-      {required this.clientId,
-      required this.network,
-      this.buildEnv = BuildEnv.production,
-      String? sdkUrl,
-      String? walletSdkUrl,
-      required this.redirectUrl,
-      this.whiteLabel,
-      this.loginConfig,
-      this.useCoreKitKey,
-      this.chainNamespace = ChainNamespace.eip155,
-      this.sessionTime = 86400,
-      this.mfaSettings})
+  Web3AuthOptions({
+    required this.clientId,
+    required this.network,
+    this.buildEnv = BuildEnv.production,
+    String? sdkUrl,
+    String? walletSdkUrl,
+    required this.redirectUrl,
+    this.whiteLabel,
+    this.loginConfig,
+    this.useCoreKitKey,
+    this.chainNamespace = ChainNamespace.eip155,
+    this.sessionTime = 86400,
+    this.mfaSettings,
+    required this.chainConfig
+  })
       : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
         walletSdkUrl =
             walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
@@ -267,7 +308,8 @@ class Web3AuthOptions {
       'useCoreKitKey': useCoreKitKey,
       'chainNamespace': chainNamespace?.name,
       'mfaSettings': mfaSettings,
-      "sessionTime": sessionTime
+      "sessionTime": sessionTime,
+      "chainConfig": chainConfig.toJson()
     };
   }
 }

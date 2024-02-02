@@ -60,17 +60,21 @@ class _MyAppState extends State<MyApp> {
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
         sdkUrl: 'https://mocaverse-auth.web3auth.com',
         walletSdkUrl: 'https://mocaverse-auth.web3auth.com',
-        network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.testing,
-        redirectUrl: redirectUrl,
-        whiteLabel: WhiteLabelData(
-          mode: ThemeModes.dark,
-          defaultLanguage: Language.en,
-          appName: "Web3Auth Flutter App",
-          theme: themeMap,
-        ),
-        loginConfig: loginConfig,
-      ),
+          network: Network.sapphire_devnet,
+          buildEnv: BuildEnv.testing,
+          redirectUrl: redirectUrl,
+          whiteLabel: WhiteLabelData(
+            mode: ThemeModes.dark,
+            defaultLanguage: Language.en,
+            appName: "Web3Auth Flutter App",
+            theme: themeMap,
+          ),
+          loginConfig: loginConfig,
+          chainConfig: ChainConfig(
+              chainId: "0x1",
+              rpcTarget:
+                  "https://mainnet.infura.io/v3/1d7f0c9a5c9a4b6e8b3a2b0a2b7b3f0d",
+              ticker: "ETH")),
     );
 
     await Web3AuthFlutter.initialize();
