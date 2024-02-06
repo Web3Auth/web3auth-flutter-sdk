@@ -336,13 +336,14 @@ String getSdkUrl(BuildEnv? buildEnv) {
 }
 
 String getWalletSdkUrl(BuildEnv? buildEnv) {
+  const String walletServicesVersion = "v1";
   switch (buildEnv) {
     case BuildEnv.staging:
-      return "https://staging-wallet.web3auth.io";
+      return "https://staging-wallet.web3auth.io/$walletServicesVersion";
     case BuildEnv.testing:
       return "https://develop-wallet.web3auth.io";
     case BuildEnv.production:
     default:
-      return "https://wallet.web3auth.io";
+      return "https://wallet.web3auth.io/$walletServicesVersion";
   }
 }
