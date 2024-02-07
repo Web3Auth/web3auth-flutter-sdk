@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:web3auth_flutter/input.dart';
@@ -13,6 +14,8 @@ class Web3AuthFlutter {
     return version;
   }
 
+  static bool _isLoginSuccessful = false;
+
   static Future<void> init(Web3AuthOptions initParams) async {
     Map<String, dynamic> initParamsJson = initParams.toJson();
     initParamsJson.removeWhere((key, value) => value == null);
@@ -21,22 +24,17 @@ class Web3AuthFlutter {
 
   static Future<Web3AuthResponse> login(LoginParams loginParams) async {
     try {
+      _isLoginSuccessful = false;
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
       loginParamsJson.removeWhere((key, value) => value == null);
       final String loginResponse = await _channel.invokeMethod(
         'login',
         jsonEncode(loginParamsJson),
       );
+      _isLoginSuccessful = true;
       return Web3AuthResponse.fromJson(jsonDecode(loginResponse));
     } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
-      }
+      throw _handlePlatformException(e);
     }
   }
 
@@ -45,14 +43,7 @@ class Web3AuthFlutter {
       await _channel.invokeMethod('logout', jsonEncode({}));
       return;
     } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
-      }
+      throw _handlePlatformException(e);
     }
   }
 
@@ -61,14 +52,7 @@ class Web3AuthFlutter {
       await _channel.invokeMethod('initialize', jsonEncode({}));
       return;
     } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
-      }
+      throw _handlePlatformException(e);
     }
   }
 
@@ -78,14 +62,7 @@ class Web3AuthFlutter {
           await _channel.invokeMethod('getPrivKey', jsonEncode({}));
       return privKey;
     } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
-      }
+      throw _handlePlatformException(e);
     }
   }
 
@@ -95,14 +72,7 @@ class Web3AuthFlutter {
           await _channel.invokeMethod('getEd25519PrivKey', jsonEncode({}));
       return getEd25519PrivKey;
     } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
-      }
+      throw _handlePlatformException(e);
     }
   }
 
@@ -112,14 +82,30 @@ class Web3AuthFlutter {
           await _channel.invokeMethod('getUserInfo', jsonEncode({}));
       return TorusUserInfo.fromJson(jsonDecode(torusUserInfo));
     } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
+      throw _handlePlatformException(e);
+    }
+  }
+
+  static Future<void> setResultUrl() async {
+    try {
+      await Future.delayed(const Duration(milliseconds: 250));
+      if (Platform.isAndroid && !_isLoginSuccessful) {
+        await _channel.invokeMethod('setResultUrl');
       }
+      return;
+    } on PlatformException catch (e) {
+      throw _handlePlatformException(e);
+    }
+  }
+
+  static Exception _handlePlatformException(PlatformException e) {
+    switch (e.code) {
+      case "UserCancelledException":
+        return UserCancelledException();
+      case "NoAllowedBrowserFoundException":
+        return UnKnownException(e.message);
+      default:
+        return e;
     }
   }
 }
