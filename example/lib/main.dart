@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         clientId:
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
         network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.testing,
+        buildEnv: BuildEnv.production,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
           mode: ThemeModes.dark,
