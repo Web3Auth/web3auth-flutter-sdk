@@ -58,10 +58,10 @@ class _MyAppState extends State<MyApp> {
       Web3AuthOptions(
         clientId:
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
-        sdkUrl: 'https://mocaverse-auth.web3auth.com',
-        walletSdkUrl: 'https://mocaverse-auth.web3auth.com',
+        sdkUrl: 'https://auth.mocaverse.xyz',
+        walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
           network: Network.sapphire_devnet,
-          buildEnv: BuildEnv.testing,
+          buildEnv: BuildEnv.production,
           redirectUrl: redirectUrl,
           whiteLabel: WhiteLabelData(
             mode: ThemeModes.dark,
@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
           chainConfig: ChainConfig(
               chainId: "0x1",
               rpcTarget:
-                  "https://mainnet.infura.io/v3/1d7f0c9a5c9a4b6e8b3a2b0a2b7b3f0d",
+                  "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
               ticker: "ETH")),
     );
 
