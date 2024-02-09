@@ -10,6 +10,7 @@ class LoginParams {
   final Uri? redirectUrl;
   final String? appState;
   final MFALevel? mfaLevel;
+  final String? dappUrl;
 
   LoginParams({
     required this.loginProvider,
@@ -18,7 +19,9 @@ class LoginParams {
     this.extraLoginOptions,
     this.redirectUrl,
     this.appState,
-    this.mfaLevel});
+    this.mfaLevel,
+    this.dappUrl
+  });
 
   Map<String, dynamic> toJson() => {
         "loginProvider": loginProvider.name,
@@ -27,7 +30,8 @@ class LoginParams {
         "extraLoginOptions": extraLoginOptions?.toJson(),
         "redirectUrl": redirectUrl?.toString(),
         "appState": appState,
-    "mfaLevel": mfaLevel?.type
+        "mfaLevel": mfaLevel?.type,
+        "dappUrl": dappUrl
       };
 }
 
@@ -205,12 +209,16 @@ class MfaSettings {
   final MfaSetting? backUpShareFactor;
   final MfaSetting? socialBackupFactor;
   final MfaSetting? passwordFactor;
+  final MfaSetting? passkeysFactor;
+  final MfaSetting? authenticatorFactor;
 
   MfaSettings({
     this.deviceShareFactor,
     this.backUpShareFactor,
     this.socialBackupFactor,
-    this.passwordFactor
+    this.passwordFactor,
+    this.passkeysFactor,
+    this.authenticatorFactor,
   });
 
   Map<String, dynamic> toJson() {
@@ -218,7 +226,9 @@ class MfaSettings {
       'deviceShareFactor': deviceShareFactor,
       'backUpShareFactor': backUpShareFactor,
       'socialBackupFactor': socialBackupFactor,
-      'passwordFactor': passwordFactor
+      'passwordFactor': passwordFactor,
+      'passkeysFactor': passkeysFactor,
+      'authenticatorFactor': authenticatorFactor
     };
   }
 }
@@ -274,7 +284,7 @@ class Web3AuthOptions {
   final ChainNamespace? chainNamespace;
   final MfaSettings? mfaSettings;
   final int? sessionTime;
-  final ChainConfig chainConfig;
+  final ChainConfig? chainConfig;
 
   Web3AuthOptions({
     required this.clientId,
@@ -289,7 +299,7 @@ class Web3AuthOptions {
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 86400,
     this.mfaSettings,
-    required this.chainConfig
+    this.chainConfig
   })
       : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
         walletSdkUrl =
@@ -309,7 +319,7 @@ class Web3AuthOptions {
       'chainNamespace': chainNamespace?.name,
       'mfaSettings': mfaSettings,
       "sessionTime": sessionTime,
-      "chainConfig": chainConfig.toJson()
+      "chainConfig": chainConfig?.toJson()
     };
   }
 }
@@ -323,7 +333,7 @@ class UnKnownException implements Exception {
 }
 
 String getSdkUrl(BuildEnv? buildEnv) {
-  const String version = "v6";
+  const String version = "v7";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-auth.web3auth.io/$version";

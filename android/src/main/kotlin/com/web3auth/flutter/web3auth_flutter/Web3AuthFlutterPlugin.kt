@@ -181,17 +181,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             "launchWalletServices" -> {
                 try {
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
-                    val loginArgs = call.arguments<String>() ?: return null
-                    val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
-                    Log.d(loginParams.toString(), "#loginParams")
-                    val obj = JSONObject(loginArgs)
-                    if (obj.has("redirectUrl")) loginParams.redirectUrl =
-                        Uri.parse(obj.get("redirectUrl") as String?)
-                    val launchWalletCF = web3auth.launchWalletServices(loginParams)
-                    Log.d(
-                        "${Web3AuthFlutterPlugin::class.qualifiedName}",
-                        "#launchWalletServices_1"
-                    )
+                    val wsArgs = call.arguments<String>() ?: return null
+                    val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
+                    Log.d(wsParams.toString(), "#wsParams")
+                    val launchWalletCF = web3auth.launchWalletServices(loginParams = wsParams.loginParams,
+                        chainConfig = wsParams.chainConfig, path = wsParams.path)
                     launchWalletCF.get()
                     return null
                 } catch (e: NotImplementedError) {
@@ -201,15 +195,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "setupMFA" -> {
+            "enableMFA" -> {
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     val obj = JSONObject(loginArgs)
                     if (obj.has("redirectUrl")) loginParams.redirectUrl =
                         Uri.parse(obj.get("redirectUrl") as String?)
-                    val setupMfaCF = web3auth.setupMFA(loginParams)
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#setupMFA")
+                    val setupMfaCF = web3auth.enableMFA(loginParams)
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
                 } catch (e: NotImplementedError) {
                     throw Error(e)
@@ -221,3 +215,8 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
         throw NotImplementedError()
     }
 }
+data class WalletServicesJson(
+    val loginParams: LoginParams,
+    val chainConfig: ChainConfig,
+    val path: String? = "wallet"
+)

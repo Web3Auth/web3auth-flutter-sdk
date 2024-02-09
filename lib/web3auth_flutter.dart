@@ -123,12 +123,20 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> launchWalletServices(LoginParams loginParams) async {
+  static Future<void> launchWalletServices(LoginParams loginParams, ChainConfig chainConfig, {String path = "wallet"}) async {
     try {
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
       loginParamsJson.removeWhere((key, value) => value == null);
+      Map<String, dynamic> chainConfigJson = chainConfig.toJson();
+      chainConfigJson.removeWhere((key, value) => value == null);
+
+      Map<String, dynamic> walletServicesJson = {};
+      walletServicesJson["loginParams"] = loginParamsJson;
+      walletServicesJson["chainConfig"] = chainConfigJson;
+      walletServicesJson["path"] = path;
+
       await _channel.invokeMethod(
-          'launchWalletServices', jsonEncode(loginParamsJson));
+          'launchWalletServices', jsonEncode(walletServicesJson));
       return;
     } on PlatformException catch (e) {
       switch (e.code) {
@@ -142,12 +150,17 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<bool> setupMFA(LoginParams loginParams) async {
+  static Future<bool> enableMFA({LoginParams? loginParams}) async {
     try {
-      Map<String, dynamic> loginParamsJson = loginParams.toJson();
-      loginParamsJson.removeWhere((key, value) => value == null);
-      final bool isMFASetup =
-          await _channel.invokeMethod('setupMFA', jsonEncode(loginParamsJson));
+      bool isMFASetup = false;
+      if(loginParams == null) {
+        isMFASetup = await _channel.invokeMethod('enableMFA', jsonEncode({}));
+        return isMFASetup;
+      } else {
+        Map<String, dynamic> loginParamsJson = loginParams.toJson();
+        loginParamsJson.removeWhere((key, value) => value == null);
+        isMFASetup = await _channel.invokeMethod('enableMFA', jsonEncode(loginParamsJson));
+      }
       return isMFASetup;
     } on PlatformException catch (e) {
       switch (e.code) {
