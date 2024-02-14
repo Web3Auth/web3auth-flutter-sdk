@@ -20,7 +20,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String _result = '';
   bool logoutVisible = false;
 
@@ -28,6 +28,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
+    // This is important to trigger the user cancellation on Android.
+    if (state == AppLifecycleState.resumed) {
+      Web3AuthFlutter.setResultUrl();
+    }
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -48,10 +63,9 @@ class _MyAppState extends State<MyApp> {
 
     final loginConfig = HashMap<String, LoginConfigItem>();
     loginConfig['jwt'] = LoginConfigItem(
-        verifier: "web3auth-auth0-email-passwordless-sapphire-devnet",
-        // get it from web3auth dashboard
+        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
         typeOfLogin: TypeOfLogin.jwt,
-        clientId: "d84f6xvbdV75VTGmHiMWfZLeSPk8M07C" // auth0 client id
+        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
         );
 
     await Web3AuthFlutter.init(
@@ -215,6 +229,8 @@ class _MyAppState extends State<MyApp> {
         log("User cancelled.");
       } on UnKnownException {
         log("Unknown exception occurred");
+      } catch (e) {
+        log(e.toString());
       }
     };
   }

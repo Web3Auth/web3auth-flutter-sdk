@@ -1,6 +1,6 @@
 name: web3auth_flutter
 description: Flutter SDK for Torus Web3Auth (Web3Auth)
-version: 3.1.3
+version: 3.1.5
 homepage: https://web3auth.io
 repository: https://github.com/Web3Auth/web3auth-flutter-sdk.git
 
