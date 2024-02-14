@@ -88,7 +88,7 @@ class Web3AuthFlutter {
 
   static Future<void> setResultUrl() async {
     try {
-      await Future.delayed(const Duration(milliseconds: 250));
+      await Future.delayed(const Duration(milliseconds: 350));
       if (Platform.isAndroid && !_isLoginSuccessful) {
         await _channel.invokeMethod('setResultUrl');
       }
