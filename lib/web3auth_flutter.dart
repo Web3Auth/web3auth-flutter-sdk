@@ -109,44 +109,6 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> launchWalletServices(LoginParams loginParams) async {
-    try {
-      Map<String, dynamic> loginParamsJson = loginParams.toJson();
-      loginParamsJson.removeWhere((key, value) => value == null);
-      await _channel.invokeMethod(
-          'launchWalletServices', jsonEncode(loginParamsJson));
-      return;
-    } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
-      }
-    }
-  }
-
-  static Future<bool> setupMFA(LoginParams loginParams) async {
-    try {
-      Map<String, dynamic> loginParamsJson = loginParams.toJson();
-      loginParamsJson.removeWhere((key, value) => value == null);
-      final bool isMFASetup =
-          await _channel.invokeMethod('setupMFA', jsonEncode(loginParamsJson));
-      return isMFASetup;
-    } on PlatformException catch (e) {
-      switch (e.code) {
-        case "UserCancelledException":
-          throw UserCancelledException();
-        case "NoAllowedBrowserFoundException":
-          throw UnKnownException(e.message);
-        default:
-          rethrow;
-      }
-    }
-  }
-
   static Future<void> launchWalletServices(LoginParams loginParams, ChainConfig chainConfig, {String path = "wallet"}) async {
     try {
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
