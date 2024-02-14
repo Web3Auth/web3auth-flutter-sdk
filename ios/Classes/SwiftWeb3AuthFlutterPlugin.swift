@@ -139,19 +139,19 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
             case "launchWalletServices":
-                let loginParams: W3ALoginParams
+                let wsParams: WalletServicesParams
                 do {
-                    loginParams = try decoder.decode(W3ALoginParams.self, from: data)
+                    wsParams = try decoder.decode(WalletServicesParams.self, from: data)
                 } catch {
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
-                        message: "Invalid Login Params",
+                        message: "Invalid Wallet Services Params",
                         details: nil))
                         return
                 }
                 var resultMap: String = ""
                 do {
-                    try await web3auth?.launchWalletServices(loginParams)
+                    try await web3auth?.launchWalletServices(wsParams.loginParams)
                     result(nil)
                     return
                 } catch {
@@ -161,7 +161,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                          details: error.localizedDescription))
                      return
                 }
-            case "setupMFA":
+            case "enableMFA":
                 let loginParams: W3ALoginParams
                 do {
                     loginParams = try decoder.decode(W3ALoginParams.self, from: data)
@@ -173,13 +173,13 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
                 do {
-                    let setupMFAResult = try await web3auth?.setupMFA(loginParams)
-                    result(setupMFAResult)
+                    let enableMFAResult = try await web3auth?.enableMFA()
+                    result(enableMFAResult)
                     return
                 } catch {
                     result(FlutterError(
-                        code: "setUpMFAFailedException",
-                        message: "Web3Auth setupMFA failed",
+                        code: "enableMFAFailedException",
+                        message: "Web3Auth enableMFA failed",
                         details: ""))
                     return
                 }
@@ -221,5 +221,25 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 result(FlutterMethodNotImplemented)
             }
         }
+    }
+}
+
+struct WalletServicesParams: Codable {
+    let loginParams: W3ALoginParams
+    let chainConfig: ChainConfig
+    let path: String?
+
+    public init(loginParams: W3ALoginParams, chainConfig: ChainConfig, path: String? = "wallet") {
+        self.loginParams = loginParams
+        self.chainConfig = chainConfig
+        self.path = path
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        loginParams = try values.decodeIfPresent(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
+        chainConfig = try values.decodeIfPresent(ChainConfig.self, forKey: .chainConfig) ?? ChainConfig(chainNamespace: ChainNamespace.eip155, chainId: "0x1",
+                           rpcTarget: "", ticker: "ETH")
+        path = try values.decodeIfPresent(String.self, forKey: .path)
     }
 }

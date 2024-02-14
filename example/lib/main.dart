@@ -58,10 +58,10 @@ class _MyAppState extends State<MyApp> {
       Web3AuthOptions(
         clientId:
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
-        sdkUrl: 'https://auth.mocaverse.xyz',
-        walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
+        //sdkUrl: 'https://auth.mocaverse.xyz',
+        //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
           network: Network.sapphire_devnet,
-          buildEnv: BuildEnv.production,
+          buildEnv: BuildEnv.testing,
           redirectUrl: redirectUrl,
           whiteLabel: WhiteLabelData(
             mode: ThemeModes.dark,
@@ -79,8 +79,8 @@ class _MyAppState extends State<MyApp> {
 
     await Web3AuthFlutter.initialize();
 
-    final Web3AuthResponse res = await Web3AuthFlutter.getWeb3AuthResponse();
-    if (res.privKey!.isNotEmpty || res.factorKey!.isNotEmpty) {
+    final String res = await Web3AuthFlutter.getPrivKey();
+    if (res.isNotEmpty) {
       setState(() {
         logoutVisible = true;
       });
@@ -304,7 +304,8 @@ class _MyAppState extends State<MyApp> {
     return () async {
       try {
         await Web3AuthFlutter.launchWalletServices(
-            LoginParams(loginProvider: Provider.google));
+            LoginParams(loginProvider: Provider.google), ChainConfig(
+            chainId: "0x1", rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0", ticker: "ETH"));
       } on UserCancelledException {
         print("User cancelled.");
       } on UnKnownException {
@@ -316,8 +317,7 @@ class _MyAppState extends State<MyApp> {
   VoidCallback _setupMFA() {
     return () async {
       try {
-        await Web3AuthFlutter.setupMFA(LoginParams(
-            loginProvider: Provider.google, mfaLevel: MFALevel.MANDATORY));
+        await Web3AuthFlutter.enableMFA();
       } on UserCancelledException {
         print("User cancelled.");
       } on UnKnownException {
