@@ -138,6 +138,51 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
+            case "launchWalletServices":
+                let wsParams: WalletServicesParams
+                do {
+                    wsParams = try decoder.decode(WalletServicesParams.self, from: data)
+                } catch {
+                    result(FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid Wallet Services Params",
+                        details: nil))
+                        return
+                }
+                var resultMap: String = ""
+                do {
+                    try await web3auth?.launchWalletServices(wsParams.loginParams)
+                    result(nil)
+                    return
+                } catch {
+                     result(FlutterError(
+                         code: "WalletServicesFailedFailedException",
+                         message: "Web3Auth wallet services launch failed",
+                         details: error.localizedDescription))
+                     return
+                }
+            case "enableMFA":
+                let loginParams: W3ALoginParams
+                do {
+                    loginParams = try decoder.decode(W3ALoginParams.self, from: data)
+                } catch {
+                    result(FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid Login Params",
+                        details: nil))
+                    return
+                }
+                do {
+                    let enableMFAResult = try await web3auth?.enableMFA()
+                    result(enableMFAResult)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "enableMFAFailedException",
+                        message: "Web3Auth enableMFA failed",
+                        details: ""))
+                    return
+                }
             case "getUserInfo":
                 var resultMap: String = ""
                 do {
@@ -152,12 +197,49 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
-               result(resultMap)
+                result(resultMap)
+                return
+
+            case "getWeb3AuthResponse":
+                var resultMap: String = ""
+                do {
+                    let web3AuthResult = try web3auth?.getWeb3AuthResponse()
+                    let resultData = try encoder.encode(web3AuthResult)
+                    resultMap = String(decoding: resultData, as: UTF8.self)
+                } catch {
+                    result(FlutterError(
+                        code: "GetWeb3AuthResponseFailedException",
+                        message: "Web3Auth getUserInfo failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+                result(resultMap)
                 return
 
             default:
                 result(FlutterMethodNotImplemented)
             }
         }
+    }
+}
+
+struct WalletServicesParams: Codable {
+    let loginParams: W3ALoginParams
+    let chainConfig: ChainConfig
+    let path: String?
+
+    public init(loginParams: W3ALoginParams, chainConfig: ChainConfig, path: String? = "wallet") {
+        self.loginParams = loginParams
+        self.chainConfig = chainConfig
+        self.path = path
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        loginParams = try values.decodeIfPresent(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
+        chainConfig = try values.decodeIfPresent(ChainConfig.self, forKey: .chainConfig) ?? ChainConfig(chainNamespace: ChainNamespace.eip155, chainId: "0x1",
+                           rpcTarget: "", ticker: "ETH")
+        path = try values.decodeIfPresent(String.self, forKey: .path)
     }
 }

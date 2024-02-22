@@ -108,4 +108,72 @@ class Web3AuthFlutter {
         return e;
     }
   }
+
+  static Future<void> launchWalletServices(LoginParams loginParams, ChainConfig chainConfig, {String path = "wallet"}) async {
+    try {
+      Map<String, dynamic> loginParamsJson = loginParams.toJson();
+      loginParamsJson.removeWhere((key, value) => value == null);
+      Map<String, dynamic> chainConfigJson = chainConfig.toJson();
+      chainConfigJson.removeWhere((key, value) => value == null);
+
+      Map<String, dynamic> walletServicesJson = {};
+      walletServicesJson["loginParams"] = loginParamsJson;
+      walletServicesJson["chainConfig"] = chainConfigJson;
+      walletServicesJson["path"] = path;
+
+      await _channel.invokeMethod(
+          'launchWalletServices', jsonEncode(walletServicesJson));
+      return;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<bool> enableMFA({LoginParams? loginParams}) async {
+    try {
+      bool isMFASetup = false;
+      if(loginParams == null) {
+        isMFASetup = await _channel.invokeMethod('enableMFA', jsonEncode({}));
+        return isMFASetup;
+      } else {
+        Map<String, dynamic> loginParamsJson = loginParams.toJson();
+        loginParamsJson.removeWhere((key, value) => value == null);
+        isMFASetup = await _channel.invokeMethod('enableMFA', jsonEncode(loginParamsJson));
+      }
+      return isMFASetup;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<Web3AuthResponse> getWeb3AuthResponse() async {
+    try {
+      final String web3AuthResponse =
+          await _channel.invokeMethod('getWeb3AuthResponse', jsonEncode({}));
+      return Web3AuthResponse.fromJson(jsonDecode(web3AuthResponse));
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
 }

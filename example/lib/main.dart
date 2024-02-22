@@ -61,26 +61,39 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       throw UnKnownException('Unknown platform');
     }
 
+    final loginConfig = HashMap<String, LoginConfigItem>();
+    loginConfig['jwt'] = LoginConfigItem(
+        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
+        typeOfLogin: TypeOfLogin.jwt,
+        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
+        );
+
     await Web3AuthFlutter.init(
       Web3AuthOptions(
         clientId:
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
-        network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.production,
-        redirectUrl: redirectUrl,
-        whiteLabel: WhiteLabelData(
-          mode: ThemeModes.dark,
-          defaultLanguage: Language.en,
-          appName: "Web3Auth Flutter App",
-          theme: themeMap,
-        ),
-      ),
+        //sdkUrl: 'https://auth.mocaverse.xyz',
+        //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
+          network: Network.sapphire_devnet,
+          buildEnv: BuildEnv.testing,
+          redirectUrl: redirectUrl,
+          whiteLabel: WhiteLabelData(
+            mode: ThemeModes.dark,
+            defaultLanguage: Language.en,
+            appName: "Web3Auth Flutter App",
+            theme: themeMap,
+          ),
+          loginConfig: loginConfig,
+          chainConfig: ChainConfig(
+              chainId: "0x1",
+              rpcTarget:
+                  "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
+              ticker: "ETH")),
     );
 
     await Web3AuthFlutter.initialize();
 
     final String res = await Web3AuthFlutter.getPrivKey();
-    log(res);
     if (res.isNotEmpty) {
       setState(() {
         logoutVisible = true;
@@ -186,6 +199,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       onPressed: _userInfo(_getUserInfo),
                       child: const Text('Get UserInfo'),
                     ),
+                    ElevatedButton(
+                        onPressed: _launchWalletServices(),
+                        child: const Text('Launch Wallet Services')),
+                    ElevatedButton(
+                        onPressed: _setupMFA(), child: const Text('Setup MFA')),
                   ],
                 ),
               ),
@@ -280,7 +298,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       LoginParams(
         loginProvider: Provider.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
-          login_hint: "ayush@tor.us",
+          login_hint: "testtkey@gmail.com",
         ),
       ),
     );
@@ -296,5 +314,31 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<TorusUserInfo> _getUserInfo() {
     return Web3AuthFlutter.getUserInfo();
+  }
+
+  VoidCallback _launchWalletServices() {
+    return () async {
+      try {
+        await Web3AuthFlutter.launchWalletServices(
+            LoginParams(loginProvider: Provider.google), ChainConfig(
+            chainId: "0x1", rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0", ticker: "ETH"));
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
+  }
+
+  VoidCallback _setupMFA() {
+    return () async {
+      try {
+        await Web3AuthFlutter.enableMFA();
+      } on UserCancelledException {
+        print("User cancelled.");
+      } on UnKnownException {
+        print("Unknown exception occurred");
+      }
+    };
   }
 }

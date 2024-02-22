@@ -10,6 +10,7 @@ class LoginParams {
   final Uri? redirectUrl;
   final String? appState;
   final MFALevel? mfaLevel;
+  final String? dappUrl;
 
   LoginParams({
     required this.loginProvider,
@@ -19,6 +20,7 @@ class LoginParams {
     this.redirectUrl,
     this.appState,
     this.mfaLevel,
+    this.dappUrl
   });
 
   Map<String, dynamic> toJson() => {
@@ -29,6 +31,7 @@ class LoginParams {
         "redirectUrl": redirectUrl?.toString(),
         "appState": appState,
         "mfaLevel": mfaLevel?.type,
+        "dappUrl": dappUrl
       };
 }
 
@@ -206,19 +209,64 @@ class MfaSettings {
   final MfaSetting? backUpShareFactor;
   final MfaSetting? socialBackupFactor;
   final MfaSetting? passwordFactor;
+  final MfaSetting? passkeysFactor;
+  final MfaSetting? authenticatorFactor;
 
-  MfaSettings(
-      {this.deviceShareFactor,
-      this.backUpShareFactor,
-      this.socialBackupFactor,
-      this.passwordFactor});
+  MfaSettings({
+    this.deviceShareFactor,
+    this.backUpShareFactor,
+    this.socialBackupFactor,
+    this.passwordFactor,
+    this.passkeysFactor,
+    this.authenticatorFactor,
+  });
 
   Map<String, dynamic> toJson() {
     return {
       'deviceShareFactor': deviceShareFactor,
       'backUpShareFactor': backUpShareFactor,
       'socialBackupFactor': socialBackupFactor,
-      'passwordFactor': passwordFactor
+      'passwordFactor': passwordFactor,
+      'passkeysFactor': passkeysFactor,
+      'authenticatorFactor': authenticatorFactor
+    };
+  }
+}
+
+class ChainConfig {
+  final ChainNamespace? chainNamespace;
+  final int decimals;
+  final String? blockExplorerUrl;
+  final String chainId;
+  final String? displayName;
+  final String? logo;
+  final String rpcTarget;
+  final String ticker;
+  final String? tickerName;
+
+  ChainConfig({
+    this.chainNamespace = ChainNamespace.eip155,
+    this.decimals = 18,
+    this.blockExplorerUrl,
+    required this.chainId,
+    this.displayName,
+    this.logo,
+    required this.rpcTarget,
+    required this.ticker,
+    this.tickerName,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'chainNamespace': chainNamespace?.name,
+      'decimals': decimals,
+      'blockExplorerUrl': blockExplorerUrl,
+      'chainId': chainId,
+      'displayName': displayName,
+      'logo': logo,
+      'rpcTarget': rpcTarget,
+      'ticker': ticker,
+      'tickerName': tickerName
     };
   }
 }
@@ -228,6 +276,7 @@ class Web3AuthOptions {
   final Network network;
   final BuildEnv? buildEnv;
   final String? sdkUrl;
+  final String? walletSdkUrl;
   final Uri redirectUrl;
   final WhiteLabelData? whiteLabel;
   final HashMap<String, LoginConfigItem>? loginConfig;
@@ -235,12 +284,14 @@ class Web3AuthOptions {
   final ChainNamespace? chainNamespace;
   final MfaSettings? mfaSettings;
   final int? sessionTime;
+  final ChainConfig? chainConfig;
 
   Web3AuthOptions({
     required this.clientId,
     required this.network,
     this.buildEnv = BuildEnv.production,
     String? sdkUrl,
+    String? walletSdkUrl,
     required this.redirectUrl,
     this.whiteLabel,
     this.loginConfig,
@@ -248,13 +299,18 @@ class Web3AuthOptions {
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 86400,
     this.mfaSettings,
-  }) : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production);
+    this.chainConfig
+  })
+      : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
+        walletSdkUrl =
+            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
       'network': network.name,
       'sdkUrl': sdkUrl,
+      'walletSdkUrl': walletSdkUrl,
       'buildEnv': buildEnv?.name,
       'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
@@ -262,7 +318,8 @@ class Web3AuthOptions {
       'useCoreKitKey': useCoreKitKey,
       'chainNamespace': chainNamespace?.name,
       'mfaSettings': mfaSettings,
-      "sessionTime": sessionTime
+      "sessionTime": sessionTime,
+      "chainConfig": chainConfig?.toJson()
     };
   }
 }
@@ -276,7 +333,7 @@ class UnKnownException implements Exception {
 }
 
 String getSdkUrl(BuildEnv? buildEnv) {
-  const String version = "v6";
+  const String version = "v7";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-auth.web3auth.io/$version";
@@ -285,5 +342,18 @@ String getSdkUrl(BuildEnv? buildEnv) {
     case BuildEnv.production:
     default:
       return "https://auth.web3auth.io/$version";
+  }
+}
+
+String getWalletSdkUrl(BuildEnv? buildEnv) {
+  const String walletServicesVersion = "v1";
+  switch (buildEnv) {
+    case BuildEnv.staging:
+      return "https://staging-wallet.web3auth.io/$walletServicesVersion";
+    case BuildEnv.testing:
+      return "https://develop-wallet.web3auth.io";
+    case BuildEnv.production:
+    default:
+      return "https://wallet.web3auth.io/$walletServicesVersion";
   }
 }
