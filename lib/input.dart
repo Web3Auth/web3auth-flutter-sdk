@@ -7,7 +7,9 @@ class LoginParams {
   /// [loginProvider] sets the oAuth login method to be used. You can use any of the
   /// valid [Provider] from the supported list.
   final Provider loginProvider;
-
+  
+  /// Custom verifier logins can get a dapp share returned to them post successful login. 
+  /// This is useful if the dapps want to use this share to allow users to login seamlessly. 
   final String? dappShare;
 
   /// [curve] will be used to determine the public key encoded in the jwt token which returned in
@@ -167,7 +169,7 @@ class ExtraLoginOptions {
   /// `fr-CA fr en`.
   final String? ui_locales;
 
-  /// [id_token_hint] denoates the previously issued ID token.
+  /// [id_token_hint] denotes the previously issued ID token.
   final String? id_token_hint;
 
   final String? id_token;
@@ -176,10 +178,22 @@ class ExtraLoginOptions {
   final String? login_hint;
 
   final String? acr_values;
+
+  /// The default scope to be used on authentication requests. The defaultScope 
+  /// defined in the Auth0Client is included along with this scope.
   final String? scope;
+
+  /// The audience, presented as the aud claim in the access token,
+  /// defines the intended consumer of the token.
   final String? audience;
+
+  /// The name of the connection configured for your application. If null, it will redirect to 
+  /// the Auth0 Login Page and show the Login Widget.
   final String? connection;
-  final String? state;
+
+ final String? state;
+
+  /// Defines which grant to execute for the authorization server.
   final String? response_type;
   final String? nonce;
 
@@ -353,7 +367,9 @@ class Web3AuthOptions {
   /// User [Network.sapphire_mainnet] for production build.
   final Network network;
 
-  ///
+  /// [buildEnv] is used for internal testing purposes. This buildEnv
+  /// signifies the enviroment for Web3Auth, and doesn't signifies 
+  /// the enviorment of the application. 
   final BuildEnv? buildEnv;
 
   /// Define the desired Web3Auth service url.
