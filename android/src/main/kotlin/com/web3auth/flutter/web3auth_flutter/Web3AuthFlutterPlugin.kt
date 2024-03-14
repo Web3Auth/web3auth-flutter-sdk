@@ -7,6 +7,9 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.NonNull
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import com.web3auth.core.Web3Auth
 import com.web3auth.core.types.*
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -19,8 +22,8 @@ import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
 import org.json.JSONObject
-
 
 class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     PluginRegistry.NewIntentListener {
@@ -183,6 +186,19 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
+            "getSignResponse" -> {
+                try {
+                    val signMsgResult = Web3Auth.getSignResponse()
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getSignResponse")
+                    if (signMsgResult == null) {
+                        throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
+                    }
+                    return gson.toJson(signMsgResult)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
             "launchWalletServices" -> {
                 try {
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
@@ -216,12 +232,49 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     throw Error(e)
                 }
             }
+
+            "signMessage" -> {
+                try {
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
+                    val signArgs = call.arguments<String>() ?: return null
+                    val signParams = gson.fromJson(signArgs, SignMessageJson::class.java)
+                    Log.d(signParams.toString(), "#signParams")
+                    val signMessageCF = web3auth.signMessage(loginParams = signParams.loginParams,
+                        method = signParams.method, requestParams = convertListToJsonArray(signParams.requestParams) ,path = signParams.path)
+                    signMessageCF.get()
+                    return null
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
         }
         throw NotImplementedError()
+    }
+
+    private fun convertListToJsonArray(list: List<Any?>): JsonArray {
+        val jsonArray = JsonArray()
+        list.forEach { item ->
+            val jsonElement: JsonElement = when (item) {
+                is String -> JsonPrimitive(item)
+                is Number -> JsonPrimitive(item)
+                is Boolean -> JsonPrimitive(item)
+                else -> throw IllegalArgumentException("Unsupported type: ${item?.javaClass}")
+            }
+            jsonArray.add(jsonElement)
+        }
+        return jsonArray
     }
 }
 data class WalletServicesJson(
     val loginParams: LoginParams,
     val chainConfig: ChainConfig,
     val path: String? = "wallet"
+)
+data class SignMessageJson(
+    val loginParams: LoginParams,
+    val method: String,
+    val requestParams: List<Any?>,
+    val path: String? = "wallet/request"
 )

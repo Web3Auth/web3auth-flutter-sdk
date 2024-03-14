@@ -160,6 +160,49 @@ class Web3AuthFlutter {
     }
   }
 
+  static Future<void> signMessage(LoginParams loginParams, String method, List<dynamic> requestParams, {String path = "wallet/request"}) async {
+    try {
+      Map<String, dynamic> loginParamsJson = loginParams.toJson();
+      loginParamsJson.removeWhere((key, value) => value == null);
+
+      Map<String, dynamic> signMessageJson = {};
+      signMessageJson["loginParams"] = loginParamsJson;
+      signMessageJson["method"] = method;
+      signMessageJson["requestParams"] = requestParams;
+      signMessageJson["path"] = path;
+
+      await _channel.invokeMethod(
+          'signMessage', jsonEncode(signMessageJson));
+      return;
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  static Future<SignResponse> getSignResponse() async {
+    try {
+      final String signMsgResponse =
+      await _channel.invokeMethod('getSignResponse', jsonEncode({}));
+      return SignResponse.fromJson(jsonDecode(signMsgResponse));
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "UserCancelledException":
+          throw UserCancelledException();
+        case "NoAllowedBrowserFoundException":
+          throw UnKnownException(e.message);
+        default:
+          rethrow;
+      }
+    }
+  }
+
   static Future<Web3AuthResponse> getWeb3AuthResponse() async {
     try {
       final String web3AuthResponse =

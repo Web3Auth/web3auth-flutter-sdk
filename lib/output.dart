@@ -150,3 +150,33 @@ class TorusUserInfo {
         oAuthAccessToken = json['oAuthAccessToken'],
         isMfaEnabled = json['isMfaEnabled'];
 }
+
+class SignResponse {
+  final bool success;
+  final String? result;
+  final String? error;
+
+  SignResponse({
+    required this.success,
+    this.result,
+    this.error,
+  });
+
+  @override
+  String toString() {
+    return "{success=$success, result = $result, error=$error}";
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'result': result,
+      'error': error
+    };
+  }
+
+  SignResponse.fromJson(Map<String, dynamic> json)
+      : success = json['success'],
+        result = json['result'],
+        error = json['error'];
+}
