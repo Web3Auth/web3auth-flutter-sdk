@@ -365,7 +365,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         params.add("Hello, Web3Auth from Flutter!");
         params.add(address.hexEip55);
         params.add("Web3Auth");
-        await Web3AuthFlutter.signMessage(
+        await Web3AuthFlutter.request(
             LoginParams(loginProvider: Provider.google), "personal_sign", params);
       } on UserCancelledException {
         print("User cancelled.");

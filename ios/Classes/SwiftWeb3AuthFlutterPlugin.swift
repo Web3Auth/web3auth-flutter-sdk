@@ -184,25 +184,25 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
             case "signMessage":
-                let signMsgParams: SignMessageJson
+                let reqParams: RequestJson
                     do {
-                        signMsgParams = try decoder.decode(SignMessageJson.self, from: data)
+                        reqParams = try decoder.decode(RequestJson.self, from: data)
                         } catch {
                         result(FlutterError(
                             code: "INVALID_ARGUMENTS",
-                            message: "Invalid Sign Message Params",
+                            message: "Invalid request Params",
                             details: nil))
                             return
                         }
                     var resultMap: String = ""
                     do {
-                        try await web3auth?.signMessage(signMsgParams.loginParams, signMsgParams.method, signMsgParams.requestParams, signMsgParams.path)
+                        try await web3auth?.request(reqParams.loginParams, reqParams.method, reqParams.requestParams, reqParams.path)
                         result(nil)
                         return
                     } catch {
                         result(FlutterError(
-                            code: "MessageSigningFailedFailedException",
-                            message: "Web3Auth sign message launch failed",
+                            code: "RequestFailedFailedException",
+                            message: "Web3Auth request launch failed",
                             details: error.localizedDescription))
                             return
                     }
@@ -284,7 +284,7 @@ struct WalletServicesParams: Codable {
     }
 }
 
-struct SignMessageJson: Codable {
+struct RequestJson: Codable {
     let loginParams: LoginParams
     let method: String
     let requestParams: [Any?]

@@ -233,15 +233,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "signMessage" -> {
+            "request" -> {
                 try {
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
-                    val signArgs = call.arguments<String>() ?: return null
-                    val signParams = gson.fromJson(signArgs, SignMessageJson::class.java)
-                    Log.d(signParams.toString(), "#signParams")
-                    val signMessageCF = web3auth.signMessage(loginParams = signParams.loginParams,
-                        method = signParams.method, requestParams = convertListToJsonArray(signParams.requestParams) ,path = signParams.path)
-                    signMessageCF.get()
+                    val requestArgs = call.arguments<String>() ?: return null
+                    val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
+                    Log.d(reqParams.toString(), "#reqParams")
+                    val requestCF = web3auth.request(loginParams = reqParams.loginParams,
+                        method = reqParams.method, requestParams = convertListToJsonArray(reqParams.requestParams) ,path = reqParams.path)
+                    requestCF.get()
                     return null
                 } catch (e: NotImplementedError) {
                     throw Error(e)
@@ -272,7 +272,7 @@ data class WalletServicesJson(
     val chainConfig: ChainConfig,
     val path: String? = "wallet"
 )
-data class SignMessageJson(
+data class RequestJson(
     val loginParams: LoginParams,
     val method: String,
     val requestParams: List<Any?>,

@@ -160,19 +160,19 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> signMessage(LoginParams loginParams, String method, List<dynamic> requestParams, {String path = "wallet/request"}) async {
+  static Future<void> request(LoginParams loginParams, String method, List<dynamic> requestParams, {String path = "wallet/request"}) async {
     try {
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
       loginParamsJson.removeWhere((key, value) => value == null);
 
-      Map<String, dynamic> signMessageJson = {};
-      signMessageJson["loginParams"] = loginParamsJson;
-      signMessageJson["method"] = method;
-      signMessageJson["requestParams"] = requestParams;
-      signMessageJson["path"] = path;
+      Map<String, dynamic> requestJson = {};
+      requestJson["loginParams"] = loginParamsJson;
+      requestJson["method"] = method;
+      requestJson["requestParams"] = requestParams;
+      requestJson["path"] = path;
 
       await _channel.invokeMethod(
-          'signMessage', jsonEncode(signMessageJson));
+          'request', jsonEncode(requestJson));
       return;
     } on PlatformException catch (e) {
       switch (e.code) {
