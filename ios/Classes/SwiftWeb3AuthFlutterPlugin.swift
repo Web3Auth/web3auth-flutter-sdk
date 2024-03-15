@@ -151,7 +151,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 var resultMap: String = ""
                 do {
-                    try await web3auth?.launchWalletServices(wsParams.loginParams)
+                    try await web3auth?.launchWalletServices(wsParams.loginParams, wsParams.chainConfig, wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -183,6 +183,29 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: ""))
                     return
                 }
+            case "signMessage":
+                let signMsgParams: SignMessageJson
+                    do {
+                        signMsgParams = try decoder.decode(SignMessageJson.self, from: data)
+                        } catch {
+                        result(FlutterError(
+                            code: "INVALID_ARGUMENTS",
+                            message: "Invalid Sign Message Params",
+                            details: nil))
+                            return
+                        }
+                    var resultMap: String = ""
+                    do {
+                        try await web3auth?.signMessage(signMsgParams.loginParams, signMsgParams.method, signMsgParams.requestParams, signMsgParams.path)
+                        result(nil)
+                        return
+                    } catch {
+                        result(FlutterError(
+                            code: "MessageSigningFailedFailedException",
+                            message: "Web3Auth sign message launch failed",
+                            details: error.localizedDescription))
+                            return
+                    }
             case "getUserInfo":
                 var resultMap: String = ""
                 do {
@@ -217,6 +240,23 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 result(resultMap)
                 return
 
+            case "getSignResponse":
+                var resultMap: String = ""
+                do {
+                    let signResponse = try Web3Auth?.getSignResponse()
+                    let resultData = try encoder.encode(signResponse)
+                    resultMap = String(decoding: resultData, as: UTF8.self)
+                } catch {
+                    result(FlutterError(
+                        code: "GetSignResponseFailedException",
+                        message: "Web3Auth getSignResponse failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+                result(resultMap)
+                return
+
             default:
                 result(FlutterMethodNotImplemented)
             }
@@ -242,4 +282,26 @@ struct WalletServicesParams: Codable {
                            rpcTarget: "", ticker: "ETH")
         path = try values.decodeIfPresent(String.self, forKey: .path)
     }
+}
+
+struct SignMessageJson: Codable {
+    let loginParams: LoginParams
+    let method: String
+    let requestParams: [Any?]
+    let path: String?
+
+    init(loginParams: LoginParams, method: String, requestParams: [Any?], path: String? = "wallet/request") {
+        self.loginParams = loginParams
+        self.method = method
+        self.requestParams = requestParams
+        self.path = path
+    }
+
+     public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        loginParams = try values.decodeIfPresent(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
+        method = try values.decodeIfPresent(String.self, forKey: .method)
+        requestParams = try values.decodeIfPresent([Any?].self, forKey: .requestParams)
+        path = try values.decodeIfPresent(String.self, forKey: .path)
+     }
 }
