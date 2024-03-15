@@ -43,9 +43,30 @@ enum TypeOfLogin {
   jwt
 }
 
-enum Display { page, popup, touch, wap }
+enum Display {
+  /// Displays the UI with a full page view.
+  page,
 
-enum MFALevel { DEFAULT, OPTIONAL, MANDATORY, NONE }
+  /// Displays the UI with a popup window.
+  popup,
+
+  /// Displays the UI in a way that leverages a touch interface.
+  touch,
+
+  /// Displays the UI with a "feature phone" type interface.
+  wap,
+}
+
+enum MFALevel {
+  /// Presents the MFA screen every third login.
+  DEFAULT,
+  /// Presents the MFA screen on every login, but user can skip it.
+  OPTIONAL,
+  /// Make it mandatory for users to set up MFA after login.
+  MANDATORY,
+  /// Skips the MFA setup screen.
+  NONE,
+}
 
 extension MFALevelExtension on MFALevel {
   String get type {
@@ -64,6 +85,18 @@ extension MFALevelExtension on MFALevel {
   }
 }
 
-enum Prompt { none, login, consent, select_account }
+enum Prompt {
+  /// Do not prompt user for login or consent on re-authentication.
+  none,
+
+  /// Prompt user for re-authentication.
+  login,
+
+  /// Prompt user for consent before processing request.
+  consent,
+
+  /// Prompt user to select an account.
+  select_account,
+}
 
 enum Curve { secp256k1, ed25519 }
