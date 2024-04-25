@@ -152,7 +152,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 var resultMap: String = ""
                 do {
-                    try await web3auth?.launchWalletServices(wsParams.loginParams, wsParams.chainConfig, wsParams.path)
+                    try await web3auth?.launchWalletServices(wsParams.loginParams, path: wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -197,7 +197,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         }
                     var resultMap: String = ""
                     do {
-                        try await web3auth?.request(reqParams.loginParams, reqParams.method, reqParams.requestParams, reqParams.path)
+                        try await web3auth?.request(reqParams.loginParams, method: reqParams.method, requestParams: reqParams.requestParams, path: reqParams.path)
                         result(nil)
                         return
                     } catch {
@@ -244,7 +244,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
             case "getSignResponse":
                 var resultMap: String = ""
                 do {
-                    let signResponse = try Web3Auth?.getSignResponse()
+                    let signResponse = try Web3Auth.getSignResponse()
                     let resultData = try encoder.encode(signResponse)
                     resultMap = String(decoding: resultData, as: UTF8.self)
                 } catch {
@@ -269,20 +269,6 @@ struct WalletServicesParams: Codable {
     let loginParams: W3ALoginParams
     let chainConfig: ChainConfig
     let path: String?
-
-    public init(loginParams: W3ALoginParams, chainConfig: ChainConfig, path: String? = "wallet") {
-        self.loginParams = loginParams
-        self.chainConfig = chainConfig
-        self.path = path
-    }
-
-    public init(from decoder: Decoder) {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        loginParams = try values.decode(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
-        chainConfig = try values.decode(ChainConfig.self, forKey: .chainConfig) ?? ChainConfig(chainNamespace: ChainNamespace.eip155, chainId: "0x1",
-                           rpcTarget: "", ticker: "ETH")
-        path = try values.decodeIfPresent(String.self, forKey: .path)
-    }
 }
 
 struct RequestJson: Codable {
@@ -290,19 +276,4 @@ struct RequestJson: Codable {
     let method: String
     let requestParams: [String]
     let path: String?
-
-    public init(loginParams: W3ALoginParams, method: String, requestParams: [String], path: String? = "wallet/request") {
-        self.loginParams = loginParams
-        self.method = method
-        self.requestParams = requestParams
-        self.path = path
-    }
-
-     public init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        loginParams = try values.decode(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
-        method = try values.decode(String.self, forKey: .method)
-        requestParams = try values.decode([String].self, forKey: .requestParams)
-        path = try values.decodeIfPresent(String.self, forKey: .path)
-     }
 }
