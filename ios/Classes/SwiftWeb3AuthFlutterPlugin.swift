@@ -142,6 +142,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 let wsParams: WalletServicesParams
                 do {
                     wsParams = try decoder.decode(WalletServicesParams.self, from: data)
+                    print("chainConfig: \(wsParams.chainConfig)")
                 } catch {
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
@@ -275,22 +276,22 @@ struct WalletServicesParams: Codable {
         self.path = path
     }
 
-    public init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        loginParams = try values.decodeIfPresent(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
-        chainConfig = try values.decodeIfPresent(ChainConfig.self, forKey: .chainConfig) ?? ChainConfig(chainNamespace: ChainNamespace.eip155, chainId: "0x1",
+        loginParams = try values.decode(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
+        chainConfig = try values.decode(ChainConfig.self, forKey: .chainConfig) ?? ChainConfig(chainNamespace: ChainNamespace.eip155, chainId: "0x1",
                            rpcTarget: "", ticker: "ETH")
         path = try values.decodeIfPresent(String.self, forKey: .path)
     }
 }
 
 struct RequestJson: Codable {
-    let loginParams: LoginParams
+    let loginParams: W3ALoginParams
     let method: String
-    let requestParams: [Any?]
+    let requestParams: [String]
     let path: String?
 
-    init(loginParams: LoginParams, method: String, requestParams: [Any?], path: String? = "wallet/request") {
+    public init(loginParams: W3ALoginParams, method: String, requestParams: [String], path: String? = "wallet/request") {
         self.loginParams = loginParams
         self.method = method
         self.requestParams = requestParams
@@ -299,9 +300,9 @@ struct RequestJson: Codable {
 
      public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        loginParams = try values.decodeIfPresent(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
-        method = try values.decodeIfPresent(String.self, forKey: .method)
-        requestParams = try values.decodeIfPresent([Any?].self, forKey: .requestParams)
+        loginParams = try values.decode(W3ALoginParams.self, forKey: .loginParams) ?? W3ALoginParams(loginProvider: .GOOGLE)
+        method = try values.decode(String.self, forKey: .method)
+        requestParams = try values.decode([String].self, forKey: .requestParams)
         path = try values.decodeIfPresent(String.self, forKey: .path)
      }
 }
