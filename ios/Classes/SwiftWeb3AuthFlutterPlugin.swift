@@ -64,7 +64,9 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 let loginParams: W3ALoginParams
                 do {
                     loginParams = try decoder.decode(W3ALoginParams.self, from: data)
+                    //print("loginParams: \(loginParams)")
                 } catch {
+                    //print(error)
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
                         message: "Invalid Login Params",
@@ -163,16 +165,6 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                      return
                 }
             case "enableMFA":
-                let loginParams: W3ALoginParams
-                do {
-                    loginParams = try decoder.decode(W3ALoginParams.self, from: data)
-                } catch {
-                    result(FlutterError(
-                        code: "INVALID_ARGUMENTS",
-                        message: "Invalid Login Params",
-                        details: nil))
-                    return
-                }
                 do {
                     let enableMFAResult = try await web3auth?.enableMFA()
                     result(enableMFAResult)
@@ -184,7 +176,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: ""))
                     return
                 }
-            case "signMessage":
+            case "request":
                 let reqParams: RequestJson
                     do {
                         reqParams = try decoder.decode(RequestJson.self, from: data)
