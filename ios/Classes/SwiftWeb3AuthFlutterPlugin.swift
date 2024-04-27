@@ -154,7 +154,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 var resultMap: String = ""
                 do {
-                    try await web3auth?.launchWalletServices(wsParams.loginParams, path: wsParams.path)
+                    try await web3auth?.launchWalletServices(wsParams.loginParams, chainConfig: wsParams.chainConfig, path: wsParams.path)
                     result(nil)
                     return
                 } catch {
