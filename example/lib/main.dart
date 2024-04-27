@@ -95,6 +95,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     await Web3AuthFlutter.initialize();
 
     final String res = await Web3AuthFlutter.getPrivKey();
+    log(res);
     if (res.isNotEmpty) {
       setState(() {
         logoutVisible = true;

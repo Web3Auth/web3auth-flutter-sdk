@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
+
 class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     PluginRegistry.NewIntentListener {
     private lateinit var channel: MethodChannel
