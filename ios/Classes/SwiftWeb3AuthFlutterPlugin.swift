@@ -64,7 +64,9 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 let loginParams: W3ALoginParams
                 do {
                     loginParams = try decoder.decode(W3ALoginParams.self, from: data)
+                    //print("loginParams: \(loginParams)")
                 } catch {
+                    //print(error)
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
                         message: "Invalid Login Params",
@@ -138,6 +140,65 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
+            case "launchWalletServices":
+                let wsParams: WalletServicesParams
+                do {
+                    wsParams = try decoder.decode(WalletServicesParams.self, from: data)
+                    print("chainConfig: \(wsParams.chainConfig)")
+                } catch {
+                    result(FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid Wallet Services Params",
+                        details: nil))
+                        return
+                }
+                var resultMap: String = ""
+                do {
+                    try await web3auth?.launchWalletServices(wsParams.loginParams, chainConfig: wsParams.chainConfig, path: wsParams.path)
+                    result(nil)
+                    return
+                } catch {
+                     result(FlutterError(
+                         code: "WalletServicesFailedFailedException",
+                         message: "Web3Auth wallet services launch failed",
+                         details: error.localizedDescription))
+                     return
+                }
+            case "enableMFA":
+                do {
+                    let enableMFAResult = try await web3auth?.enableMFA()
+                    result(enableMFAResult)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "enableMFAFailedException",
+                        message: "Web3Auth enableMFA failed",
+                        details: ""))
+                    return
+                }
+            case "request":
+                let reqParams: RequestJson
+                    do {
+                        reqParams = try decoder.decode(RequestJson.self, from: data)
+                        } catch {
+                        result(FlutterError(
+                            code: "INVALID_ARGUMENTS",
+                            message: "Invalid request Params",
+                            details: nil))
+                            return
+                        }
+                    var resultMap: String = ""
+                    do {
+                        try await web3auth?.request(reqParams.loginParams, method: reqParams.method, requestParams: reqParams.requestParams, path: reqParams.path)
+                        result(nil)
+                        return
+                    } catch {
+                        result(FlutterError(
+                            code: "RequestFailedFailedException",
+                            message: "Web3Auth request launch failed",
+                            details: error.localizedDescription))
+                            return
+                    }
             case "getUserInfo":
                 var resultMap: String = ""
                 do {
@@ -152,7 +213,41 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     ))
                     return
                 }
-               result(resultMap)
+                result(resultMap)
+                return
+
+            case "getWeb3AuthResponse":
+                var resultMap: String = ""
+                do {
+                    let web3AuthResult = try web3auth?.getWeb3AuthResponse()
+                    let resultData = try encoder.encode(web3AuthResult)
+                    resultMap = String(decoding: resultData, as: UTF8.self)
+                } catch {
+                    result(FlutterError(
+                        code: "GetWeb3AuthResponseFailedException",
+                        message: "Web3Auth getUserInfo failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+                result(resultMap)
+                return
+
+            case "getSignResponse":
+                var resultMap: String = ""
+                do {
+                    let signResponse = try Web3Auth.getSignResponse()
+                    let resultData = try encoder.encode(signResponse)
+                    resultMap = String(decoding: resultData, as: UTF8.self)
+                } catch {
+                    result(FlutterError(
+                        code: "GetSignResponseFailedException",
+                        message: "Web3Auth getSignResponse failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+                result(resultMap)
                 return
 
             default:
@@ -160,4 +255,17 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
             }
         }
     }
+}
+
+struct WalletServicesParams: Codable {
+    let loginParams: W3ALoginParams
+    let chainConfig: ChainConfig
+    let path: String?
+}
+
+struct RequestJson: Codable {
+    let loginParams: W3ALoginParams
+    let method: String
+    let requestParams: [String]
+    let path: String?
 }

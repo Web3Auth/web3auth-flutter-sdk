@@ -7,6 +7,9 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.NonNull
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import com.web3auth.core.Web3Auth
 import com.web3auth.core.types.*
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -19,6 +22,7 @@ import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
 import org.json.JSONObject
 
 
@@ -109,7 +113,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val loginCF = web3auth.login(loginParams)
                     // Log.d(loginParams.toString(), "#loginParams")
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
-                    var loginResult: Web3AuthResponse = loginCF.get()
+                    val loginResult: Web3AuthResponse = loginCF.get()
                     return gson.toJson(loginResult)
                 } catch (e: NotImplementedError) {
                     throw Error(e)
@@ -169,7 +173,109 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 web3auth.setResultUrl(null)
                 return null
             }
+
+            "getWeb3AuthResponse" -> {
+                try {
+                    val web3AuthResult = web3auth.getWeb3AuthResponse()
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getWeb3AuthResponse")
+                    if (web3AuthResult == null) {
+                        throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
+                    }
+                    return gson.toJson(web3AuthResult)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "getSignResponse" -> {
+                try {
+                    val signMsgResult = Web3Auth.getSignResponse()
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getSignResponse")
+                    if (signMsgResult == null) {
+                        throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
+                    }
+                    return gson.toJson(signMsgResult)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "launchWalletServices" -> {
+                try {
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
+                    val wsArgs = call.arguments<String>() ?: return null
+                    val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
+                    Log.d(wsParams.toString(), "#wsParams")
+                    val launchWalletCF = web3auth.launchWalletServices(loginParams = wsParams.loginParams,
+                        chainConfig = wsParams.chainConfig, path = wsParams.path)
+                    launchWalletCF.get()
+                    return null
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "enableMFA" -> {
+                try {
+                    val loginArgs = call.arguments<String>() ?: return null
+                    val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
+                    val obj = JSONObject(loginArgs)
+                    if (obj.has("redirectUrl")) loginParams.redirectUrl =
+                        Uri.parse(obj.get("redirectUrl") as String?)
+                    val setupMfaCF = web3auth.enableMFA(loginParams)
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
+                    return setupMfaCF.get()
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "request" -> {
+                try {
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
+                    val requestArgs = call.arguments<String>() ?: return null
+                    val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
+                    Log.d(reqParams.toString(), "#reqParams")
+                    val requestCF = web3auth.request(loginParams = reqParams.loginParams,
+                        method = reqParams.method, requestParams = convertListToJsonArray(reqParams.requestParams) ,path = reqParams.path)
+                    requestCF.get()
+                    return null
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
         }
         throw NotImplementedError()
     }
+
+    private fun convertListToJsonArray(list: List<Any?>): JsonArray {
+        val jsonArray = JsonArray()
+        list.forEach { item ->
+            val jsonElement: JsonElement = when (item) {
+                is String -> JsonPrimitive(item)
+                is Number -> JsonPrimitive(item)
+                is Boolean -> JsonPrimitive(item)
+                else -> throw IllegalArgumentException("Unsupported type: ${item?.javaClass}")
+            }
+            jsonArray.add(jsonElement)
+        }
+        return jsonArray
+    }
 }
+data class WalletServicesJson(
+    val loginParams: LoginParams,
+    val chainConfig: ChainConfig,
+    val path: String? = "wallet"
+)
+data class RequestJson(
+    val loginParams: LoginParams,
+    val method: String,
+    val requestParams: List<Any?>,
+    val path: String? = "wallet/request"
+)

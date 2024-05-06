@@ -7,9 +7,9 @@ class LoginParams {
   /// [loginProvider] sets the oAuth login method to be used. You can use any of the
   /// valid [Provider] from the supported list.
   final Provider loginProvider;
-  
-  /// Custom verifier logins can get a dapp share returned to them post successful login. 
-  /// This is useful if the dapps want to use this share to allow users to login seamlessly. 
+
+  /// Custom verifier logins can get a dapp share returned to them post successful login.
+  /// This is useful if the dapps want to use this share to allow users to login seamlessly.
   final String? dappShare;
 
   /// [curve] will be used to determine the public key encoded in the jwt token which returned in
@@ -34,6 +34,7 @@ class LoginParams {
 
   /// Customize the MFA screen shown to the user during OAuth authentication.
   final MFALevel? mfaLevel;
+  final String? dappUrl;
 
   LoginParams({
     required this.loginProvider,
@@ -43,6 +44,7 @@ class LoginParams {
     this.redirectUrl,
     this.appState,
     this.mfaLevel,
+    this.dappUrl
   });
 
   Map<String, dynamic> toJson() => {
@@ -53,6 +55,7 @@ class LoginParams {
         "redirectUrl": redirectUrl?.toString(),
         "appState": appState,
         "mfaLevel": mfaLevel?.type,
+        "dappUrl": dappUrl
       };
 }
 
@@ -179,7 +182,7 @@ class ExtraLoginOptions {
 
   final String? acr_values;
 
-  /// The default scope to be used on authentication requests. The defaultScope 
+  /// The default scope to be used on authentication requests. The defaultScope
   /// defined in the Auth0Client is included along with this scope.
   final String? scope;
 
@@ -187,7 +190,7 @@ class ExtraLoginOptions {
   /// defines the intended consumer of the token.
   final String? audience;
 
-  /// The name of the connection configured for your application. If null, it will redirect to 
+  /// The name of the connection configured for your application. If null, it will redirect to
   /// the Auth0 Login Page and show the Login Widget.
   final String? connection;
 
@@ -338,12 +341,16 @@ class MfaSettings {
 
   /// Define the settings for password factor.
   final MfaSetting? passwordFactor;
+  final MfaSetting? passkeysFactor;
+  final MfaSetting? authenticatorFactor;
 
   MfaSettings({
     this.deviceShareFactor,
     this.backUpShareFactor,
     this.socialBackupFactor,
     this.passwordFactor,
+    this.passkeysFactor,
+    this.authenticatorFactor,
   });
 
   Map<String, dynamic> toJson() {
@@ -351,7 +358,47 @@ class MfaSettings {
       'deviceShareFactor': deviceShareFactor,
       'backUpShareFactor': backUpShareFactor,
       'socialBackupFactor': socialBackupFactor,
-      'passwordFactor': passwordFactor
+      'passwordFactor': passwordFactor,
+      'passkeysFactor': passkeysFactor,
+      'authenticatorFactor': authenticatorFactor
+    };
+  }
+}
+
+class ChainConfig {
+  final ChainNamespace? chainNamespace;
+  final int decimals;
+  final String? blockExplorerUrl;
+  final String chainId;
+  final String? displayName;
+  final String? logo;
+  final String rpcTarget;
+  final String ticker;
+  final String? tickerName;
+
+  ChainConfig({
+    this.chainNamespace = ChainNamespace.eip155,
+    this.decimals = 18,
+    this.blockExplorerUrl,
+    required this.chainId,
+    this.displayName,
+    this.logo,
+    required this.rpcTarget,
+    required this.ticker,
+    this.tickerName,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'chainNamespace': chainNamespace?.name,
+      'decimals': decimals,
+      'blockExplorerUrl': blockExplorerUrl,
+      'chainId': chainId,
+      'displayName': displayName,
+      'logo': logo,
+      'rpcTarget': rpcTarget,
+      'ticker': ticker,
+      'tickerName': tickerName
     };
   }
 }
@@ -368,12 +415,13 @@ class Web3AuthOptions {
   final Network network;
 
   /// [buildEnv] is used for internal testing purposes. This buildEnv
-  /// signifies the enviroment for Web3Auth, and doesn't signifies 
-  /// the enviorment of the application. 
+  /// signifies the enviroment for Web3Auth, and doesn't signifies
+  /// the enviorment of the application.
   final BuildEnv? buildEnv;
 
   /// Define the desired Web3Auth service url.
   final String? sdkUrl;
+  final String? walletSdkUrl;
 
   /// Deeplinking for the application where user will be redirected after login.
   /// Ideally, it should be bundleId and package name for iOS and Android respectively.
@@ -405,12 +453,14 @@ class Web3AuthOptions {
   ///
   /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 7 days.
   final int? sessionTime;
+  final ChainConfig? chainConfig;
 
   Web3AuthOptions({
     required this.clientId,
     required this.network,
     this.buildEnv = BuildEnv.production,
     String? sdkUrl,
+    String? walletSdkUrl,
     required this.redirectUrl,
     this.whiteLabel,
     this.loginConfig,
@@ -418,13 +468,18 @@ class Web3AuthOptions {
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 86400,
     this.mfaSettings,
-  }) : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production);
+    this.chainConfig
+  })
+      : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
+        walletSdkUrl =
+            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
       'network': network.name,
       'sdkUrl': sdkUrl,
+      'walletSdkUrl': walletSdkUrl,
       'buildEnv': buildEnv?.name,
       'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
@@ -432,7 +487,8 @@ class Web3AuthOptions {
       'useCoreKitKey': useCoreKitKey,
       'chainNamespace': chainNamespace?.name,
       'mfaSettings': mfaSettings,
-      "sessionTime": sessionTime
+      "sessionTime": sessionTime,
+      "chainConfig": chainConfig?.toJson()
     };
   }
 }
@@ -446,7 +502,7 @@ class UnKnownException implements Exception {
 }
 
 String getSdkUrl(BuildEnv? buildEnv) {
-  const String version = "v6";
+  const String version = "v8";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-auth.web3auth.io/$version";
@@ -455,5 +511,18 @@ String getSdkUrl(BuildEnv? buildEnv) {
     case BuildEnv.production:
     default:
       return "https://auth.web3auth.io/$version";
+  }
+}
+
+String getWalletSdkUrl(BuildEnv? buildEnv) {
+  const String walletServicesVersion = "v1";
+  switch (buildEnv) {
+    case BuildEnv.staging:
+      return "https://staging-wallet.web3auth.io/$walletServicesVersion";
+    case BuildEnv.testing:
+      return "https://develop-wallet.web3auth.io";
+    case BuildEnv.production:
+    default:
+      return "https://wallet.web3auth.io/$walletServicesVersion";
   }
 }
