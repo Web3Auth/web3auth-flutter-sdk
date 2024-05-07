@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:web3auth_flutter/input.dart';
@@ -8,8 +7,6 @@ import 'package:web3auth_flutter/output.dart';
 
 class Web3AuthFlutter {
   static const MethodChannel _channel = MethodChannel('web3auth_flutter');
-
-  static bool _isLoginSuccessful = false;
 
   /// [init] methods helps you setup [Web3AuthFlutter] SDK. You can add
   /// whitelabeling, redirect url, and set other parameters during init.
@@ -28,14 +25,13 @@ class Web3AuthFlutter {
   /// For more details, look into [LoginParams].
   static Future<Web3AuthResponse> login(LoginParams loginParams) async {
     try {
-      _isLoginSuccessful = false;
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
       loginParamsJson.removeWhere((key, value) => value == null);
       final String loginResponse = await _channel.invokeMethod(
         'login',
         jsonEncode(loginParamsJson),
       );
-      _isLoginSuccessful = true;
+      
       return Web3AuthResponse.fromJson(jsonDecode(loginResponse));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
@@ -99,29 +95,6 @@ class Web3AuthFlutter {
       final String torusUserInfo =
           await _channel.invokeMethod('getUserInfo', jsonEncode({}));
       return TorusUserInfo.fromJson(jsonDecode(torusUserInfo));
-    } on PlatformException catch (e) {
-      throw _handlePlatformException(e);
-    }
-  }
-
-  /// [setResultUrl] helps to trigger the [UserCancelledException] exception
-  /// on Android.
-  ///
-  /// The Android SDK uses the custom tabs and from current implementation of chrome custom tab,
-  /// it's not possible to add a listener directly to chrome custom tab close button and
-  /// trigger login exceptions.
-  ///
-  /// If you want to trigger exception for user closing the browser tab, you have to use
-  /// WidgetsBindingObserver mixin with your your login screen.
-  ///
-  /// Please checkout [Flutter SDK reference](https://web3auth.io/docs/sdk/pnp/flutter/usage#setresulturl) to know more.
-  static Future<void> setResultUrl() async {
-    try {
-      await Future.delayed(const Duration(milliseconds: 350));
-      if (Platform.isAndroid && !_isLoginSuccessful) {
-        await _channel.invokeMethod('setResultUrl');
-      }
-      return;
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }

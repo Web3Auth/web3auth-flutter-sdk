@@ -169,11 +169,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "setResultUrl" -> {
-                web3auth.setResultUrl(null)
-                return null
-            }
-
             "getWeb3AuthResponse" -> {
                 try {
                     val web3AuthResult = web3auth.getWeb3AuthResponse()
