@@ -173,7 +173,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(
                         code: "enableMFAFailedException",
                         message: "Web3Auth enableMFA failed",
-                        details: ""))
+                        details: error.localizedDescription))
                     return
                 }
             case "request":
@@ -184,7 +184,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         result(FlutterError(
                             code: "INVALID_ARGUMENTS",
                             message: "Invalid request Params",
-                            details: nil))
+                            details: error.localizedDescription))
                             return
                         }
                     var resultMap: String = ""
