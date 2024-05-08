@@ -365,14 +365,14 @@ class MfaSettings {
 }
 
 class ChainConfig {
-  final ChainNamespace? chainNamespace;
-  final int decimals;
+  final ChainNamespace chainNamespace;
+  final int? decimals;
   final String? blockExplorerUrl;
   final String chainId;
   final String? displayName;
   final String? logo;
   final String rpcTarget;
-  final String ticker;
+  final String? ticker;
   final String? tickerName;
 
   ChainConfig({
@@ -383,13 +383,13 @@ class ChainConfig {
     this.displayName,
     this.logo,
     required this.rpcTarget,
-    required this.ticker,
+    this.ticker,
     this.tickerName,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'chainNamespace': chainNamespace?.name,
+      'chainNamespace': chainNamespace.name,
       'decimals': decimals,
       'blockExplorerUrl': blockExplorerUrl,
       'chainId': chainId,
