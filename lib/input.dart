@@ -373,7 +373,7 @@ class ChainConfig {
   final String? displayName;
   final String? logo;
   final String rpcTarget;
-  final String ticker;
+  final String? ticker;
   final String? tickerName;
 
   ChainConfig({
@@ -384,7 +384,7 @@ class ChainConfig {
     this.displayName,
     this.logo,
     required this.rpcTarget,
-    required this.ticker,
+    this.ticker,
     this.tickerName,
   });
 

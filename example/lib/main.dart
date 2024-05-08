@@ -334,8 +334,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return () async {
       try {
         await Web3AuthFlutter.launchWalletServices(
-            LoginParams(loginProvider: Provider.google), ChainConfig(
-            chainId: "0x1", rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0", ticker: "ETH"));
+            ChainConfig(
+            chainId: "0x1", rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0"));
       } on UserCancelledException {
         print("User cancelled.");
       } on UnKnownException {
