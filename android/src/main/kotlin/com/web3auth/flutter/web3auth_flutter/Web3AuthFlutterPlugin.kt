@@ -201,8 +201,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val wsArgs = call.arguments<String>() ?: return null
                     val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
                     Log.d(wsParams.toString(), "#wsParams")
-                    val launchWalletCF = web3auth.launchWalletServices(loginParams = wsParams.loginParams,
-                        chainConfig = wsParams.chainConfig, path = wsParams.path)
+                    val launchWalletCF = web3auth.launchWalletServices(chainConfig = wsParams.chainConfig, path = wsParams.path)
                     launchWalletCF.get()
                     return null
                 } catch (e: NotImplementedError) {
@@ -264,7 +263,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     }
 }
 data class WalletServicesJson(
-    val loginParams: LoginParams,
     val chainConfig: ChainConfig,
     val path: String? = "wallet"
 )

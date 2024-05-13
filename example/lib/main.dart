@@ -331,9 +331,8 @@ class _MyAppState extends State<MyApp> {
     return () async {
       try {
         await Web3AuthFlutter.launchWalletServices(
-          LoginParams(loginProvider: Provider.google),
           ChainConfig(
-            chainId: "0x1",
+            chainId: "0x89",
             rpcTarget:
                 "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
           ),

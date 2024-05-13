@@ -112,18 +112,14 @@ class Web3AuthFlutter {
   }
 
   static Future<void> launchWalletServices(
-    LoginParams loginParams,
     ChainConfig chainConfig, {
     String path = "wallet",
   }) async {
     try {
-      Map<String, dynamic> loginParamsJson = loginParams.toJson();
-      loginParamsJson.removeWhere((key, value) => value == null);
       Map<String, dynamic> chainConfigJson = chainConfig.toJson();
       chainConfigJson.removeWhere((key, value) => value == null);
 
       Map<String, dynamic> walletServicesJson = {};
-      walletServicesJson["loginParams"] = loginParamsJson;
       walletServicesJson["chainConfig"] = chainConfigJson;
       walletServicesJson["path"] = path;
 
