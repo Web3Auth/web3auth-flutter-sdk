@@ -150,11 +150,16 @@ class _MyAppState extends State<MyApp> {
                             onPressed: _login(_withFacebook),
                             child: const Text('Facebook'),
                           ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: textEditingController,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: textEditingController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "abc@xyz.com",
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 8),
                           ElevatedButton(
                             onPressed: _login(_withEmailPasswordless),
                             child: const Text('Email Passwordless'),
