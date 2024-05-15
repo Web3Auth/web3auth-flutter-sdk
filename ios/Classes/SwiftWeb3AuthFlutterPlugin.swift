@@ -102,44 +102,17 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
             case "initialize":
-                do {
-                    // There is no initialize function in swift
-                    result(nil)
-                    return
-                } catch {
-                    result(FlutterError(
-                        code: "InitializeFailedException",
-                        message: "Web3Auth initialize failed",
-                        details: error.localizedDescription
-                    ))
-                    return
-                }
+                // There is no initialize function in swift
+                result(nil)
+                return
             case "getPrivKey":
-                do {
-                    let privKey = try web3auth?.getPrivkey()
-                    result(privKey)
-                    return
-                } catch {
-                    result(FlutterError(
-                        code: "GetPrivKeyFailedException",
-                        message: "Web3Auth getPrivKey failed",
-                        details: ""
-                    ))
-                    return
-                }
+                let privKey = web3auth?.getPrivkey()
+                result(privKey)
+                return
             case "getEd25519PrivKey":
-                do {
-                    let getEd25519PrivKey = try web3auth?.getEd25519PrivKey()
-                    result(getEd25519PrivKey)
-                    return
-                } catch {
-                    result(FlutterError(
-                        code: "GetEd25519PrivKeyFailedException",
-                        message: "Web3Auth getEd25519PrivKey failed",
-                        details: ""
-                    ))
-                    return
-                }
+                let getEd25519PrivKey = web3auth?.getEd25519PrivKey()
+                result(getEd25519PrivKey)
+                return
             case "launchWalletServices":
                 let wsParams: WalletServicesParams
                 do {
@@ -152,9 +125,9 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: nil))
                         return
                 }
-                var resultMap: String = ""
+                
                 do {
-                    try await web3auth?.launchWalletServices(wsParams.loginParams, chainConfig: wsParams.chainConfig, path: wsParams.path)
+                    try await web3auth?.launchWalletServices(chainConfig: wsParams.chainConfig, path: wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -173,7 +146,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(
                         code: "enableMFAFailedException",
                         message: "Web3Auth enableMFA failed",
-                        details: ""))
+                        details: error.localizedDescription))
                     return
                 }
             case "request":
@@ -184,12 +157,17 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         result(FlutterError(
                             code: "INVALID_ARGUMENTS",
                             message: "Invalid request Params",
-                            details: nil))
+                            details: error.localizedDescription))
                             return
                         }
-                    var resultMap: String = ""
+                
                     do {
-                        try await web3auth?.request(reqParams.loginParams, method: reqParams.method, requestParams: reqParams.requestParams, path: reqParams.path)
+                        try await web3auth?.request(
+                            chainConfig: reqParams.chainConfig,
+                            method: reqParams.method,
+                            requestParams: reqParams.requestParams,
+                            path: reqParams.path
+                        )
                         result(nil)
                         return
                     } catch {
@@ -258,13 +236,12 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
 }
 
 struct WalletServicesParams: Codable {
-    let loginParams: W3ALoginParams
     let chainConfig: ChainConfig
     let path: String?
 }
 
 struct RequestJson: Codable {
-    let loginParams: W3ALoginParams
+    let chainConfig: ChainConfig
     let method: String
     let requestParams: [String]
     let path: String?

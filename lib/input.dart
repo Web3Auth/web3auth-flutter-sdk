@@ -36,16 +36,15 @@ class LoginParams {
   final MFALevel? mfaLevel;
   final String? dappUrl;
 
-  LoginParams({
-    required this.loginProvider,
-    this.dappShare,
-    this.curve = Curve.secp256k1,
-    this.extraLoginOptions,
-    this.redirectUrl,
-    this.appState,
-    this.mfaLevel,
-    this.dappUrl
-  });
+  LoginParams(
+      {required this.loginProvider,
+      this.dappShare,
+      this.curve = Curve.secp256k1,
+      this.extraLoginOptions,
+      this.redirectUrl,
+      this.appState,
+      this.mfaLevel,
+      this.dappUrl});
 
   Map<String, dynamic> toJson() => {
         "loginProvider": loginProvider.name,
@@ -194,7 +193,7 @@ class ExtraLoginOptions {
   /// the Auth0 Login Page and show the Login Widget.
   final String? connection;
 
- final String? state;
+  final String? state;
 
   /// Defines which grant to execute for the authorization server.
   final String? response_type;
@@ -366,14 +365,14 @@ class MfaSettings {
 }
 
 class ChainConfig {
-  final ChainNamespace? chainNamespace;
-  final int decimals;
+  final ChainNamespace chainNamespace;
+  final int? decimals;
   final String? blockExplorerUrl;
   final String chainId;
   final String? displayName;
   final String? logo;
   final String rpcTarget;
-  final String ticker;
+  final String? ticker;
   final String? tickerName;
 
   ChainConfig({
@@ -384,13 +383,13 @@ class ChainConfig {
     this.displayName,
     this.logo,
     required this.rpcTarget,
-    required this.ticker,
+    this.ticker,
     this.tickerName,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'chainNamespace': chainNamespace?.name,
+      'chainNamespace': chainNamespace.name,
       'decimals': decimals,
       'blockExplorerUrl': blockExplorerUrl,
       'chainId': chainId,
@@ -453,6 +452,7 @@ class Web3AuthOptions {
   ///
   /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 7 days.
   final int? sessionTime;
+
   final ChainConfig? chainConfig;
 
   Web3AuthOptions({
@@ -468,9 +468,8 @@ class Web3AuthOptions {
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 86400,
     this.mfaSettings,
-    this.chainConfig
-  })
-      : sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
+  })  : chainConfig = null,
+        sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
         walletSdkUrl =
             walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
 
@@ -515,7 +514,7 @@ String getSdkUrl(BuildEnv? buildEnv) {
 }
 
 String getWalletSdkUrl(BuildEnv? buildEnv) {
-  const String walletServicesVersion = "v1";
+  const String walletServicesVersion = "v2";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-wallet.web3auth.io/$walletServicesVersion";
