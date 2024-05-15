@@ -42,7 +42,9 @@ enum TypeOfLogin {
   line,
   email_passwordless,
   email_password,
-  jwt
+  jwt,
+  sms_passwordless,
+  farcaster,
 }
 
 enum Display {
