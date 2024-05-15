@@ -24,11 +24,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _result = '';
   bool logoutVisible = false;
+  late final TextEditingController textEditingController;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
+    textEditingController = TextEditingController();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -147,6 +149,16 @@ class _MyAppState extends State<MyApp> {
                           ElevatedButton(
                             onPressed: _login(_withFacebook),
                             child: const Text('Facebook'),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextField(
+                              controller: textEditingController,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "abc@xyz.com",
+                              ),
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: _login(_withEmailPasswordless),
@@ -308,7 +320,7 @@ class _MyAppState extends State<MyApp> {
       LoginParams(
         loginProvider: Provider.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
-          login_hint: "ayush@tor.us",
+          login_hint: textEditingController.text,
         ),
       ),
     );
