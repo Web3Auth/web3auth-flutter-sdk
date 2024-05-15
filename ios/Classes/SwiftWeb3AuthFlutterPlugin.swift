@@ -162,7 +162,12 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         }
                 
                     do {
-                        try await web3auth?.request(reqParams.loginParams, method: reqParams.method, requestParams: reqParams.requestParams, path: reqParams.path)
+                        try await web3auth?.request(
+                            chainConfig: reqParams.chainConfig,
+                            method: reqParams.method,
+                            requestParams: reqParams.requestParams,
+                            path: reqParams.path
+                        )
                         result(nil)
                         return
                     } catch {
@@ -236,7 +241,7 @@ struct WalletServicesParams: Codable {
 }
 
 struct RequestJson: Codable {
-    let loginParams: W3ALoginParams
+    let chainConfig: ChainConfig
     let method: String
     let requestParams: [String]
     let path: String?

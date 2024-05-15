@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/input.dart';
 import 'package:web3auth_flutter/output.dart';
@@ -368,7 +367,7 @@ class _MyAppState extends State<MyApp> {
         params.add(address.hexEip55);
         params.add("Web3Auth");
         await Web3AuthFlutter.request(
-          LoginParams(loginProvider: Provider.google),
+          ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
           "personal_sign",
           params,
         );

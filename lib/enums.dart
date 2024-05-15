@@ -21,7 +21,9 @@ enum Provider {
   line,
   kakao,
   email_passwordless,
-  jwt
+  jwt,
+  sms_passwordless,
+  farcaster,
 }
 
 enum TypeOfLogin {

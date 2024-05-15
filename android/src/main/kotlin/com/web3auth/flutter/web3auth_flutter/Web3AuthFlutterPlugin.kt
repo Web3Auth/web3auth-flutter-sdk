@@ -234,8 +234,12 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val requestArgs = call.arguments<String>() ?: return null
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
-                    val requestCF = web3auth.request(loginParams = reqParams.loginParams,
-                        method = reqParams.method, requestParams = convertListToJsonArray(reqParams.requestParams) ,path = reqParams.path)
+                    val requestCF = web3auth.request(
+                        chainConfig = reqParams.chainConfig,
+                        method = reqParams.method,
+                        requestParams = convertListToJsonArray(reqParams.requestParams) ,
+                        path = reqParams.path
+                    )
                     requestCF.get()
                     return null
                 } catch (e: NotImplementedError) {
@@ -267,7 +271,7 @@ data class WalletServicesJson(
     val path: String? = "wallet"
 )
 data class RequestJson(
-    val loginParams: LoginParams,
+    val chainConfig: ChainConfig,
     val method: String,
     val requestParams: List<Any?>,
     val path: String? = "wallet/request"
