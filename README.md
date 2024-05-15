@@ -22,7 +22,7 @@ Checkout the official [Web3Auth Documentation](https://web3auth.io/docs) and [SD
 
 ## ⏪ Requirements
 
-- For iOS, only iOS 12+ supported since we requires ASWebAuthenticationSession.
+- For iOS, only iOS 14+ supported since we requires ASWebAuthenticationSession.
   - Xcode 11.4+ / 12.x
   - Swift 4.x / 5.x
   - For iOS build: `platform :ios` needs to be `14.0`. Check `ios/Podfile` in
@@ -37,7 +37,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^3.1.6
+  web3auth_flutter: ^4.0.0
 ```
 
 or
@@ -50,24 +50,6 @@ flutter pub add web3auth_flutter
 
 Checkout [SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter/install) to configure for Android and iOS
 builds.
-
-#### Register the URL scheme you intended to use for redirection
-
-- Android `AndroidManifest.xml` (required)
-
-  ```xml
-  <intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-
-    <data android:scheme="{scheme}" android:host="{YOUR_APP_PACKAGE_NAME}" android:path="/auth" />
-    <!-- Accept URIs: w3a://com.example.w3aflutter/auth -->
-  </intent-filter>
-  ```
-
-- iOS `Info.plist` (optional)
 
 ## 🩹 Example
 
@@ -124,55 +106,6 @@ await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
 
 // Logout
 await Web3AuthFlutter.logout();
-```
-
-## Triggering UserCancellation on Android
-
-On Android, if you want to trigger exception for user closing the browser tab, you have to use
-`WidgetsBindingObserver` mixin with your your login screen.
-
-```dart
-class LoginScreen extends State<MyApp> with WidgetsBindingObserver {
- 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(final AppLifecycleState state) {
-    // This is important to trigger the user cancellation on Android.
-    if (state == AppLifecycleState.resumed) {
-      Web3AuthFlutter.setResultUrl();
-    }
-  }
-  
-   @override
-  Widget build(BuildContext context) { 
-    // Your UI code
-  }
-
-  Future<void> _login() async {
-    try {
-      await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
-    } on UserCancelledException {
-        log("User cancelled.");
-    } on UnKnownException {
-        log("Unknown exception occurred");
-    } catch (e) {
-        log(e.toString());
-    }
-  }
-
-}
-
 ```
 
 ## 🩹 Custom JWT - Example
