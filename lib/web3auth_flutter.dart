@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:web3auth_flutter/input.dart';
@@ -95,6 +96,27 @@ class Web3AuthFlutter {
       final String torusUserInfo =
           await _channel.invokeMethod('getUserInfo', jsonEncode({}));
       return TorusUserInfo.fromJson(jsonDecode(torusUserInfo));
+    } on PlatformException catch (e) {
+      throw _handlePlatformException(e);
+    }
+  }
+  
+  /// [setCustomTabsClosed] helps to trigger the [UserCancelledException] exception
+  /// on Android.
+  ///
+  /// The Android SDK uses the custom tabs and from current implementation of chrome custom tab,
+  /// it's not possible to add a listener directly to chrome custom tab close button and
+  /// trigger login exceptions.
+  ///
+  /// If you want to trigger exception for user closing the browser tab, you have to use
+  /// WidgetsBindingObserver mixin with your your login screen, and call the method during 
+  /// [AppLifecycleState.resumed].
+  static Future<void> setCustomTabsClosed() async {
+    try {
+      if (Platform.isAndroid) {
+        await _channel.invokeMethod('setCustomTabsClosed');
+      }
+      return;
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }

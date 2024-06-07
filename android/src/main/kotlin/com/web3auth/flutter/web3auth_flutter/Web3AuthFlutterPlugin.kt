@@ -228,19 +228,33 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
+            "setCustomTabsClosed" -> {
+                try {
+                    if (Web3Auth.getCustomTabsClosed()) {
+                        web3auth.setResultUrl(null)
+                        Web3Auth.setCustomTabsClosed(false)
+                    }
+                    return null
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
             "request" -> {
                 try {
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
                     val requestArgs = call.arguments<String>() ?: return null
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
-                    val requestCF = web3auth.request(
-                        chainConfig = reqParams.chainConfig,
-                        method = reqParams.method,
-                        requestParams = convertListToJsonArray(reqParams.requestParams) ,
-                        path = reqParams.path
-                    )
-                    requestCF.get()
+//                    val requestCF = web3auth.request(
+//                        chainConfig = reqParams.chainConfig,
+//                        method = reqParams.method,
+//                        requestParams = convertListToJsonArray(reqParams.requestParams) ,
+//                        path = reqParams.path
+//                    )
+//                    requestCF.get()
                     return null
                 } catch (e: NotImplementedError) {
                     throw Error(e)

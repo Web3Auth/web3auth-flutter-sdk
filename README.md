@@ -180,6 +180,50 @@ await Web3AuthFlutter.logout();
 
 ```
 
+## Triggering UserCancellation on Android
+
+On Android, if you want to trigger exception for user closing the browser tab, you have to use
+`WidgetsBindingObserver` mixin with your your login screen.
+
+```dart
+class LoginScreen extends State<MyApp> with WidgetsBindingObserver {
+ 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+  @override
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
+    // This is important to trigger the user cancellation on Android.
+    if (state == AppLifecycleState.resumed) {
+      Web3AuthFlutter.setCustomTabsClosed();
+    }
+  }
+  
+   @override
+  Widget build(BuildContext context) { 
+    // Your UI code
+  }
+  Future<void> _login() async {
+    try {
+      await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
+    } on UserCancelledException {
+        log("User cancelled.");
+    } on UnKnownException {
+        log("Unknown exception occurred");
+    } catch (e) {
+        log(e.toString());
+    }
+  }
+}
+```
+
 ## 🌐 Demo
 
 Checkout the [Web3Auth Demo](https://demo-app.web3auth.io/) to see how Web3Auth can be used in an application.
