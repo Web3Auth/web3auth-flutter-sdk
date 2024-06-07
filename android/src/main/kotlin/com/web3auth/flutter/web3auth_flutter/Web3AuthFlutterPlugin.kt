@@ -248,13 +248,13 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val requestArgs = call.arguments<String>() ?: return null
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
-//                    val requestCF = web3auth.request(
-//                        chainConfig = reqParams.chainConfig,
-//                        method = reqParams.method,
-//                        requestParams = convertListToJsonArray(reqParams.requestParams) ,
-//                        path = reqParams.path
-//                    )
-//                    requestCF.get()
+                    val requestCF = web3auth.request(
+                        chainConfig = reqParams.chainConfig,
+                        method = reqParams.method,
+                        requestParams = convertListToJsonArray(reqParams.requestParams) ,
+                        path = reqParams.path
+                    )
+                    requestCF.get()
                     return null
                 } catch (e: NotImplementedError) {
                     throw Error(e)
