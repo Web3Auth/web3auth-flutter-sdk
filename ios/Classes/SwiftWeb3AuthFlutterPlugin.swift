@@ -48,7 +48,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: data))
                     return
                 }
-                let web3auth = await Web3Auth(initParams)
+                let web3auth = try await Web3Auth(initParams)
                 self.web3auth = web3auth
                 result(nil)
                 return
