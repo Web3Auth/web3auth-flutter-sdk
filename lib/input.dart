@@ -455,6 +455,8 @@ class Web3AuthOptions {
 
   final ChainConfig? chainConfig;
 
+  final Map<String, String>? originData;
+
   Web3AuthOptions({
     required this.clientId,
     required this.network,
@@ -468,6 +470,7 @@ class Web3AuthOptions {
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 86400,
     this.mfaSettings,
+    this.originData
   })  : chainConfig = null,
         sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
         walletSdkUrl =
@@ -487,7 +490,8 @@ class Web3AuthOptions {
       'chainNamespace': chainNamespace?.name,
       'mfaSettings': mfaSettings,
       "sessionTime": sessionTime,
-      "chainConfig": chainConfig?.toJson()
+      "chainConfig": chainConfig?.toJson(),
+      "originData": originData
     };
   }
 }
