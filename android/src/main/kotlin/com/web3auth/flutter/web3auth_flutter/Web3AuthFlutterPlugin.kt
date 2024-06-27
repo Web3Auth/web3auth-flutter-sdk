@@ -228,6 +228,20 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
+            "setCustomTabsClosed" -> {
+                try {
+                    if (Web3Auth.getCustomTabsClosed()) {
+                        web3auth.setResultUrl(null)
+                        Web3Auth.setCustomTabsClosed(false)
+                    }
+                    return null
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
             "request" -> {
                 try {
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
