@@ -48,10 +48,18 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: data))
                     return
                 }
-                let web3auth = await Web3Auth(initParams)
-                self.web3auth = web3auth
-                result(nil)
-                return
+                do {
+                    let web3auth = try await Web3Auth(initParams)
+                    self.web3auth = web3auth
+                    result(nil)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "InitFailedException",
+                        message: "Web3Auth init failed",
+                        details: error.localizedDescription))
+                    return
+                }
             case "login":
                 guard let web3auth = web3auth
                 else {
