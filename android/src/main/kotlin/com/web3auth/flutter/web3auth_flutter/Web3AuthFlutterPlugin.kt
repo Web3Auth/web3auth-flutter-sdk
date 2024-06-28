@@ -78,7 +78,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 launch(Dispatchers.Main) { result.notImplemented() }
             } catch (e: Throwable) {
                 launch(Dispatchers.Main) {
-                    result.error("error", e.message, e.localizedMessage)
+                    if(e.message == "User Cancelled") {
+                        result.error("UserCancelledException", e.message, e.localizedMessage)
+                    } else {
+                        result.error("error", e.message, e.localizedMessage)
+                    }
                 }
             }
         }
@@ -118,7 +122,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 } catch (e: NotImplementedError) {
                     throw Error(e)
                 } catch (e: Throwable) {
-                    throw Error(e)
+                    throw Error("User Cancelled")
                 }
             }
 
