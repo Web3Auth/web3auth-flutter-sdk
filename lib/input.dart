@@ -293,7 +293,7 @@ class WhiteLabelData {
     this.mode = ThemeModes.auto,
     this.theme,
     this.appUrl,
-    this.useLogoLoader,
+    this.useLogoLoader = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -470,7 +470,7 @@ class Web3AuthOptions {
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 86400,
     this.mfaSettings,
-    this.originData
+    this.originData,
   })  : chainConfig = null,
         sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
         walletSdkUrl =
