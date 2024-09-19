@@ -96,10 +96,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
                 if (obj.has("redirectUrl")) initParams.redirectUrl = Uri.parse(obj.get("redirectUrl") as String?)
-                initParams.context = activity!!
+                //initParams.context = activity!!
                 // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
-                    initParams
+                    initParams, activity!!
                 )
 
                 web3auth.setResultUrl(activity?.intent?.data)
@@ -262,6 +262,19 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     return null
                 } catch (e: NotImplementedError) {
                     throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "isSessionIdExists" -> {
+                try {
+                    val result = web3auth.isSessionIdExists()
+                    Log.d(
+                        "${Web3AuthFlutterPlugin::class.qualifiedName}",
+                        "#isSessionIdExists"
+                    )
+                    return result
                 } catch (e: Throwable) {
                     throw Error(e)
                 }
