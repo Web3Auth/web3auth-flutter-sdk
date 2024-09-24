@@ -199,15 +199,6 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<bool> isSessionIdExists() async {
-    try {
-      bool response = await _channel.invokeMethod('isSessionIdExists');
-      return response;
-    } on PlatformException catch (e) {
-      throw _handlePlatformException(e);
-    }
-  }
-
   static Future<SignResponse> getSignResponse() async {
     try {
       final String signMsgResponse = await _channel.invokeMethod(

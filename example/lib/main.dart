@@ -89,9 +89,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
     );
 
-    if (await Web3AuthFlutter.isSessionIdExists()) {
-      await Web3AuthFlutter.initialize();
-    }
+    await Web3AuthFlutter.initialize();
 
     final String res = await Web3AuthFlutter.getPrivKey();
     log(res);
