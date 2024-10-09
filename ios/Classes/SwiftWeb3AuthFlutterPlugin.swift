@@ -253,4 +253,5 @@ struct RequestJson: Codable {
     let method: String
     let requestParams: [String]
     let path: String?
+    let appState: String?
 }

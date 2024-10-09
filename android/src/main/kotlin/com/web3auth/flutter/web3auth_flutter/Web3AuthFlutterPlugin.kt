@@ -260,6 +260,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                         method = reqParams.method,
                         requestParams = convertListToJsonArray(reqParams.requestParams) ,
                         path = reqParams.path,
+                        appState = reqParams.appState,
                         context = activity!!
                     )
                     requestCF.get()
@@ -296,5 +297,6 @@ data class RequestJson(
     val chainConfig: ChainConfig,
     val method: String,
     val requestParams: List<Any?>,
-    val path: String? = "wallet/request"
+    val path: String? = "wallet/request",
+    val appState: String? = null
 )

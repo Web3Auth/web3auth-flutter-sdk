@@ -181,6 +181,7 @@ class Web3AuthFlutter {
     String method,
     List<dynamic> requestParams, {
     String path = "wallet/request",
+    String? appState,
   }) async {
     try {
       Map<String, dynamic> chainConfigJson = chainConfig.toJson();
@@ -191,6 +192,9 @@ class Web3AuthFlutter {
       requestJson["method"] = method;
       requestJson["requestParams"] = requestParams;
       requestJson["path"] = path;
+      if (appState != null) {
+        requestJson["appState"] = appState;
+      }
 
       await _channel.invokeMethod('request', jsonEncode(requestJson));
       return;
