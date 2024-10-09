@@ -55,8 +55,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     Uri redirectUrl;
     if (Platform.isAndroid) {
-      redirectUrl = Uri.parse(
-          'torusapp://org.torusresearch.flutter.web3authexample/auth');
+      redirectUrl = Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
     } else if (Platform.isIOS) {
       redirectUrl =
           Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
