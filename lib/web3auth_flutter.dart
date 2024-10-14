@@ -49,8 +49,11 @@ class Web3AuthFlutter {
     }
   }
 
-  /// Initializes the [Web3AuthFlutter], please make sure you have
-  /// called initialize before performing any other operation.
+  /// Initializes the [Web3AuthFlutter] with session if present. 
+  /// If no active session is present, the method will throw an error. 
+  /// 
+  /// You should use try and catch block to handle the error when no 
+  /// active session is present.
   static Future<void> initialize() async {
     try {
       await _channel.invokeMethod('initialize', jsonEncode({}));
@@ -155,7 +158,9 @@ class Web3AuthFlutter {
       throw _handlePlatformException(e);
     }
   }
-
+ 
+  /// [enableMFA] method allows us trigger the MFA flow. If the MFA is already 
+  /// enable, the method will throw an error.
   static Future<bool> enableMFA({LoginParams? loginParams}) async {
     try {
       bool isMFASetup = false;
@@ -175,7 +180,13 @@ class Web3AuthFlutter {
       throw _handlePlatformException(e);
     }
   }
-
+  
+  /// The method will allow you to use of templated transaction screens for 
+  /// signing transactions. Please check the list of [JSON RPC methods](https://docs.metamask.io/wallet/reference/json-rpc-api/), noting that 
+  /// the request method currently supports only the signing methods.
+  /// 
+  /// To retrieve the response of the request method, you should use the 
+  /// [getSignResponse] method. 
   static Future<void> request(
     ChainConfig chainConfig,
     String method,
@@ -198,7 +209,8 @@ class Web3AuthFlutter {
       throw _handlePlatformException(e);
     }
   }
-
+  
+  /// The method helps you to retrieve the response of the [request] method.
   static Future<SignResponse> getSignResponse() async {
     try {
       final String signMsgResponse = await _channel.invokeMethod(
