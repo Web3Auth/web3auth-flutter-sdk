@@ -37,7 +37,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^4.0.0
+  web3auth_flutter: ^5.0.4
 ```
 
 or
@@ -57,127 +57,28 @@ Checkout the examples for your preferred blockchain and platform in our [example
 
 ```dart
 // Initialization
-Future<void> initPlatformState() async {
-  final themeMap = HashMap<String, String>();
-  themeMap['primary'] = "#fff000";
+await Web3AuthFlutter.init(
+  Web3AuthOptions(
+    // Get your client it from dashboard.web3auth.io
+    clientId: 'YOUR_WEB3AUTH_CLIENT_ID',
+    network: Network.sapphire_devnet,
+    // Your redirect url, check how to configure.
+    // Android: https://web3auth.io/docs/sdk/pnp/flutter/install#android-configuration
+    // iOS: https://web3auth.io/docs/sdk/pnp/flutter/install#ios-configuration
+    redirectUrl: redirectUrl,
+  ),
+);
 
-  Uri redirectUrl;
-  if (Platform.isAndroid) {
-    redirectUrl = Uri.parse(
-      'torusapp://org.torusresearch.flutter.web3authexample/auth',
-    );
-  } else if (Platform.isIOS) {
-    redirectUrl =
-        Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
-  } else {
-    throw UnKnownException('Unknown platform');
-  }
-  
-  await Web3AuthFlutter.init(
-    Web3AuthOptions(
-      clientId:
-          'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
-      network: Network.sapphire_devnet,
-      redirectUrl: redirectUrl,
-      whiteLabel: WhiteLabelData(
-        mode: ThemeModes.dark,
-        appName: "Web3Auth Flutter App",
-        theme: themeMap,
-      ),
-    ),
-  );
-
-  // Call initialize() function to get privKey and user information without relogging in user if a user has an active session
-  await Web3AuthFlutter.initialize();
-
-  // Call getPrivKey() function to get user private key
-  final String privKey = await Web3AuthFlutter.getPrivKey();
-
-  // Call getEd25519PrivKey() function to get user ed25519 private key
-  final String ed255199PrivKey = await Web3AuthFlutter.getEd25519PrivKey();
-
-  // Call getUserInfo() function to get user information like name, email, verifier, verifierId etc.
-  final TorusUserInfo userInfo = await Web3AuthFlutter.getUserInfo();
-
-}
+// Call initialize() function to get privKey and user information without relogging in
+// user if a user has an active session. If no active session is present, the 
+// function throws an error. 
+await Web3AuthFlutter.initialize();
 
 // Login
 await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
 
 // Logout
 await Web3AuthFlutter.logout();
-```
-
-## 🩹 Custom JWT - Example
-
-```dart
-// Initialization
-Future<void> initPlatformState() async {
-  final themeMap = HashMap<String, String>();
-  themeMap['primary'] = "#fff000";
-
-  Uri redirectUrl;
-  if (Platform.isAndroid) {
-    redirectUrl = Uri.parse(
-      'torusapp://org.torusresearch.flutter.web3authexample/auth',
-    );
-  } else if (Platform.isIOS) {
-    redirectUrl =
-        Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
-  } else {
-    throw UnKnownException('Unknown platform');
-  }
-
-  final loginConfig = new HashMap<String, LoginConfigItem>();
-  loginConfig['jwt'] = LoginConfigItem(
-    verifier: "verifier-name", // get it from web3auth dashboard
-    typeOfLogin: TypeOfLogin.jwt,
-    name: "Custom JWT Login",
-    clientId: "web3auth_client_id" // web3auth's plug and play client id
-  );
-
-   await Web3AuthFlutter.init(
-      Web3AuthOptions(
-        clientId:
-            'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
-        network: Network.sapphire_devnet,
-        redirectUrl: redirectUrl,
-        whiteLabel: WhiteLabelData(
-          mode: ThemeModes.dark,
-          appName: "Web3Auth Flutter App",
-          theme: themeMap,
-        ),
-        loginConfig: loginConfig,
-      ),
-    );
-
-  // Call initialize() function to get privKey and user information without relogging in user if a user has an active session
-  await Web3AuthFlutter.initialize();
-
-  // call getPrivKey() function to get user private key
-  final String privKey = await Web3AuthFlutter.getPrivKey();
-
-  // call getEd25519PrivKey() function to get user ed25519 private key
-  final String ed255199PrivKey = await Web3AuthFlutter.getEd25519PrivKey();
-
-  // call getUserInfo() function to get user information like name, email, verifier, verifierId etc
-  final TorusUserInfo userInfo = await Web3AuthFlutter.getUserInfo();
-}
-
-// Login
-await Web3AuthFlutter.login(
-   LoginParams(
-    loginProvider: Provider.jwt,
-    extraLoginOptions: ExtraLoginOptions(
-      id_token: "{YOUR_JWT_TOKEN}",
-      domain: "{YOUR-DOMAIN}",
-    ),
-  ),
-);
-
-// Logout
-await Web3AuthFlutter.logout();
-
 ```
 
 ## Triggering UserCancellation on Android
