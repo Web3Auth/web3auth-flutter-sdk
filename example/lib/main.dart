@@ -396,6 +396,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
           "personal_sign",
           params,
+          appState: "web3auth",
         );
       } on UserCancelledException {
         log("User cancelled.");
