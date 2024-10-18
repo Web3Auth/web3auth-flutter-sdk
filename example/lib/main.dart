@@ -89,7 +89,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ),
     );
 
-    await Web3AuthFlutter.initialize();
+    try {
+      await Web3AuthFlutter.initialize();
+    } catch (e) {
+      print('Error during Web3Auth initialization: $e');
+    }
 
     final String res = await Web3AuthFlutter.getPrivKey();
     log(res);
