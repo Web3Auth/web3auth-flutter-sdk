@@ -26,6 +26,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace = "com.web3auth.flutter.web3auth_flutter"
+
     compileSdkVersion 34
 
     compileOptions {
