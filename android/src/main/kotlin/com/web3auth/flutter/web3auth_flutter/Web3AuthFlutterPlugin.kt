@@ -185,19 +185,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "getSignResponse" -> {
-                try {
-                    val signMsgResult = Web3Auth.getSignResponse()
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getSignResponse")
-                    if (signMsgResult == null) {
-                        throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
-                    }
-                    return gson.toJson(signMsgResult)
-                } catch (e: Throwable) {
-                    throw Error(e)
-                }
-            }
-
             "launchWalletServices" -> {
                 try {
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
@@ -263,8 +250,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                         appState = reqParams.appState,
                         context = activity!!
                     )
-                    requestCF.get()
-                    return null
+                    return gson.toJson(requestCF.get())
                 } catch (e: NotImplementedError) {
                     throw Error(e)
                 } catch (e: Throwable) {

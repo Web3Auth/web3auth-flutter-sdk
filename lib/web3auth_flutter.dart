@@ -176,7 +176,7 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> request(
+  static Future<SignResponse> request(
     ChainConfig chainConfig,
     String method,
     List<dynamic> requestParams, {
@@ -196,20 +196,8 @@ class Web3AuthFlutter {
         requestJson["appState"] = appState;
       }
 
-      await _channel.invokeMethod('request', jsonEncode(requestJson));
-      return;
-    } on PlatformException catch (e) {
-      throw _handlePlatformException(e);
-    }
-  }
-
-  static Future<SignResponse> getSignResponse() async {
-    try {
-      final String signMsgResponse = await _channel.invokeMethod(
-        'getSignResponse',
-        jsonEncode({}),
-      );
-      return SignResponse.fromJson(jsonDecode(signMsgResponse));
+      final response = await _channel.invokeMethod('request', jsonEncode(requestJson));
+      return SignResponse.fromJson(jsonDecode(response));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }

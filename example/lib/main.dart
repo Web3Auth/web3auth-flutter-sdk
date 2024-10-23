@@ -217,14 +217,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             child: const Text('Setup MFA'),
                           ),
                           ElevatedButton(
-                            onPressed: _signMesssage(),
+                            onPressed: _signMesssage(context),
                             child: const Text('Sign Message'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              _getSignResponse(context);
-                            },
-                            child: const Text('Get Sign Response'),
                           ),
                         ],
                       ),
@@ -241,21 +235,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         },
       ),
     );
-  }
-
-  Future<void> _getSignResponse(BuildContext context) async {
-    try {
-      final signResponse = await Web3AuthFlutter.getSignResponse();
-      if (context.mounted) {
-        showAlertDialog(
-          context,
-          'Sign Result',
-          signResponse.toString(),
-        );
-      }
-    } catch (e) {
-      log(e.toString());
-    }
   }
 
   VoidCallback _login(Future<Web3AuthResponse> Function() method) {
@@ -386,7 +365,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
   }
 
-  VoidCallback _signMesssage() {
+  VoidCallback _signMesssage(BuildContext context) {
     return () async {
       try {
         String? privKey = await _getPrivKey();
@@ -396,12 +375,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         params.add("Hello, Web3Auth from Flutter!");
         params.add(address.hexEip55);
         params.add("Web3Auth");
-        await Web3AuthFlutter.request(
+        final signResponse = await Web3AuthFlutter.request(
           ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
           "personal_sign",
           params,
           appState: "web3auth",
         );
+        if (context.mounted) {
+          showAlertDialog(
+            context,
+            'Sign Result',
+            signResponse.toString(),
+          );
+        }
       } on UserCancelledException {
         log("User cancelled.");
       } on UnKnownException {
