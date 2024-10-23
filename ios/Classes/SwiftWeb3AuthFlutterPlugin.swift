@@ -174,7 +174,8 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                             chainConfig: reqParams.chainConfig,
                             method: reqParams.method,
                             requestParams: reqParams.requestParams,
-                            path: reqParams.path
+                            path: reqParams.path,
+                            appState: reqParams.appState
                         )
                         result(nil)
                         return
@@ -253,4 +254,5 @@ struct RequestJson: Codable {
     let method: String
     let requestParams: [String]
     let path: String?
+    let appState: String?
 }
