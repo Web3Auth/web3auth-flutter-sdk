@@ -197,10 +197,14 @@ class Web3AuthFlutter {
       Map<String, dynamic> chainConfigJson = chainConfig.toJson();
       chainConfigJson.removeWhere((key, value) => value == null);
 
+      List<String> modifiedRequestParams = requestParams
+          .map((param) => jsonEncode(param))
+          .toList();
+
       Map<String, dynamic> requestJson = {};
       requestJson["chainConfig"] = chainConfigJson;
       requestJson["method"] = method;
-      requestJson["requestParams"] = requestParams;
+      requestJson["requestParams"] = modifiedRequestParams;
       requestJson["path"] = path;
 
       await _channel.invokeMethod('request', jsonEncode(requestJson));
