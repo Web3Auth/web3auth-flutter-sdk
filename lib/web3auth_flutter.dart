@@ -192,16 +192,20 @@ class Web3AuthFlutter {
       Map<String, dynamic> chainConfigJson = chainConfig.toJson();
       chainConfigJson.removeWhere((key, value) => value == null);
 
+      List<String> modifiedRequestParams =
+          requestParams.map((param) => jsonEncode(param)).toList();
+
       Map<String, dynamic> requestJson = {};
       requestJson["chainConfig"] = chainConfigJson;
       requestJson["method"] = method;
-      requestJson["requestParams"] = requestParams;
+      requestJson["requestParams"] = modifiedRequestParams;
       requestJson["path"] = path;
       if (appState != null) {
         requestJson["appState"] = appState;
       }
 
-      final response = await _channel.invokeMethod('request', jsonEncode(requestJson));
+      final response =
+          await _channel.invokeMethod('request', jsonEncode(requestJson));
       return SignResponse.fromJson(jsonDecode(response));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);

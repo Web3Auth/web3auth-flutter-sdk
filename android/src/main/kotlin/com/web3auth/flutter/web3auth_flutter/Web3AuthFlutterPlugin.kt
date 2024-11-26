@@ -265,12 +265,17 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
     private fun convertListToJsonArray(list: List<Any?>): JsonArray {
         val jsonArray = JsonArray()
+        val gson = Gson()
+
         list.forEach { item ->
             val jsonElement: JsonElement = when (item) {
-                is String -> JsonPrimitive(item)
                 is Number -> JsonPrimitive(item)
+                is String -> JsonPrimitive(item)
                 is Boolean -> JsonPrimitive(item)
-                else -> throw IllegalArgumentException("Unsupported type: ${item?.javaClass}")
+                is Map<*, *> -> gson.toJsonTree(item)
+                is List<*> -> convertListToJsonArray(item)
+                null -> JsonPrimitive("")
+                else -> throw IllegalArgumentException("Unsupported type: ${item::class.java}")
             }
             jsonArray.add(jsonElement)
         }
