@@ -6,14 +6,14 @@ PODS:
   - TorusSessionManager (6.0.1):
     - curvelib.swift (~> 2.0.0)
     - KeychainSwift (~> 20.0.0)
-  - Web3Auth (10.0.0):
+  - Web3Auth (10.0.1):
     - BigInt (~> 5.2.0)
     - curvelib.swift (~> 2.0.0)
     - KeychainSwift (~> 20.0.0)
     - TorusSessionManager (~> 6.0.1)
   - web3auth_flutter (2.0.1):
     - Flutter
-    - Web3Auth (~> 10.0.0)
+    - Web3Auth (~> 10.0.1)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -39,8 +39,8 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
   TorusSessionManager: 9c9871718233dc020ab4fde9bdf37802f01dae10
-  Web3Auth: 67d1b67326e4d8052eb122f3100c5189621e74f2
-  web3auth_flutter: a0e306edb3d4a787fb2d53bc6b75cfc1d39073a6
+  Web3Auth: c7fddb06065c213bf4fd8badd166201ab31cb29b
+  web3auth_flutter: 816f64706f40f7fc08698c77e53cd3c7ad0736f3
 
 PODFILE CHECKSUM: 1d58595b82b880200a7ded05da9181d30ef8c1b7
 
