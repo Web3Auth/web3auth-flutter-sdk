@@ -180,44 +180,33 @@ class Web3AuthFlutter {
       throw _handlePlatformException(e);
     }
   }
-  
-  /// The method will allow you to use of templated transaction screens for 
-  /// signing transactions. Please check the list of [JSON RPC methods](https://docs.metamask.io/wallet/reference/json-rpc-api/), noting that 
-  /// the request method currently supports only the signing methods.
-  /// 
-  /// To retrieve the response of the request method, you should use the 
-  /// [getSignResponse] method. 
-  static Future<void> request(
+
+  static Future<SignResponse> request(
     ChainConfig chainConfig,
     String method,
     List<dynamic> requestParams, {
     String path = "wallet/request",
+    String? appState,
   }) async {
     try {
       Map<String, dynamic> chainConfigJson = chainConfig.toJson();
       chainConfigJson.removeWhere((key, value) => value == null);
 
+      List<String> modifiedRequestParams =
+          requestParams.map((param) => jsonEncode(param)).toList();
+
       Map<String, dynamic> requestJson = {};
       requestJson["chainConfig"] = chainConfigJson;
       requestJson["method"] = method;
-      requestJson["requestParams"] = requestParams;
+      requestJson["requestParams"] = modifiedRequestParams;
       requestJson["path"] = path;
+      if (appState != null) {
+        requestJson["appState"] = appState;
+      }
 
-      await _channel.invokeMethod('request', jsonEncode(requestJson));
-      return;
-    } on PlatformException catch (e) {
-      throw _handlePlatformException(e);
-    }
-  }
-  
-  /// The method helps you to retrieve the response of the [request] method.
-  static Future<SignResponse> getSignResponse() async {
-    try {
-      final String signMsgResponse = await _channel.invokeMethod(
-        'getSignResponse',
-        jsonEncode({}),
-      );
-      return SignResponse.fromJson(jsonDecode(signMsgResponse));
+      final response =
+          await _channel.invokeMethod('request', jsonEncode(requestJson));
+      return SignResponse.fromJson(jsonDecode(response));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }

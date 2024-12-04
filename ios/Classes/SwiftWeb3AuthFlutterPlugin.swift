@@ -170,13 +170,16 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         }
                 
                     do {
-                        try await web3auth?.request(
+                        let signResponse = try await web3auth?.request(
                             chainConfig: reqParams.chainConfig,
                             method: reqParams.method,
                             requestParams: reqParams.requestParams,
-                            path: reqParams.path
+                            path: reqParams.path,
+                            appState: reqParams.appState
                         )
-                        result(nil)
+                        let signData = try encoder.encode(signResponse)
+                        let resultMap = String(decoding: signData, as: UTF8.self)
+                        result(resultMap)
                         return
                     } catch {
                         result(FlutterError(
@@ -219,23 +222,6 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 result(resultMap)
                 return
 
-            case "getSignResponse":
-                var resultMap: String = ""
-                do {
-                    let signResponse = try Web3Auth.getSignResponse()
-                    let resultData = try encoder.encode(signResponse)
-                    resultMap = String(decoding: resultData, as: UTF8.self)
-                } catch {
-                    result(FlutterError(
-                        code: "GetSignResponseFailedException",
-                        message: "Web3Auth getSignResponse failed",
-                        details: error.localizedDescription
-                    ))
-                    return
-                }
-                result(resultMap)
-                return
-
             default:
                 result(FlutterMethodNotImplemented)
             }
@@ -253,4 +239,5 @@ struct RequestJson: Codable {
     let method: String
     let requestParams: [String]
     let path: String?
+    let appState: String?
 }

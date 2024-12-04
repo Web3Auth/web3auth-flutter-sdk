@@ -11,7 +11,12 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.*
+import com.web3auth.core.types.ChainConfig
+import com.web3auth.core.types.ErrorCode
+import com.web3auth.core.types.LoginParams
+import com.web3auth.core.types.Web3AuthError
+import com.web3auth.core.types.Web3AuthOptions
+import com.web3auth.core.types.Web3AuthResponse
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -22,7 +27,6 @@ import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
 import org.json.JSONObject
 
 
@@ -96,10 +100,9 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
                 if (obj.has("redirectUrl")) initParams.redirectUrl = Uri.parse(obj.get("redirectUrl") as String?)
-                initParams.context = activity!!
                 // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
-                    initParams
+                    initParams, activity!!
                 )
 
                 web3auth.setResultUrl(activity?.intent?.data)
@@ -186,26 +189,16 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "getSignResponse" -> {
-                try {
-                    val signMsgResult = Web3Auth.getSignResponse()
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getSignResponse")
-                    if (signMsgResult == null) {
-                        throw Error(Web3AuthError.getError(ErrorCode.NOUSERFOUND))
-                    }
-                    return gson.toJson(signMsgResult)
-                } catch (e: Throwable) {
-                    throw Error(e)
-                }
-            }
-
             "launchWalletServices" -> {
                 try {
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
                     val wsArgs = call.arguments<String>() ?: return null
                     val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
                     Log.d(wsParams.toString(), "#wsParams")
-                    val launchWalletCF = web3auth.launchWalletServices(chainConfig = wsParams.chainConfig, path = wsParams.path)
+                    val launchWalletCF = web3auth.launchWalletServices(
+                        chainConfig = wsParams.chainConfig,
+                        path = wsParams.path
+                    )
                     launchWalletCF.get()
                     return null
                 } catch (e: NotImplementedError) {
@@ -256,10 +249,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                         chainConfig = reqParams.chainConfig,
                         method = reqParams.method,
                         requestParams = convertListToJsonArray(reqParams.requestParams) ,
-                        path = reqParams.path
+                        path = reqParams.path,
+                        appState = reqParams.appState
                     )
-                    requestCF.get()
-                    return null
+                    return gson.toJson(requestCF.get())
                 } catch (e: NotImplementedError) {
                     throw Error(e)
                 } catch (e: Throwable) {
@@ -272,12 +265,17 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
     private fun convertListToJsonArray(list: List<Any?>): JsonArray {
         val jsonArray = JsonArray()
+        val gson = Gson()
+
         list.forEach { item ->
             val jsonElement: JsonElement = when (item) {
-                is String -> JsonPrimitive(item)
                 is Number -> JsonPrimitive(item)
+                is String -> JsonPrimitive(item)
                 is Boolean -> JsonPrimitive(item)
-                else -> throw IllegalArgumentException("Unsupported type: ${item?.javaClass}")
+                is Map<*, *> -> gson.toJsonTree(item)
+                is List<*> -> convertListToJsonArray(item)
+                null -> JsonPrimitive("")
+                else -> throw IllegalArgumentException("Unsupported type: ${item::class.java}")
             }
             jsonArray.add(jsonElement)
         }
@@ -292,5 +290,6 @@ data class RequestJson(
     val chainConfig: ChainConfig,
     val method: String,
     val requestParams: List<Any?>,
-    val path: String? = "wallet/request"
+    val path: String? = "wallet/request",
+    val appState: String? = null
 )
