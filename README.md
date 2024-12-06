@@ -27,7 +27,7 @@ Checkout the official [Web3Auth Documentation](https://web3auth.io/docs) and [SD
   - Swift 4.x / 5.x
   - For iOS build: `platform :ios` needs to be `14.0`. Check `ios/Podfile` in
     your Flutter project to change it.
-- For Android, API version 24 or newer is supported.
+- For Android, API version 26 or newer is supported.
   - For Android build: compileSdkVersion needs to be 34.
   - Check `android/app/build.gradle` in your Flutter project to change it.
 
@@ -37,7 +37,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^5.0.4
+  web3auth_flutter: ^6.0.1
 ```
 
 or
