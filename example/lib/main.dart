@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
@@ -7,15 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/input.dart';
 import 'package:web3auth_flutter/output.dart';
+import 'dart:async';
+
 import 'package:web3auth_flutter/web3auth_flutter.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -24,17 +32,16 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   String _result = '';
   bool logoutVisible = false;
-  late final TextEditingController textEditingController;
+  String rpcUrl = 'https://rpc.ankr.com/eth_sepolia';
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
-    textEditingController = TextEditingController();
-    WidgetsBinding.instance.addObserver(this);
+      WidgetsBinding.instance.addObserver(this);
   }
 
-  @override
+   @override
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
@@ -42,58 +49,66 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(final AppLifecycleState state) {
-    // This is important to trigger the user cancellation on Android.
+    // This is important to trigger the on Android.
     if (state == AppLifecycleState.resumed) {
       Web3AuthFlutter.setCustomTabsClosed();
     }
   }
 
+  
+
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    HashMap themeMap = HashMap<String, String>();
-    themeMap['primary'] = "#229954";
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    final themeMap = HashMap<String, String>();
+    themeMap['primary'] = "#F5820D";
 
     Uri redirectUrl;
     if (Platform.isAndroid) {
-      redirectUrl = Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
+      redirectUrl = Uri.parse('w3a://com.example.w3aflutter/auth');
     } else if (Platform.isIOS) {
-      redirectUrl =
-          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
+      redirectUrl = Uri.parse('com.example.w3aflutter://auth');
     } else {
       throw UnKnownException('Unknown platform');
     }
 
     final loginConfig = HashMap<String, LoginConfigItem>();
     loginConfig['jwt'] = LoginConfigItem(
-        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
+        verifier: "w3a-firebase-demo", // get it from web3auth dashboard
         typeOfLogin: TypeOfLogin.jwt,
-        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
+        clientId:
+            "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ" // web3auth's plug and play client id
         );
 
     await Web3AuthFlutter.init(
       Web3AuthOptions(
         clientId:
-            'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
-        //sdkUrl: 'https://auth.mocaverse.xyz',
-        //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
-        network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.testing,
+            'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
+        network: Network.sapphire_mainnet,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
-          mode: ThemeModes.dark,
-          defaultLanguage: Language.en,
           appName: "Web3Auth Flutter App",
+          logoLight:
+              "https://www.vectorlogo.zone/logos/flutterio/flutterio-icon.svg",
+          logoDark:
+              "https://cdn.icon-icons.com/icons2/2389/PNG/512/flutter_logo_icon_145273.png",
+          defaultLanguage: Language.en,
+          mode: ThemeModes.auto,
+          appUrl: "https://web3auth.io",
+          useLogoLoader: true,
           theme: themeMap,
         ),
         loginConfig: loginConfig,
+        // 259200 allows user to stay authenticated for 3 days with Web3Auth.
+        // Default is 86400, which is 1 day.
+        sessionTime: 259200,
       ),
     );
 
-    try {
-      await Web3AuthFlutter.initialize();
-    } catch (e) {
-      print('Error during Web3Auth initialization: $e');
-    }
+    await Web3AuthFlutter.initialize();
 
     final String res = await Web3AuthFlutter.getPrivKey();
     log(res);
@@ -107,132 +122,121 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Builder(
-        builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Web3Auth x Flutter Example'),
-            ),
-            body: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                    ),
-                    Visibility(
-                      visible: !logoutVisible,
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          const Icon(
-                            Icons.flutter_dash,
-                            size: 80,
-                            color: Color(0xFF1389fd),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          const Text(
-                            'Web3Auth',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 36,
-                                color: Color(0xFF0364ff)),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Text(
-                            'Welcome to Web3Auth x Flutter Demo',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const Text(
-                            'Login with',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          ElevatedButton(
-                            onPressed: _login(_withGoogle),
-                            child: const Text('Google'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _login(_withFacebook),
-                            child: const Text('Facebook'),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: textEditingController,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: "abc@xyz.com",
-                              ),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: _login(_withEmailPasswordless),
-                            child: const Text('Email Passwordless'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _login(_withDiscord),
-                            child: const Text('Discord'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible: logoutVisible,
-                      child: Column(
-                        children: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red[600],
-                            ),
-                            onPressed: _logout(),
-                            child: const Text('Logout'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _privKey(_getPrivKey),
-                            child: const Text('Get PrivKey'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _userInfo(_getUserInfo),
-                            child: const Text('Get UserInfo'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _launchWalletServices(),
-                            child: const Text('Launch Wallet Services'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _setupMFA(),
-                            child: const Text('Setup MFA'),
-                          ),
-                          ElevatedButton(
-                            onPressed: _signMesssage(context),
-                            child: const Text('Sign Message'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(_result),
-                    )
-                  ],
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('W3A Flutter (JWT) Firebase Example'),
+        ),
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                 ),
-              ),
+                Visibility(
+                  visible: !logoutVisible,
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.flutter_dash,
+                        size: 80,
+                        color: Color(0xFF1389fd),
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      const Text(
+                        'Web3Auth',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 36,
+                          color: Color(0xFF0364ff),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Text(
+                        'Welcome to Web3Auth Flutter (JWT) Firebase Example',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        'Login with',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 245, 130, 13),
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: _login(_withJWT),
+                        child: const Text('Login with JWT via Firebase'),
+                      ),
+                    ],
+                  ),
+                ),
+                Visibility(
+                  visible: logoutVisible,
+                  child: ElevatedButtonTheme(
+                    data: ElevatedButtonThemeData(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 195, 47, 233),
+                        foregroundColor: Colors.white, // This is what you need!
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Center(
+                          child: ElevatedButton(
+                              // This is what you need!
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red[600],
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: _logout(),
+                              child: const Column(
+                                children: [
+                                  Text('Logout'),
+                                ],
+                              )),
+                        ),
+                        const Text(
+                          'Blockchain calls',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        ElevatedButton(
+                          onPressed: _getAddress,
+                          child: const Text('Get Address'),
+                        ),
+                        ElevatedButton(
+                          onPressed: _getBalance,
+                          child: const Text('Get Balance'),
+                        ),
+                        ElevatedButton(
+                          onPressed: _sendTransaction,
+                          child: const Text('Send Transaction'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(_result),
+                )
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -240,56 +244,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   VoidCallback _login(Future<Web3AuthResponse> Function() method) {
     return () async {
       try {
-        final Web3AuthResponse _ = await method();
-        setState(() {
-          logoutVisible = true;
-        });
-      } on UserCancelledException {
-        log("User cancelled.");
-      } on UnKnownException {
-        log("Unknown exception occurred");
-      } catch (e) {
-        log(e.toString());
-      }
-    };
-  }
-
-  VoidCallback _logout() {
-    return () async {
-      try {
-        await Web3AuthFlutter.logout();
-        setState(() {
-          _result = '';
-          logoutVisible = false;
-        });
-      } on UserCancelledException {
-        log("User cancelled.");
-      } on UnKnownException {
-        log("Unknown exception occurred");
-      }
-    };
-  }
-
-  VoidCallback _privKey(Future<String?> Function() method) {
-    return () async {
-      try {
-        final String response = await Web3AuthFlutter.getPrivKey();
-        setState(() {
-          _result = response;
-          logoutVisible = true;
-        });
-      } on UserCancelledException {
-        log("User cancelled.");
-      } on UnKnownException {
-        log("Unknown exception occurred");
-      }
-    };
-  }
-
-  VoidCallback _userInfo(Future<TorusUserInfo> Function() method) {
-    return () async {
-      try {
-        final TorusUserInfo response = await Web3AuthFlutter.getUserInfo();
+        final Web3AuthResponse response = await method();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('privateKey', response.privKey.toString());
         setState(() {
           _result = response.toString();
           logoutVisible = true;
@@ -302,117 +259,112 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
   }
 
-  Future<Web3AuthResponse> _withGoogle() {
-    return Web3AuthFlutter.login(
-      LoginParams(loginProvider: Provider.google, mfaLevel: MFALevel.NONE),
-    );
+  VoidCallback _logout() {
+    return () async {
+      try {
+        setState(() {
+          _result = '';
+          logoutVisible = false;
+        });
+        await Web3AuthFlutter.logout();
+      } on UserCancelledException {
+        log("User cancelled.");
+      } on UnKnownException {
+        log("Unknown exception occurred");
+      }
+    };
   }
 
-  Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.facebook));
-  }
+  Future<Web3AuthResponse> _withJWT() async {
+    String idToken = "";
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: 'custom+id_token@firebase.login',
+        password: 'Welcome@W3A',
+      );
+      idToken = await credential.user?.getIdToken(true) ?? '';
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        log('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        log('Wrong password provided for that user.');
+      }
+    }
 
-  Future<Web3AuthResponse> _withEmailPasswordless() {
     return Web3AuthFlutter.login(
       LoginParams(
-        loginProvider: Provider.email_passwordless,
+        loginProvider: Provider.jwt,
+        mfaLevel: MFALevel.OPTIONAL,
         extraLoginOptions: ExtraLoginOptions(
-          login_hint: textEditingController.text,
+          id_token: idToken,
+          domain: 'firebase',
         ),
       ),
     );
   }
 
-  Future<Web3AuthResponse> _withDiscord() {
-    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
+  Future<String> _getAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final privateKey = prefs.getString('privateKey') ?? '0';
+
+    final credentials = EthPrivateKey.fromHex(privateKey);
+    final address = credentials.address;
+
+    log("Account, ${address.hexEip55}");
+    setState(() {
+      _result = address.hexEip55.toString();
+    });
+    return address.hexEip55;
   }
 
-  Future<String?> _getPrivKey() {
-    return Web3AuthFlutter.getPrivKey();
+  Future<EtherAmount> _getBalance() async {
+    final prefs = await SharedPreferences.getInstance();
+    final privateKey = prefs.getString('privateKey') ?? '0';
+
+    final client = Web3Client(rpcUrl, Client());
+    final credentials = EthPrivateKey.fromHex(privateKey);
+    final address = credentials.address;
+    final balance = await client.getBalance(address);
+    log(balance.toString());
+    setState(() {
+      _result = balance.toString();
+    });
+    return balance;
   }
 
-  Future<TorusUserInfo> _getUserInfo() {
-    return Web3AuthFlutter.getUserInfo();
-  }
+  Future<String> _sendTransaction() async {
+    final prefs = await SharedPreferences.getInstance();
+    final privateKey = prefs.getString('privateKey') ?? '0';
 
-  VoidCallback _launchWalletServices() {
-    return () async {
-      try {
-        await Web3AuthFlutter.launchWalletServices(
-          ChainConfig(
-            chainId: "0x89",
-            rpcTarget:
-                "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
+    final client = Web3Client(rpcUrl, Client());
+    final credentials = EthPrivateKey.fromHex(privateKey);
+    final address = credentials.address;
+    try {
+      final receipt = await client.sendTransaction(
+        credentials,
+        Transaction(
+          from: address,
+          to: EthereumAddress.fromHex(
+            '0x809D4310d578649D8539e718030EE11e603Ee8f3',
           ),
-        );
-      } on UserCancelledException {
-        log("User cancelled.");
-      } on UnKnownException {
-        log("Unknown exception occurred");
-      }
-    };
-  }
-
-  VoidCallback _setupMFA() {
-    return () async {
-      try {
-        await Web3AuthFlutter.enableMFA();
-      } on UserCancelledException {
-        log("User cancelled.");
-      } on UnKnownException {
-        log("Unknown exception occurred");
-      }
-    };
-  }
-
-  VoidCallback _signMesssage(BuildContext context) {
-    return () async {
-      try {
-        String? privKey = await _getPrivKey();
-        final credentials = EthPrivateKey.fromHex(privKey!);
-        final address = credentials.address;
-        List<dynamic> params = [];
-        params.add("Hello, Web3Auth from Flutter!");
-        params.add(address.hexEip55);
-        params.add("Web3Auth");
-        final signResponse = await Web3AuthFlutter.request(
-          ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
-          "personal_sign",
-          params,
-          appState: "web3auth",
-        );
-        if (context.mounted) {
-          showAlertDialog(
-            context,
-            'Sign Result',
-            signResponse.toString(),
-          );
-        }
-      } on UserCancelledException {
-        log("User cancelled.");
-      } on UnKnownException {
-        log("Unknown exception occurred");
-      }
-    };
-  }
-
-  void showAlertDialog(BuildContext context, String title, String content) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
+          // gasPrice: EtherAmount.fromUnitAndValue(EtherUnit.gwei, 100),
+          value: EtherAmount.fromInt(
+            EtherUnit.gwei,
+            5000000,
+          ), // 0.005 ETH
+        ),
+        chainId: 11155111,
+      );
+      log(receipt);
+      setState(() {
+        _result = receipt;
+      });
+      return receipt;
+    } catch (e) {
+      setState(() {
+        _result = e.toString();
+      });
+      return e.toString();
+    }
   }
 }

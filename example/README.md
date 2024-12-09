@@ -1,16 +1,32 @@
-# web3auth_flutter_example
+# Web3Auth Flutter x Firebase Example
 
-Demonstrates how to use the web3auth_flutter plugin.
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/pnp/flutter)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
-## Getting Started
+[Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
 
-This project is a starting point for a Flutter application.
+This example demonstrates how to use Web3Auth in Flutter.
 
-A few resources to get you started if this is your first Flutter project:
+## How to Use
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+### Download Manually
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+npx degit Web3Auth/web3auth-pnp-examples/flutter/flutter-firebase-example w3a-flutter-firebase
+```
+
+Install & Run:
+
+```bash
+cd w3a-flutter-firebase
+# run project in Android Studio or in VSCode
+```
+
+## Important Links
+
+- [Website](https://web3auth.io)
+- [Docs](https://web3auth.io/docs)
+- [Guides](https://web3auth.io/docs/guides)
+- [SDK / API References](https://web3auth.io/docs/sdk)
+- [Pricing](https://web3auth.io/pricing.html)
+- [Community Portal](https://community.web3auth.io)

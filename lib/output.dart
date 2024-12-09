@@ -1,10 +1,10 @@
 import 'dart:core';
 
 class Web3AuthResponse {
-  /// secp256k1 private key compaitible with Ethereum ecosystem.
+  /// secp256k1 private key compatible with Ethereum ecosystem.
   final String? privKey;
 
-  /// ed25519 private key compaitible with Solana ecosystem.
+  /// ed25519 private key compatible with Solana ecosystem.
   final String? ed25519PrivKey;
 
   /// Current We3Auth sessionId.

@@ -1,13 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.web3auth.flutter.web3auth_flutter_example">
+    package="com.example.w3aflutter">
    <application
-        android:label="web3auth_flutter_example"
+        android:label="w3aflutter"
         android:name="${applicationName}"
-        tools:replace="android:name"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="com.openlogin.flutter.openlogin_flutter_example.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
@@ -33,9 +31,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Accept URIs: {YOUR_APP_PACKAGE_NAME}://* -->
-                <data
-                    android:scheme="torusapp"
-                    android:host="org.torusresearch.flutter.web3authexample" />
+                <data android:scheme="w3a" android:host="com.example.w3aflutter" android:path="/auth" />
+                <!-- Accept URIs: w3a://com.example.w3aflutter/auth -->
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -44,4 +41,5 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
