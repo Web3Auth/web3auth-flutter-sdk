@@ -156,6 +156,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         let enableMFAResult = try await web3auth?.enableMFA()
                         result(enableMFAResult)
                     }
+                    return
                 } catch {
                     result(FlutterError(
                         code: "enableMFAFailedException",
@@ -192,7 +193,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                             code: "RequestFailedFailedException",
                             message: "Web3Auth request launch failed",
                             details: error.localizedDescription))
-                            return
+                        return
                     }
             case "getUserInfo":
                 var resultMap: String = ""
