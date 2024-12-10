@@ -147,15 +147,22 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
             case "enableMFA":
                 do {
-                    let enableMFAResult = try await web3auth?.enableMFA()
-                    result(enableMFAResult)
-                    return
+                    let loginParams = try? decoder.decode(W3ALoginParams.self, from: data)
+
+                    if let params = loginParams {
+                        let enableMFAResult = try await web3auth?.enableMFA(params)
+                        result(enableMFAResult)
+                } else {
+                    result(FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid Login Params",
+                        details: nil))
+                    }
                 } catch {
                     result(FlutterError(
                         code: "enableMFAFailedException",
                         message: "Web3Auth enableMFA failed",
                         details: error.localizedDescription))
-                    return
                 }
             case "request":
                 let reqParams: RequestJson
