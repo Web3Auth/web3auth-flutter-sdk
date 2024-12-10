@@ -161,6 +161,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         code: "enableMFAFailedException",
                         message: "Web3Auth enableMFA failed",
                         details: error.localizedDescription))
+                    return
                 }
             case "request":
                 let reqParams: RequestJson
