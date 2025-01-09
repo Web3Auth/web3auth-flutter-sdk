@@ -51,6 +51,6 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'com.github.web3auth:web3auth-android-sdk:9.0.3'
+    implementation 'com.github.web3auth:web3auth-android-sdk:9.0.4'
     implementation 'com.google.code.gson:gson:2.10.1'
 }
