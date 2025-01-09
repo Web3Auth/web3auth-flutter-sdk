@@ -450,7 +450,7 @@ class Web3AuthOptions {
 
   /// [sessionTime] allows developers to configure the session management time.
   ///
-  /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 7 days.
+  /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
   final int? sessionTime;
 
   final ChainConfig? chainConfig;
