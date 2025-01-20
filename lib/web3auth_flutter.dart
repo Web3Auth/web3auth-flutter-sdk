@@ -206,6 +206,14 @@ class Web3AuthFlutter {
 
       final response =
           await _channel.invokeMethod('request', jsonEncode(requestJson));
+
+      if (response == "null") {
+        return SignResponse(
+          success: false,
+          error: "Something went wrong. Unable to process the request.",
+        );
+      }
+
       return SignResponse.fromJson(jsonDecode(response));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
