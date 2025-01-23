@@ -190,12 +190,12 @@ class Web3AuthFlutter {
       } else {
         Map<String, dynamic> loginParamsJson = loginParams.toJson();
         loginParamsJson.removeWhere((key, value) => value == null);
-        isMFASetup = await _channel.invokeMethod(
+        isManageMFA = await _channel.invokeMethod(
           'manageMFA',
           jsonEncode(loginParamsJson),
         );
       }
-      return isMFASetup;
+      return isManageMFA;
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }
