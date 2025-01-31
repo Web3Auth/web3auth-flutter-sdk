@@ -457,6 +457,8 @@ class Web3AuthOptions {
 
   final Map<String, String>? originData;
 
+  final String? dashboardUrl;
+
   Web3AuthOptions({
     required this.clientId,
     required this.network,
@@ -471,10 +473,13 @@ class Web3AuthOptions {
     this.sessionTime = 86400,
     this.mfaSettings,
     this.originData,
+    String? dashboardUrl,
   })  : chainConfig = null,
         sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
         walletSdkUrl =
-            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
+            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production),
+        dashboardUrl =
+            dashboardUrl ?? getDashBoardUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
@@ -491,7 +496,8 @@ class Web3AuthOptions {
       'mfaSettings': mfaSettings,
       "sessionTime": sessionTime,
       "chainConfig": chainConfig?.toJson(),
-      "originData": originData
+      "originData": originData,
+      "dashboardUrl": dashboardUrl,
     };
   }
 }
@@ -527,5 +533,18 @@ String getWalletSdkUrl(BuildEnv? buildEnv) {
     case BuildEnv.production:
     default:
       return "https://wallet.web3auth.io/$walletServicesVersion";
+  }
+}
+
+String getDashBoardUrl(BuildEnv? buildEnv) {
+  const String walletAccountConstant = "wallet/account";
+  switch (buildEnv) {
+    case BuildEnv.staging:
+      return "https://staging-account.web3auth.io/$walletAccountConstant";
+    case BuildEnv.testing:
+      return "https://develop-account.web3auth.io/$walletAccountConstant";
+    case BuildEnv.production:
+    default:
+      return "https://account.web3auth.io/$walletAccountConstant";
   }
 }
