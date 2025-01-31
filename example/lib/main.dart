@@ -217,6 +217,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             child: const Text('Setup MFA'),
                           ),
                           ElevatedButton(
+                            onPressed: _manageMFA(),
+                            child: const Text('Manage MFA'),
+                          ),
+                          ElevatedButton(
                             onPressed: _signMesssage(context),
                             child: const Text('Sign Message'),
                           ),
@@ -357,6 +361,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return () async {
       try {
         await Web3AuthFlutter.enableMFA();
+      } on UserCancelledException {
+        log("User cancelled.");
+      } on UnKnownException {
+        log("Unknown exception occurred");
+      }
+    };
+  }
+
+  VoidCallback _manageMFA() {
+    return () async {
+      try {
+        await Web3AuthFlutter.manageMFA();
       } on UserCancelledException {
         log("User cancelled.");
       } on UnKnownException {
