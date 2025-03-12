@@ -164,6 +164,25 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: error.localizedDescription))
                     return
                 }
+            case "manageMFA":
+                do {
+                    let loginParams = try? decoder.decode(W3ALoginParams.self, from: data)
+
+                    if let params = loginParams {
+                        let manageMFAResult = try await web3auth?.enableMFA(params)
+                        result(manageMFAResult)
+                    } else {
+                        let manageMFAResult = try await web3auth?.manageMFA()
+                        result(manageMFAResult)
+                    }
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "manageMFAFailedException",
+                        message: "Web3Auth manageMFA failed",
+                        details: error.localizedDescription))
+                    return
+                }
             case "request":
                 let reqParams: RequestJson
                     do {
