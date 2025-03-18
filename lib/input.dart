@@ -479,7 +479,7 @@ class Web3AuthOptions {
         walletSdkUrl =
             walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production),
         dashboardUrl =
-            dashboardUrl ?? getDashBoardUrl(buildEnv ?? BuildEnv.production);
+            dashboardUrl ?? getDashboardUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
@@ -524,7 +524,7 @@ String getSdkUrl(BuildEnv? buildEnv) {
 }
 
 String getWalletSdkUrl(BuildEnv? buildEnv) {
-  const String walletServicesVersion = "v3";
+  const String walletServicesVersion = "v4";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-wallet.web3auth.io/$walletServicesVersion";
@@ -536,7 +536,7 @@ String getWalletSdkUrl(BuildEnv? buildEnv) {
   }
 }
 
-String getDashBoardUrl(BuildEnv? buildEnv) {
+String getDashboardUrl(BuildEnv? buildEnv) {
   const String walletAccountConstant = "wallet/account";
   switch (buildEnv) {
     case BuildEnv.staging:
