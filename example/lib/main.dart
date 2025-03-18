@@ -372,7 +372,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   VoidCallback _manageMFA() {
     return () async {
       try {
-        await Web3AuthFlutter.manageMFA();
+        bool result = await Web3AuthFlutter.manageMFA();
+        if (result) {
+          log("MFA manage successfully done.");
+        } else {
+          log("Some error occured.");
+        }
       } on UserCancelledException {
         log("User cancelled.");
       } on UnKnownException {
