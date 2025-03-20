@@ -470,7 +470,7 @@ class Web3AuthOptions {
     this.loginConfig,
     this.useCoreKitKey,
     this.chainNamespace = ChainNamespace.eip155,
-    this.sessionTime = 86400,
+    this.sessionTime = 30 * 86400,
     this.mfaSettings,
     this.originData,
     String? dashboardUrl,
