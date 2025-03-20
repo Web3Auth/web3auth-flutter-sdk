@@ -169,7 +169,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     let loginParams = try? decoder.decode(W3ALoginParams.self, from: data)
 
                     if let params = loginParams {
-                        let manageMFAResult = try await web3auth?.enableMFA(params)
+                        let manageMFAResult = try await web3auth?.manageMFA(params)
                         result(manageMFAResult)
                     } else {
                         let manageMFAResult = try await web3auth?.manageMFA()
