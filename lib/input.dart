@@ -427,7 +427,7 @@ class Web3AuthOptions {
   ///
   /// While using redirectUrl, please make sure you have whitelisted it
   /// developer dashboard. Checkout [SDK reference](https://web3auth.io/docs/sdk/pnp/flutter/install#configuration-1) more details.
-  final Uri redirectUrl;
+  final Uri? redirectUrl;
 
   /// WhiteLabel options for web3auth. It helps you define
   /// custom UI, branding, and translations for your brand app.
@@ -465,7 +465,7 @@ class Web3AuthOptions {
     this.buildEnv = BuildEnv.production,
     String? sdkUrl,
     String? walletSdkUrl,
-    required this.redirectUrl,
+    this.redirectUrl,
     this.whiteLabel,
     this.loginConfig,
     this.useCoreKitKey,
