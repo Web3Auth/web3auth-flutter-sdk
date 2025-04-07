@@ -427,7 +427,7 @@ class Web3AuthOptions {
   ///
   /// While using redirectUrl, please make sure you have whitelisted it
   /// developer dashboard. Checkout [SDK reference](https://web3auth.io/docs/sdk/pnp/flutter/install#configuration-1) more details.
-  final Uri redirectUrl;
+  final Uri? redirectUrl;
 
   /// WhiteLabel options for web3auth. It helps you define
   /// custom UI, branding, and translations for your brand app.
@@ -457,24 +457,29 @@ class Web3AuthOptions {
 
   final Map<String, String>? originData;
 
+  final String? dashboardUrl;
+
   Web3AuthOptions({
     required this.clientId,
     required this.network,
     this.buildEnv = BuildEnv.production,
     String? sdkUrl,
     String? walletSdkUrl,
-    required this.redirectUrl,
+    this.redirectUrl,
     this.whiteLabel,
     this.loginConfig,
     this.useCoreKitKey,
     this.chainNamespace = ChainNamespace.eip155,
-    this.sessionTime = 86400,
+    this.sessionTime = 30 * 86400,
     this.mfaSettings,
     this.originData,
+    String? dashboardUrl,
   })  : chainConfig = null,
         sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
         walletSdkUrl =
-            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production);
+            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production),
+        dashboardUrl =
+            dashboardUrl ?? getDashboardUrl(buildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
@@ -491,7 +496,8 @@ class Web3AuthOptions {
       'mfaSettings': mfaSettings,
       "sessionTime": sessionTime,
       "chainConfig": chainConfig?.toJson(),
-      "originData": originData
+      "originData": originData,
+      "dashboardUrl": dashboardUrl,
     };
   }
 }
@@ -518,7 +524,7 @@ String getSdkUrl(BuildEnv? buildEnv) {
 }
 
 String getWalletSdkUrl(BuildEnv? buildEnv) {
-  const String walletServicesVersion = "v3";
+  const String walletServicesVersion = "v4";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-wallet.web3auth.io/$walletServicesVersion";
@@ -527,5 +533,18 @@ String getWalletSdkUrl(BuildEnv? buildEnv) {
     case BuildEnv.production:
     default:
       return "https://wallet.web3auth.io/$walletServicesVersion";
+  }
+}
+
+String getDashboardUrl(BuildEnv? buildEnv) {
+  const String walletAccountConstant = "wallet/account";
+  switch (buildEnv) {
+    case BuildEnv.staging:
+      return "https://staging-account.web3auth.io/$walletAccountConstant";
+    case BuildEnv.testing:
+      return "https://develop-account.web3auth.io/$walletAccountConstant";
+    case BuildEnv.production:
+    default:
+      return "https://account.web3auth.io/$walletAccountConstant";
   }
 }

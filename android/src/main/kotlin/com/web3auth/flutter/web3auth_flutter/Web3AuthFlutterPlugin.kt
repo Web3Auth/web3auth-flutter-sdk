@@ -259,6 +259,23 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     throw Error(e)
                 }
             }
+
+            "manageMFA" -> {
+                try {
+                    val loginArgs = call.arguments<String>() ?: return null
+                    val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
+                    val obj = JSONObject(loginArgs)
+                    if (obj.has("redirectUrl")) loginParams.redirectUrl =
+                        Uri.parse(obj.get("redirectUrl") as String?)
+                    val setupMfaCF = web3auth.manageMFA(loginParams)
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
+                    return setupMfaCF.get()
+                } catch (e: NotImplementedError) {
+                    throw Error(e)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
         }
         throw NotImplementedError()
     }

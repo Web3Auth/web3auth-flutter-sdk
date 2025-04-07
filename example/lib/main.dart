@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         //sdkUrl: 'https://auth.mocaverse.xyz',
         //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
         network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.testing,
+        buildEnv: BuildEnv.production,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
           mode: ThemeModes.dark,
@@ -215,6 +215,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           ElevatedButton(
                             onPressed: _setupMFA(),
                             child: const Text('Setup MFA'),
+                          ),
+                          ElevatedButton(
+                            onPressed: _manageMFA(),
+                            child: const Text('Manage MFA'),
                           ),
                           ElevatedButton(
                             onPressed: _signMesssage(context),
@@ -357,6 +361,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return () async {
       try {
         await Web3AuthFlutter.enableMFA();
+      } on UserCancelledException {
+        log("User cancelled.");
+      } on UnKnownException {
+        log("Unknown exception occurred");
+      }
+    };
+  }
+
+  VoidCallback _manageMFA() {
+    return () async {
+      try {
+        bool result = await Web3AuthFlutter.manageMFA();
+        if (result) {
+          log("MFA manage successfully done.");
+        } else {
+          log("Some error occured.");
+        }
       } on UserCancelledException {
         log("User cancelled.");
       } on UnKnownException {
