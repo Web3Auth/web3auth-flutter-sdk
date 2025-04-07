@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.annotation.NonNull
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -28,7 +29,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-
 
 class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
     PluginRegistry.NewIntentListener {
@@ -196,8 +196,8 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
                     Log.d(wsParams.toString(), "#wsParams")
                     val launchWalletCF = web3auth.launchWalletServices(
-                        chainConfig = wsParams.chainConfig,
-                        path = wsParams.path
+                        wsParams.chainConfig,
+                        wsParams.path
                     )
                     launchWalletCF.get()
                     return null
@@ -246,11 +246,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
                     val requestCF = web3auth.request(
-                        chainConfig = reqParams.chainConfig,
-                        method = reqParams.method,
-                        requestParams = convertListToJsonArray(reqParams.requestParams) ,
-                        path = reqParams.path,
-                        appState = reqParams.appState
+                        reqParams.chainConfig,
+                        reqParams.method,
+                        convertListToJsonArray(reqParams.requestParams) ,
+                        reqParams.path,
+                        reqParams.appState
                     )
                     return gson.toJson(requestCF.get())
                 } catch (e: NotImplementedError) {
@@ -299,14 +299,17 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
         return jsonArray
     }
 }
+@Keep
 data class WalletServicesJson(
-    val chainConfig: ChainConfig,
-    val path: String? = "wallet"
+    @Keep val chainConfig: ChainConfig,
+    @Keep val path: String? = "wallet"
 )
+
+@Keep
 data class RequestJson(
-    val chainConfig: ChainConfig,
-    val method: String,
-    val requestParams: List<Any?>,
-    val path: String? = "wallet/request",
-    val appState: String? = null
+    @Keep val chainConfig: ChainConfig,
+    @Keep val method: String,
+    @Keep val requestParams: List<Any?>,
+    @Keep val path: String? = "wallet/request",
+    @Keep val appState: String? = null
 )
