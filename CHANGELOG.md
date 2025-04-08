@@ -153,7 +153,7 @@
 ## 6.0.0
 
 * Update code documentation.
-* Feat: auth-services v9 changes and wallet-services v3 changes added..
+* Feat: auth-services v9 changes and wallet-services v3 changes added.
 
 ## 6.0.1
 
@@ -162,7 +162,7 @@
 ## 6.1.0
 
 * Update README.
-Swift pnp dependency updated
+* Swift pnp dependency updated
 
 ## 6.1.1
 
