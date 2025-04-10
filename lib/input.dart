@@ -6,7 +6,7 @@ import 'package:web3auth_flutter/web3auth_flutter.dart';
 class LoginParams {
   /// [loginProvider] sets the oAuth login method to be used. You can use any of the
   /// valid [Provider] from the supported list.
-  final Provider loginProvider;
+  final AUTH_CONNECTION loginProvider;
 
   /// Custom verifier logins can get a dapp share returned to them post successful login.
   /// This is useful if the dapps want to use this share to allow users to login seamlessly.
@@ -58,12 +58,12 @@ class LoginParams {
       };
 }
 
-class LoginConfigItem {
+class AuthConnectionConfig {
   /// Custom verifier name given in the developer dashboard.
-  final String verifier;
+  final String authConnectionId;
 
   /// The type of login for custom verifier.
-  final TypeOfLogin typeOfLogin;
+  final AuthConnection authConnection;
 
   /// Client id provided by your login provider used for custom verifier.
   final String clientId;
@@ -99,9 +99,9 @@ class LoginConfigItem {
   /// Whether to show the login button on Mobile.
   final bool? showOnMobile;
 
-  LoginConfigItem({
-    required this.verifier,
-    required this.typeOfLogin,
+  AuthConnectionConfig({
+    required this.authConnectionId,
+    required this.authConnection,
     required this.clientId,
     this.name,
     this.description,
@@ -117,8 +117,8 @@ class LoginConfigItem {
 
   Map<String, dynamic> toJson() {
     return {
-      'verifier': verifier,
-      'typeOfLogin': typeOfLogin.name,
+      'authConnectionId': authConnectionId,
+      'authConnection': authConnection.name,
       'clientId': clientId,
       'name': name,
       'description': description,
@@ -436,7 +436,7 @@ class Web3AuthOptions {
   final WhiteLabelData? whiteLabel;
 
   /// Login config for the custom verifiers.
-  final HashMap<String, LoginConfigItem>? loginConfig;
+  final List<AuthConnectionConfig>? authConnectionConfig;
 
   /// Use [useCoreKitKey] to get the core kit key.
   final bool? useCoreKitKey;
@@ -467,7 +467,7 @@ class Web3AuthOptions {
     String? walletSdkUrl,
     this.redirectUrl,
     this.whiteLabel,
-    this.loginConfig,
+    this.authConnectionConfig,
     this.useCoreKitKey,
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 30 * 86400,
@@ -490,7 +490,7 @@ class Web3AuthOptions {
       'buildEnv': buildEnv?.name,
       'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
-      'loginConfig': loginConfig,
+      'authConnectionConfig': authConnectionConfig,
       'useCoreKitKey': useCoreKitKey,
       'chainNamespace': chainNamespace?.name,
       'mfaSettings': mfaSettings,

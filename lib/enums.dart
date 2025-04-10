@@ -8,7 +8,7 @@ enum Language { en, de, ja, ko, zh, es, fr, pt, nl , tr}
 
 enum ThemeModes { light, dark, auto }
 
-enum Provider {
+enum AUTH_CONNECTION {
   google,
   facebook,
   reddit,
@@ -26,7 +26,7 @@ enum Provider {
   farcaster,
 }
 
-enum TypeOfLogin {
+enum AuthConnection {
   google,
   facebook,
   reddit,

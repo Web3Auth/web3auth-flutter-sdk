@@ -55,7 +55,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     Uri redirectUrl;
     if (Platform.isAndroid) {
-      redirectUrl = Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
+      redirectUrl =
+          Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
     } else if (Platform.isIOS) {
       redirectUrl =
           Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
@@ -63,12 +64,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       throw UnKnownException('Unknown platform');
     }
 
-    final loginConfig = HashMap<String, LoginConfigItem>();
-    loginConfig['jwt'] = LoginConfigItem(
-        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
-        typeOfLogin: TypeOfLogin.jwt,
-        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
-        );
+    final List<AuthConnectionConfig> authConnectionConfig = [
+      AuthConnectionConfig(
+        authConnectionId: "web3auth-auth0-email-passwordless-sapphire-devnet",
+        authConnection: AuthConnection.jwt,
+        clientId: "d84f6xvbdV75VTGmHiMWfZLeSPk8M07C",
+      )
+    ];
 
     await Web3AuthFlutter.init(
       Web3AuthOptions(
@@ -85,7 +87,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           appName: "Web3Auth Flutter App",
           theme: themeMap,
         ),
-        loginConfig: loginConfig,
+        authConnectionConfig: authConnectionConfig,
       ),
     );
 
@@ -290,10 +292,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
   }
 
-  VoidCallback _userInfo(Future<TorusUserInfo> Function() method) {
+  VoidCallback _userInfo(Future<UserInfo> Function() method) {
     return () async {
       try {
-        final TorusUserInfo response = await Web3AuthFlutter.getUserInfo();
+        final UserInfo response = await Web3AuthFlutter.getUserInfo();
         setState(() {
           _result = response.toString();
           logoutVisible = true;
@@ -308,18 +310,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.login(
-      LoginParams(loginProvider: Provider.google, mfaLevel: MFALevel.NONE),
+      LoginParams(
+          loginProvider: AUTH_CONNECTION.google, mfaLevel: MFALevel.NONE),
     );
   }
 
   Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.facebook));
+    return Web3AuthFlutter.login(
+        LoginParams(loginProvider: AUTH_CONNECTION.facebook));
   }
 
   Future<Web3AuthResponse> _withEmailPasswordless() {
     return Web3AuthFlutter.login(
       LoginParams(
-        loginProvider: Provider.email_passwordless,
+        loginProvider: AUTH_CONNECTION.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
           login_hint: textEditingController.text,
         ),
@@ -328,14 +332,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<Web3AuthResponse> _withDiscord() {
-    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
+    return Web3AuthFlutter.login(
+        LoginParams(loginProvider: AUTH_CONNECTION.discord));
   }
 
   Future<String?> _getPrivKey() {
     return Web3AuthFlutter.getPrivKey();
   }
 
-  Future<TorusUserInfo> _getUserInfo() {
+  Future<UserInfo> _getUserInfo() {
     return Web3AuthFlutter.getUserInfo();
   }
 
