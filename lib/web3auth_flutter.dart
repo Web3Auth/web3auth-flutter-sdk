@@ -94,16 +94,16 @@ class Web3AuthFlutter {
   /// Returns the user information such as email address, name, session id, and etc.
   ///
   /// If user is not authenticated, it'll throw an error.
-  static Future<TorusUserInfo> getUserInfo() async {
+  static Future<UserInfo> getUserInfo() async {
     try {
       final String torusUserInfo =
           await _channel.invokeMethod('getUserInfo', jsonEncode({}));
-      return TorusUserInfo.fromJson(jsonDecode(torusUserInfo));
+      return UserInfo.fromJson(jsonDecode(torusUserInfo));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }
   }
-  
+
   /// [setCustomTabsClosed] helps to trigger the [UserCancelledException] exception
   /// on Android.
   ///

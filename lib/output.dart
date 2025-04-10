@@ -11,7 +11,7 @@ class Web3AuthResponse {
   final String? sessionId;
 
   /// User's information based on the current session.
-  final TorusUserInfo? userInfo;
+  final UserInfo? userInfo;
 
   final String? error;
 
@@ -25,32 +25,33 @@ class Web3AuthResponse {
   final int? tssShareIndex;
   final String? tssPubKey;
   final String? tssShare;
+  final String? tssTag;
   final int? tssNonce;
   final List<int>? nodeIndexes;
   final String? keyMode;
 
-  Web3AuthResponse({
-    this.privKey,
-    this.userInfo,
-    this.error,
-    this.ed25519PrivKey,
-    this.sessionId,
-    this.coreKitKey,
-    this.coreKitEd25519PrivKey,
-    this.factorKey,
-    this.signatures,
-    this.tssShareIndex,
-    this.tssPubKey,
-    this.tssShare,
-    this.tssNonce,
-    this.nodeIndexes,
-    this.keyMode
-  });
+  Web3AuthResponse(
+      {this.privKey,
+      this.userInfo,
+      this.error,
+      this.ed25519PrivKey,
+      this.sessionId,
+      this.coreKitKey,
+      this.coreKitEd25519PrivKey,
+      this.factorKey,
+      this.signatures,
+      this.tssShareIndex,
+      this.tssPubKey,
+      this.tssShare,
+      this.tssTag,
+      this.tssNonce,
+      this.nodeIndexes,
+      this.keyMode});
 
   @override
   String toString() {
     return "{privKey=$privKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error,"
-        "factorKey=$factorKey, signatures=$signatures, tssShareIndex=$tssShareIndex, tssPubKey=$tssPubKey, tssShare=$tssShare, tssNonce=$tssNonce, nodeIndexes=$nodeIndexes, keyMode=$keyMode}";
+        "factorKey=$factorKey, signatures=$signatures, tssShareIndex=$tssShareIndex, tssPubKey=$tssPubKey, tssShare=$tssShare, tssTag:$tssTag, tssNonce=$tssNonce, nodeIndexes=$nodeIndexes, keyMode=$keyMode}";
   }
 
   Map<String, dynamic> toJson() {
@@ -67,6 +68,7 @@ class Web3AuthResponse {
       'tssShareIndex': tssShareIndex,
       'tssPubKey': tssPubKey,
       'tssShare': tssShare,
+      'tssTag': tssTag,
       'tssNonce': tssNonce,
       'nodeIndexes': nodeIndexes,
       'keyMode': keyMode
@@ -76,7 +78,7 @@ class Web3AuthResponse {
   Web3AuthResponse.fromJson(Map<String, dynamic> json)
       : privKey = json['privKey'],
         userInfo = json['userInfo'] != null
-            ? TorusUserInfo.fromJson(json['userInfo'])
+            ? UserInfo.fromJson(json['userInfo'])
             : null,
         ed25519PrivKey = json['ed25519PrivKey'],
         sessionId = json['sessionId'],
@@ -90,6 +92,7 @@ class Web3AuthResponse {
         tssShareIndex = json['tssShareIndex'],
         tssPubKey = json['tssPubKey'],
         tssShare = json['tssShare'],
+        tssTag = json['tssTag'],
         tssNonce = json['tssNonce'],
         nodeIndexes = json['nodeIndexes'] != null
             ? List<int>.from(json['nodeIndexes'])
@@ -97,7 +100,7 @@ class Web3AuthResponse {
         keyMode = json['keyMode'];
 }
 
-class TorusUserInfo {
+class UserInfo {
   /// Email of the connected user.
   final String? email;
 
@@ -108,16 +111,16 @@ class TorusUserInfo {
   final String? profileImage;
 
   /// Details of the verifier type.
-  final String? verifier;
+  final String? authConnectionId;
 
   /// Verified id for the custom verifiers.
-  final String? verifierId;
+  final String? userId;
 
   /// Type of login choosen by user, like google, facebook, etc.
-  final String? typeOfLogin;
+  final String? authConnection;
 
   /// Details of the aggregate verifier, if present.
-  final String? aggregateVerifier;
+  final String? groupedAuthConnectionId;
 
   /// If you are using a Custom Verifier, you can get a dapp share after successful login.
   /// This share can act as a replacement to your user's device share.
@@ -137,14 +140,14 @@ class TorusUserInfo {
   /// Defines whether MFA is enabled or not.
   final bool? isMfaEnabled;
 
-  const TorusUserInfo({
+  const UserInfo({
     this.email,
     this.name,
     this.profileImage,
-    this.verifier,
-    this.verifierId,
-    this.typeOfLogin,
-    this.aggregateVerifier,
+    this.authConnectionId,
+    this.userId,
+    this.authConnection,
+    this.groupedAuthConnectionId,
     this.dappShare,
     this.idToken,
     this.oAuthIdToken,
@@ -154,8 +157,8 @@ class TorusUserInfo {
 
   @override
   String toString() {
-    return "{email=$email, name=$name, profileImage=$profileImage, verifier=$verifier,"
-        "verifierId=$verifierId, typeOfLogin=$typeOfLogin, dappShare=$dappShare, idToken=$idToken, oAuthIdToken=$oAuthIdToken, oAuthAccessToken=$oAuthAccessToken, isMfaEnabled=$isMfaEnabled}";
+    return "{email=$email, name=$name, profileImage=$profileImage, authConnectionId=$authConnectionId,"
+        "userId=$userId, authConnection=$authConnection, dappShare=$dappShare, idToken=$idToken, oAuthIdToken=$oAuthIdToken, oAuthAccessToken=$oAuthAccessToken, isMfaEnabled=$isMfaEnabled}";
   }
 
   Map<String, dynamic> toJson() {
@@ -163,10 +166,10 @@ class TorusUserInfo {
       'email': email,
       'name': name,
       'profileImage': profileImage,
-      'verifier': verifier,
-      'verifierId': verifierId,
-      'typeOfLogin': typeOfLogin,
-      'aggregateVerifier': aggregateVerifier,
+      'verifier': authConnectionId,
+      'verifierId': userId,
+      'authConnection': authConnection,
+      'groupedAuthConnectionId': groupedAuthConnectionId,
       'dappShare': dappShare,
       'idToken': idToken,
       'oAuthIdToken': oAuthIdToken,
@@ -175,14 +178,14 @@ class TorusUserInfo {
     };
   }
 
-  TorusUserInfo.fromJson(Map<String, dynamic> json)
+  UserInfo.fromJson(Map<String, dynamic> json)
       : email = json['email'],
         name = json['name'],
         profileImage = json['profileImage'],
-        verifier = json['verifier'],
-        verifierId = json['verifierId'],
-        typeOfLogin = json['typeOfLogin'],
-        aggregateVerifier = json['aggregateVerifier'],
+        authConnectionId = json['authConnectionId'],
+        userId = json['userId'],
+        authConnection = json['authConnection'],
+        groupedAuthConnectionId = json['groupedAuthConnectionId'],
         dappShare = json['dappShare'],
         idToken = json['idToken'],
         oAuthIdToken = json['oAuthIdToken'],
