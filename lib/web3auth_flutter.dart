@@ -137,7 +137,8 @@ class Web3AuthFlutter {
   }
 
   static Future<void> launchWalletServices(
-    ChainConfig chainConfig, {
+    List<ChainConfig> chains,
+    String chainId, {
     String path = "wallet",
   }) async {
     try {
@@ -145,7 +146,8 @@ class Web3AuthFlutter {
       chainConfigJson.removeWhere((key, value) => value == null);
 
       Map<String, dynamic> walletServicesJson = {};
-      walletServicesJson["chainConfig"] = chainConfigJson;
+      walletServicesJson["chains"] = chains;
+      walletServicesJson["chainId"] = chainId;
       walletServicesJson["path"] = path;
 
       await _channel.invokeMethod(
@@ -202,7 +204,8 @@ class Web3AuthFlutter {
   }
 
   static Future<SignResponse> request(
-    ChainConfig chainConfig,
+    List<ChainConfig> chains,
+    String chainId
     String method,
     List<dynamic> requestParams, {
     String path = "wallet/request",
@@ -216,7 +219,8 @@ class Web3AuthFlutter {
           requestParams.map((param) => jsonEncode(param)).toList();
 
       Map<String, dynamic> requestJson = {};
-      requestJson["chainConfig"] = chainConfigJson;
+      requestJson["chains"] = chains;
+      requestJson["chainId"] = chainId;
       requestJson["method"] = method;
       requestJson["requestParams"] = modifiedRequestParams;
       requestJson["path"] = path;

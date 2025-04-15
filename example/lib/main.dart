@@ -348,11 +348,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return () async {
       try {
         await Web3AuthFlutter.launchWalletServices(
-          ChainConfig(
-            chainId: "0x89",
-            rpcTarget:
-                "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
-          ),
+            [
+              ChainConfig(
+                chainId: "0x89",
+                rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
+              ),
+            ],
+            "0x89"
         );
       } on UserCancelledException {
         log("User cancelled.");
@@ -402,7 +404,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         params.add(address.hexEip55);
         params.add("Web3Auth");
         final signResponse = await Web3AuthFlutter.request(
-          ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
+          [ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/")],
+          "0x89",
           "personal_sign",
           params,
           appState: "web3auth",
