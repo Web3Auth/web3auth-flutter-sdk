@@ -197,6 +197,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     Log.d(wsParams.toString(), "#wsParams")
                     val launchWalletCF = web3auth.launchWalletServices(
                         wsParams.chainConfig,
+                        wsParams.chainId,
                         wsParams.path
                     )
                     launchWalletCF.get()
@@ -247,6 +248,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     Log.d(reqParams.toString(), "#reqParams")
                     val requestCF = web3auth.request(
                         reqParams.chainConfig,
+                        reqParams.chainId,
                         reqParams.method,
                         convertListToJsonArray(reqParams.requestParams) ,
                         reqParams.path,
@@ -301,13 +303,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 }
 @Keep
 data class WalletServicesJson(
-    @Keep val chainConfig: ChainConfig,
+    @Keep val chainConfig: List<ChainConfig>,
+    @Keep val chainId: String,
     @Keep val path: String? = "wallet"
 )
 
 @Keep
 data class RequestJson(
-    @Keep val chainConfig: ChainConfig,
+    @Keep val chainConfig: List<ChainConfig>,
+    @Keep val chainId: String,
     @Keep val method: String,
     @Keep val requestParams: List<Any?>,
     @Keep val path: String? = "wallet/request",
