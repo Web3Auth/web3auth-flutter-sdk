@@ -79,7 +79,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         //sdkUrl: 'https://auth.mocaverse.xyz',
         //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
         network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.production,
+        buildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
           mode: ThemeModes.dark,
@@ -215,8 +215,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             child: const Text('Launch Wallet Services'),
                           ),
                           ElevatedButton(
-                            onPressed: _setupMFA(),
-                            child: const Text('Setup MFA'),
+                            onPressed: _enableMFA(),
+                            child: const Text('Enable MFA'),
                           ),
                           ElevatedButton(
                             onPressed: _manageMFA(),
@@ -311,19 +311,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.login(
       LoginParams(
-          loginProvider: AUTH_CONNECTION.google, mfaLevel: MFALevel.NONE),
+          authConnection: AUTH_CONNECTION.google, mfaLevel: MFALevel.NONE),
     );
   }
 
   Future<Web3AuthResponse> _withFacebook() {
     return Web3AuthFlutter.login(
-        LoginParams(loginProvider: AUTH_CONNECTION.facebook));
+        LoginParams(authConnection: AUTH_CONNECTION.facebook));
   }
 
   Future<Web3AuthResponse> _withEmailPasswordless() {
     return Web3AuthFlutter.login(
       LoginParams(
-        loginProvider: AUTH_CONNECTION.email_passwordless,
+        authConnection: AUTH_CONNECTION.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
           login_hint: textEditingController.text,
         ),
@@ -333,7 +333,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<Web3AuthResponse> _withDiscord() {
     return Web3AuthFlutter.login(
-        LoginParams(loginProvider: AUTH_CONNECTION.discord));
+        LoginParams(authConnection: AUTH_CONNECTION.discord));
   }
 
   Future<String?> _getPrivKey() {
@@ -364,7 +364,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
   }
 
-  VoidCallback _setupMFA() {
+  VoidCallback _enableMFA() {
     return () async {
       try {
         await Web3AuthFlutter.enableMFA();

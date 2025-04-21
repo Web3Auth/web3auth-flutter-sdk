@@ -137,18 +137,23 @@ class Web3AuthFlutter {
   }
 
   static Future<void> launchWalletServices(
-    List<ChainConfig> chains,
+    List<ChainConfig> chainConfig,
     String chainId, {
     String path = "wallet",
   }) async {
     try {
-      Map<String, dynamic> chainConfigJson = chainConfig.toJson();
-      chainConfigJson.removeWhere((key, value) => value == null);
+      List<Map<String, dynamic>> chainConfigJson = chainConfig
+          .map((config) {
+        final json = config.toJson();
+        json.removeWhere((key, value) => value == null);
+        return json;
+      }).toList();
 
-      Map<String, dynamic> walletServicesJson = {};
-      walletServicesJson["chains"] = chains;
-      walletServicesJson["chainId"] = chainId;
-      walletServicesJson["path"] = path;
+      Map<String, dynamic> walletServicesJson = {
+        "chainConfig": chainConfigJson,
+        "chainId": chainId,
+        "path": path,
+      };
 
       await _channel.invokeMethod(
         'launchWalletServices',
@@ -204,26 +209,35 @@ class Web3AuthFlutter {
   }
 
   static Future<SignResponse> request(
-    List<ChainConfig> chains,
-    String chainId
+    List<ChainConfig> chainConfig,
+    String chainId,
     String method,
     List<dynamic> requestParams, {
     String path = "wallet/request",
     String? appState,
   }) async {
     try {
-      Map<String, dynamic> chainConfigJson = chainConfig.toJson();
-      chainConfigJson.removeWhere((key, value) => value == null);
+      List<Map<String, dynamic>> chainConfigJson = chainConfig
+          .map((config) {
+        final json = config.toJson();
+        json.removeWhere((key, value) => value == null);
+        return json;
+      })
+          .toList();
 
+      // Encode each request param as a string
       List<String> modifiedRequestParams =
-          requestParams.map((param) => jsonEncode(param)).toList();
+      requestParams.map((param) => jsonEncode(param)).toList();
 
-      Map<String, dynamic> requestJson = {};
-      requestJson["chains"] = chains;
-      requestJson["chainId"] = chainId;
-      requestJson["method"] = method;
-      requestJson["requestParams"] = modifiedRequestParams;
-      requestJson["path"] = path;
+      // Build the request JSON
+      Map<String, dynamic> requestJson = {
+        "chainConfig": chainConfigJson,
+        "chainId": chainId,
+        "method": method,
+        "requestParams": modifiedRequestParams,
+        "path": path,
+      };
+
       if (appState != null) {
         requestJson["appState"] = appState;
       }

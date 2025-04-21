@@ -4,9 +4,9 @@ import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 class LoginParams {
-  /// [loginProvider] sets the oAuth login method to be used. You can use any of the
-  /// valid [Provider] from the supported list.
-  final AUTH_CONNECTION loginProvider;
+  /// [authConnection] sets the oAuth login method to be used. You can use any of the
+  /// valid [AUTH_CONNECTION] from the supported list.
+  final AUTH_CONNECTION authConnection;
 
   /// Custom verifier logins can get a dapp share returned to them post successful login.
   /// This is useful if the dapps want to use this share to allow users to login seamlessly.
@@ -22,7 +22,7 @@ class LoginParams {
   /// The default value is [Curve.secp256k1].
   final Curve? curve;
 
-  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [loginProvider].
+  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AUTH_CONNECTION].
   ///
   /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
   final ExtraLoginOptions? extraLoginOptions;
@@ -37,7 +37,7 @@ class LoginParams {
   final String? dappUrl;
 
   LoginParams(
-      {required this.loginProvider,
+      {required this.authConnection,
       this.dappShare,
       this.curve = Curve.secp256k1,
       this.extraLoginOptions,
@@ -47,7 +47,7 @@ class LoginParams {
       this.dappUrl});
 
   Map<String, dynamic> toJson() => {
-        "loginProvider": loginProvider.name,
+        "authConnection": authConnection.name,
         "dappShare": dappShare,
         "curve": curve?.name,
         "extraLoginOptions": extraLoginOptions?.toJson(),
@@ -511,7 +511,7 @@ class UnKnownException implements Exception {
 }
 
 String getSdkUrl(BuildEnv? buildEnv) {
-  const String version = "v9";
+  const String version = "v10";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-auth.web3auth.io/$version";
