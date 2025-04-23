@@ -121,7 +121,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 let getEd25519PrivKey = web3auth?.getEd25519PrivKey()
                 result(getEd25519PrivKey)
                 return
-            case "launchWalletServices":
+            case "showWalletUI":
                 let wsParams: WalletServicesParams
                 do {
                     wsParams = try decoder.decode(WalletServicesParams.self, from: data)
@@ -135,7 +135,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 
                 do {
-                    try await web3auth?.launchWalletServices(chains: wsParams.chains, chainId: wsParams.chainId, path: wsParams.path)
+                    try await web3auth?.showWalletUI(chains: wsParams.chains, chainId: wsParams.chainId, path: wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -197,8 +197,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 
                     do {
                         let signResponse = try await web3auth?.request(
-                            chains: reqParams.chains,
-                            chainId: wsParams.chainId,
+                            chainConfig: reqParams.chainConfig,
                             method: reqParams.method,
                             requestParams: reqParams.requestParams,
                             path: reqParams.path,
@@ -263,8 +262,7 @@ struct WalletServicesParams: Codable {
 }
 
 struct RequestJson: Codable {
-    let chains: [ChainConfig]
-    let chainId: String
+    let chainConfig: ChainConfig
     let method: String
     let requestParams: [String]
     let path: String?

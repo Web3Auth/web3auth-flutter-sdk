@@ -12,7 +12,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.ChainConfig
+import com.web3auth.core.types.ChainsConfig
 import com.web3auth.core.types.ErrorCode
 import com.web3auth.core.types.LoginParams
 import com.web3auth.core.types.Web3AuthError
@@ -189,13 +189,13 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "launchWalletServices" -> {
+            "showWalletUI" -> {
                 try {
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#showWalletUI")
                     val wsArgs = call.arguments<String>() ?: return null
                     val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
                     Log.d(wsParams.toString(), "#wsParams")
-                    val launchWalletCF = web3auth.launchWalletServices(
+                    val launchWalletCF = web3auth.showWalletUI(
                         wsParams.chainConfig,
                         wsParams.chainId,
                         wsParams.path
@@ -242,13 +242,12 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
             "request" -> {
                 try {
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#request")
                     val requestArgs = call.arguments<String>() ?: return null
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
                     val requestCF = web3auth.request(
                         reqParams.chainConfig,
-                        reqParams.chainId,
                         reqParams.method,
                         convertListToJsonArray(reqParams.requestParams) ,
                         reqParams.path,
@@ -303,14 +302,14 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 }
 @Keep
 data class WalletServicesJson(
-    @Keep val chainConfig: List<ChainConfig>,
+    @Keep val chainConfig: List<ChainsConfig>,
     @Keep val chainId: String,
     @Keep val path: String? = "wallet"
 )
 
 @Keep
 data class RequestJson(
-    @Keep val chainConfig: List<ChainConfig>,
+    @Keep val chainConfig: ChainsConfig,
     @Keep val chainId: String,
     @Keep val method: String,
     @Keep val requestParams: List<Any?>,

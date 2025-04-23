@@ -79,7 +79,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         //sdkUrl: 'https://auth.mocaverse.xyz',
         //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
         network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.testing,
+        authBuildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(
           mode: ThemeModes.dark,
@@ -311,19 +311,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.login(
       LoginParams(
-          authConnection: AUTH_CONNECTION.google, mfaLevel: MFALevel.NONE),
+          authConnection: AuthConnection.google, mfaLevel: MFALevel.NONE),
     );
   }
 
   Future<Web3AuthResponse> _withFacebook() {
     return Web3AuthFlutter.login(
-        LoginParams(authConnection: AUTH_CONNECTION.facebook));
+        LoginParams(authConnection: AuthConnection.facebook));
   }
 
   Future<Web3AuthResponse> _withEmailPasswordless() {
     return Web3AuthFlutter.login(
       LoginParams(
-        authConnection: AUTH_CONNECTION.email_passwordless,
+        authConnection: AuthConnection.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
           login_hint: textEditingController.text,
         ),
@@ -333,7 +333,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<Web3AuthResponse> _withDiscord() {
     return Web3AuthFlutter.login(
-        LoginParams(authConnection: AUTH_CONNECTION.discord));
+        LoginParams(authConnection: AuthConnection.discord));
   }
 
   Future<String?> _getPrivKey() {
@@ -347,9 +347,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   VoidCallback _launchWalletServices() {
     return () async {
       try {
-        await Web3AuthFlutter.launchWalletServices(
+        await Web3AuthFlutter.showWalletUI(
             [
-              ChainConfig(
+              ChainsConfig(
                 chainId: "0x89",
                 rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
               ),
@@ -404,8 +404,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         params.add(address.hexEip55);
         params.add("Web3Auth");
         final signResponse = await Web3AuthFlutter.request(
-          [ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/")],
-          "0x89",
+          ChainsConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
           "personal_sign",
           params,
           appState: "web3auth",
