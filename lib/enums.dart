@@ -8,24 +8,6 @@ enum Language { en, de, ja, ko, zh, es, fr, pt, nl , tr}
 
 enum ThemeModes { light, dark, auto }
 
-enum AUTH_CONNECTION {
-  google,
-  facebook,
-  reddit,
-  discord,
-  twitch,
-  github,
-  apple,
-  linkedin,
-  twitter,
-  line,
-  kakao,
-  email_passwordless,
-  jwt,
-  sms_passwordless,
-  farcaster,
-}
-
 enum AuthConnection {
   google,
   facebook,

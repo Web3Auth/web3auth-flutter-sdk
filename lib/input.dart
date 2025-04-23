@@ -5,8 +5,8 @@ import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 class LoginParams {
   /// [authConnection] sets the oAuth login method to be used. You can use any of the
-  /// valid [AUTH_CONNECTION] from the supported list.
-  final AUTH_CONNECTION authConnection;
+  /// valid [AuthConnection] from the supported list.
+  final AuthConnection authConnection;
 
   /// Custom verifier logins can get a dapp share returned to them post successful login.
   /// This is useful if the dapps want to use this share to allow users to login seamlessly.
@@ -22,7 +22,7 @@ class LoginParams {
   /// The default value is [Curve.secp256k1].
   final Curve? curve;
 
-  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AUTH_CONNECTION].
+  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AuthConnection].
   ///
   /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
   final ExtraLoginOptions? extraLoginOptions;
@@ -364,7 +364,7 @@ class MfaSettings {
   }
 }
 
-class ChainConfig {
+class ChainsConfig {
   final ChainNamespace chainNamespace;
   final int? decimals;
   final String? blockExplorerUrl;
@@ -375,7 +375,7 @@ class ChainConfig {
   final String? ticker;
   final String? tickerName;
 
-  ChainConfig({
+  ChainsConfig({
     this.chainNamespace = ChainNamespace.eip155,
     this.decimals = 18,
     this.blockExplorerUrl,
@@ -413,10 +413,10 @@ class Web3AuthOptions {
   /// User [Network.sapphire_mainnet] for production build.
   final Network network;
 
-  /// [buildEnv] is used for internal testing purposes. This buildEnv
+  /// [authBuildEnv] is used for internal testing purposes. This buildEnv
   /// signifies the enviroment for Web3Auth, and doesn't signifies
   /// the enviorment of the application.
-  final BuildEnv? buildEnv;
+  final BuildEnv? authBuildEnv;
 
   /// Define the desired Web3Auth service url.
   final String? sdkUrl;
@@ -453,7 +453,7 @@ class Web3AuthOptions {
   /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
   final int? sessionTime;
 
-  final ChainConfig? chainConfig;
+  final ChainsConfig? chainConfig;
 
   final Map<String, String>? originData;
 
@@ -462,7 +462,7 @@ class Web3AuthOptions {
   Web3AuthOptions({
     required this.clientId,
     required this.network,
-    this.buildEnv = BuildEnv.production,
+    this.authBuildEnv = BuildEnv.production,
     String? sdkUrl,
     String? walletSdkUrl,
     this.redirectUrl,
@@ -475,11 +475,11 @@ class Web3AuthOptions {
     this.originData,
     String? dashboardUrl,
   })  : chainConfig = null,
-        sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
+        sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv ?? BuildEnv.production),
         walletSdkUrl =
-            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production),
+            walletSdkUrl ?? getWalletSdkUrl(authBuildEnv ?? BuildEnv.production),
         dashboardUrl =
-            dashboardUrl ?? getDashboardUrl(buildEnv ?? BuildEnv.production);
+            dashboardUrl ?? getDashboardUrl(authBuildEnv ?? BuildEnv.production);
 
   Map<String, dynamic> toJson() {
     return {
@@ -487,7 +487,7 @@ class Web3AuthOptions {
       'network': network.name,
       'sdkUrl': sdkUrl,
       'walletSdkUrl': walletSdkUrl,
-      'buildEnv': buildEnv?.name,
+      'buildEnv': authBuildEnv?.name,
       'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
       'authConnectionConfig': authConnectionConfig,
