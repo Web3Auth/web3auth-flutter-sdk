@@ -364,7 +364,7 @@ class MfaSettings {
   }
 }
 
-class ChainsConfig {
+class ChainConfig {
   final ChainNamespace chainNamespace;
   final int? decimals;
   final String? blockExplorerUrl;
@@ -375,7 +375,7 @@ class ChainsConfig {
   final String? ticker;
   final String? tickerName;
 
-  ChainsConfig({
+  ChainConfig({
     this.chainNamespace = ChainNamespace.eip155,
     this.decimals = 18,
     this.blockExplorerUrl,
@@ -453,7 +453,7 @@ class Web3AuthOptions {
   /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
   final int? sessionTime;
 
-  final ChainsConfig? chainConfig;
+  final ChainConfig? chainConfig;
 
   final Map<String, String>? originData;
 

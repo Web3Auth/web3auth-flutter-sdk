@@ -349,7 +349,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       try {
         await Web3AuthFlutter.showWalletUI(
             [
-              ChainsConfig(
+              ChainConfig(
                 chainId: "0x89",
                 rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
               ),
@@ -404,7 +404,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         params.add(address.hexEip55);
         params.add("Web3Auth");
         final signResponse = await Web3AuthFlutter.request(
-          ChainsConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
+          ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
           "personal_sign",
           params,
           appState: "web3auth",

@@ -137,7 +137,7 @@ class Web3AuthFlutter {
   }
 
   static Future<void> showWalletUI(
-    List<ChainsConfig> chainConfig,
+    List<ChainConfig> chainConfig,
     String chainId, {
     String path = "wallet",
   }) async {
@@ -209,7 +209,7 @@ class Web3AuthFlutter {
   }
 
   static Future<SignResponse> request(
-    ChainsConfig chainConfig,
+    ChainConfig chainConfig,
     String method,
     List<dynamic> requestParams, {
     String path = "wallet/request",

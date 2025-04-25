@@ -12,7 +12,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.ChainsConfig
+import com.web3auth.core.types.ChainConfig
 import com.web3auth.core.types.ErrorCode
 import com.web3auth.core.types.LoginParams
 import com.web3auth.core.types.Web3AuthError
@@ -302,14 +302,14 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 }
 @Keep
 data class WalletServicesJson(
-    @Keep val chainConfig: List<ChainsConfig>,
+    @Keep val chainConfig: List<ChainConfig>,
     @Keep val chainId: String,
     @Keep val path: String? = "wallet"
 )
 
 @Keep
 data class RequestJson(
-    @Keep val chainConfig: ChainsConfig,
+    @Keep val chainConfig: ChainConfig,
     @Keep val chainId: String,
     @Keep val method: String,
     @Keep val requestParams: List<Any?>,
