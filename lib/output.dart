@@ -1,8 +1,11 @@
 import 'dart:core';
 
+import 'package:json_annotation/json_annotation.dart';
+
 class Web3AuthResponse {
   /// secp256k1 private key compaitible with Ethereum ecosystem.
-  final String? privKey;
+  @JsonKey(name: 'privKey')
+  final String? privateKey;
 
   /// ed25519 private key compaitible with Solana ecosystem.
   final String? ed25519PrivKey;
@@ -31,7 +34,7 @@ class Web3AuthResponse {
   final String? keyMode;
 
   Web3AuthResponse(
-      {this.privKey,
+      {this.privateKey,
       this.userInfo,
       this.error,
       this.ed25519PrivKey,
@@ -50,13 +53,13 @@ class Web3AuthResponse {
 
   @override
   String toString() {
-    return "{privKey=$privKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error,"
+    return "{privateKey=$privateKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error,"
         "factorKey=$factorKey, signatures=$signatures, tssShareIndex=$tssShareIndex, tssPubKey=$tssPubKey, tssShare=$tssShare, tssTag:$tssTag, tssNonce=$tssNonce, nodeIndexes=$nodeIndexes, keyMode=$keyMode}";
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'privKey': privKey,
+      'privKey': privateKey,
       'userInfo': userInfo?.toJson(),
       'ed25519PrivKey': ed25519PrivKey,
       'sessionId': sessionId,
@@ -76,7 +79,7 @@ class Web3AuthResponse {
   }
 
   Web3AuthResponse.fromJson(Map<String, dynamic> json)
-      : privKey = json['privKey'],
+      : privateKey = json['privKey'],
         userInfo = json['userInfo'] != null
             ? UserInfo.fromJson(json['userInfo'])
             : null,

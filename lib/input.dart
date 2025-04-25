@@ -1,5 +1,7 @@
 import 'dart:collection';
+import 'dart:convert';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
@@ -410,8 +412,9 @@ class Web3AuthOptions {
 
   /// Web3Auth Network to use for the session & the issued idToken.
   ///
-  /// User [Network.sapphire_mainnet] for production build.
-  final Network network;
+  /// User [Web3AuthNetwork.sapphire_mainnet] for production build.
+  @JsonKey(name: 'network')
+  final Web3AuthNetwork web3AuthNetwork;
 
   /// [authBuildEnv] is used for internal testing purposes. This buildEnv
   /// signifies the enviroment for Web3Auth, and doesn't signifies
@@ -461,7 +464,7 @@ class Web3AuthOptions {
 
   Web3AuthOptions({
     required this.clientId,
-    required this.network,
+    required this.web3AuthNetwork,
     this.authBuildEnv = BuildEnv.production,
     String? sdkUrl,
     String? walletSdkUrl,
@@ -484,7 +487,7 @@ class Web3AuthOptions {
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
-      'network': network.name,
+      'network': web3AuthNetwork.name,
       'sdkUrl': sdkUrl,
       'walletSdkUrl': walletSdkUrl,
       'buildEnv': authBuildEnv?.name,

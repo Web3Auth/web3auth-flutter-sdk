@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
         //sdkUrl: 'https://auth.mocaverse.xyz',
         //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
-        network: Network.sapphire_devnet,
+        web3AuthNetwork: Web3AuthNetwork.sapphire_devnet,
         authBuildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
         whiteLabel: WhiteLabelData(

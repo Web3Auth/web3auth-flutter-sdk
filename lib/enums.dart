@@ -1,4 +1,4 @@
-enum Network { mainnet, testnet, cyan, aqua, sapphire_devnet, sapphire_mainnet }
+enum Web3AuthNetwork { mainnet, testnet, cyan, aqua, sapphire_devnet, sapphire_mainnet }
 
 enum BuildEnv { production, staging, testing }
 
