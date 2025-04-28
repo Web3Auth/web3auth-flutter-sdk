@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:web3auth_flutter/enums.dart';
@@ -470,7 +469,7 @@ class Web3AuthOptions {
     String? walletSdkUrl,
     this.redirectUrl,
     this.whiteLabel,
-    this.authConnectionConfig,
+    List<AuthConnectionConfig>? authConnectionConfig,
     this.useCoreKitKey,
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 30 * 86400,
@@ -482,7 +481,8 @@ class Web3AuthOptions {
         walletSdkUrl =
             walletSdkUrl ?? getWalletSdkUrl(authBuildEnv ?? BuildEnv.production),
         dashboardUrl =
-            dashboardUrl ?? getDashboardUrl(authBuildEnv ?? BuildEnv.production);
+            dashboardUrl ?? getDashboardUrl(authBuildEnv ?? BuildEnv.production),
+        authConnectionConfig = authConnectionConfig ?? const [];
 
   Map<String, dynamic> toJson() {
     return {
