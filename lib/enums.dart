@@ -24,7 +24,7 @@ enum AuthConnection {
   line,
   email_passwordless,
   email_password,
-  jwt,
+  custom,
   sms_passwordless,
   farcaster,
 }

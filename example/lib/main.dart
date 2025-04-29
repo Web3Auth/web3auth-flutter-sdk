@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     final List<AuthConnectionConfig> authConnectionConfig = [
       AuthConnectionConfig(
         authConnectionId: "web3auth-auth0-email-passwordless-sapphire-devnet",
-        authConnection: AuthConnection.jwt,
+        authConnection: AuthConnection.custom,
         clientId: "d84f6xvbdV75VTGmHiMWfZLeSPk8M07C",
       )
     ];
