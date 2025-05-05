@@ -94,16 +94,16 @@ class Web3AuthFlutter {
   /// Returns the user information such as email address, name, session id, and etc.
   ///
   /// If user is not authenticated, it'll throw an error.
-  static Future<TorusUserInfo> getUserInfo() async {
+  static Future<UserInfo> getUserInfo() async {
     try {
       final String torusUserInfo =
           await _channel.invokeMethod('getUserInfo', jsonEncode({}));
-      return TorusUserInfo.fromJson(jsonDecode(torusUserInfo));
+      return UserInfo.fromJson(jsonDecode(torusUserInfo));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }
   }
-  
+
   /// [setCustomTabsClosed] helps to trigger the [UserCancelledException] exception
   /// on Android.
   ///
@@ -136,20 +136,27 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> launchWalletServices(
-    ChainConfig chainConfig, {
+  static Future<void> showWalletUI(
+    List<ChainConfig> chainConfig,
+    String chainId, {
     String path = "wallet",
   }) async {
     try {
-      Map<String, dynamic> chainConfigJson = chainConfig.toJson();
-      chainConfigJson.removeWhere((key, value) => value == null);
+      List<Map<String, dynamic>> chainConfigJson = chainConfig
+          .map((config) {
+        final json = config.toJson();
+        json.removeWhere((key, value) => value == null);
+        return json;
+      }).toList();
 
-      Map<String, dynamic> walletServicesJson = {};
-      walletServicesJson["chainConfig"] = chainConfigJson;
-      walletServicesJson["path"] = path;
+      Map<String, dynamic> walletServicesJson = {
+        "chainConfig": chainConfigJson,
+        "chainId": chainId,
+        "path": path,
+      };
 
       await _channel.invokeMethod(
-        'launchWalletServices',
+        'showWalletUI',
         jsonEncode(walletServicesJson),
       );
 
@@ -209,17 +216,18 @@ class Web3AuthFlutter {
     String? appState,
   }) async {
     try {
-      Map<String, dynamic> chainConfigJson = chainConfig.toJson();
-      chainConfigJson.removeWhere((key, value) => value == null);
-
+      // Encode each request param as a string
       List<String> modifiedRequestParams =
-          requestParams.map((param) => jsonEncode(param)).toList();
+      requestParams.map((param) => jsonEncode(param)).toList();
 
-      Map<String, dynamic> requestJson = {};
-      requestJson["chainConfig"] = chainConfigJson;
-      requestJson["method"] = method;
-      requestJson["requestParams"] = modifiedRequestParams;
-      requestJson["path"] = path;
+      // Build the request JSON
+      Map<String, dynamic> requestJson = {
+        "chainConfig": chainConfig.toJson(),
+        "method": method,
+        "requestParams": modifiedRequestParams,
+        "path": path,
+      };
+
       if (appState != null) {
         requestJson["appState"] = appState;
       }
