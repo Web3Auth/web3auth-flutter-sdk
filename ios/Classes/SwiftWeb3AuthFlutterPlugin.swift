@@ -113,12 +113,12 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 // There is no initialize function in swift
                 result(nil)
                 return
-            case "getPrivKey":
-                let privKey = web3auth?.getPrivkey()
+            case "getPrivateKey":
+                let privKey = web3auth?.getPrivateKey()
                 result(privKey)
                 return
-            case "getEd25519PrivKey":
-                let getEd25519PrivKey = web3auth?.getEd25519PrivKey()
+            case "getEd25519PrivateKey":
+                let getEd25519PrivKey = web3auth?.getEd25519PrivateKey()
                 result(getEd25519PrivKey)
                 return
             case "showWalletUI":

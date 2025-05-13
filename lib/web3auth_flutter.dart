@@ -67,10 +67,10 @@ class Web3AuthFlutter {
   /// authenticated.
   ///
   /// If user is not authenticated, it'll return empty string.
-  static Future<String> getPrivKey() async {
+  static Future<String> getPrivateKey() async {
     try {
       final String privKey =
-          await _channel.invokeMethod('getPrivKey', jsonEncode({}));
+          await _channel.invokeMethod('getPrivateKey', jsonEncode({}));
       return privKey;
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
@@ -81,10 +81,10 @@ class Web3AuthFlutter {
   /// authenticated.
   ///
   /// If user is not authenticated, it'll return empty string.
-  static Future<String> getEd25519PrivKey() async {
+  static Future<String> getEd25519PrivateKey() async {
     try {
       final String getEd25519PrivKey =
-          await _channel.invokeMethod('getEd25519PrivKey', jsonEncode({}));
+          await _channel.invokeMethod('getEd25519PrivateKey', jsonEncode({}));
       return getEd25519PrivKey;
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);

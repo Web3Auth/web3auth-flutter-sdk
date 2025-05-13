@@ -75,6 +75,8 @@ class AuthConnectionConfig {
   /// Description for the button. If provided, it renders as a full length button. else, icon button.
   final String? description;
 
+  final String? groupedAuthConnectionId;
+
   /// The field in JWT token which maps to verifier id. Please make sure you selected
   /// correct JWT verifier id in the developer dashboard.
   final String? verifierSubIdentifier;
@@ -106,6 +108,7 @@ class AuthConnectionConfig {
     required this.clientId,
     this.name,
     this.description,
+    this.groupedAuthConnectionId,
     this.verifierSubIdentifier,
     this.logoHover,
     this.logoLight,
@@ -123,6 +126,7 @@ class AuthConnectionConfig {
       'clientId': clientId,
       'name': name,
       'description': description,
+      'groupedAuthConnectionId': groupedAuthConnectionId,
       'verifierSubIdentifier': verifierSubIdentifier,
       'logoHover': logoHover,
       'logoLight': logoLight,

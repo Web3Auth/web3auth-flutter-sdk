@@ -151,15 +151,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "getPrivKey" -> {
-                val privKey = web3auth.getPrivkey()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivKey")
+            "getPrivateKey" -> {
+                val privKey = web3auth.privateKey
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivateKey")
                 return privKey
             }
 
-            "getEd25519PrivKey" -> {
-                val ed25519Key = web3auth.getEd25519PrivKey()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
+            "getEd25519PrivateKey" -> {
+                val ed25519Key = web3auth.ed25519PrivateKey
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivateKey")
                 return ed25519Key
             }
 

@@ -97,7 +97,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       print('Error during Web3Auth initialization: $e');
     }
 
-    final String res = await Web3AuthFlutter.getPrivKey();
+    final String res = await Web3AuthFlutter.getPrivateKey();
     log(res);
     if (res.isNotEmpty) {
       setState(() {
@@ -279,7 +279,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   VoidCallback _privKey(Future<String?> Function() method) {
     return () async {
       try {
-        final String response = await Web3AuthFlutter.getPrivKey();
+        final String response = await Web3AuthFlutter.getPrivateKey();
         setState(() {
           _result = response;
           logoutVisible = true;
@@ -337,7 +337,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<String?> _getPrivKey() {
-    return Web3AuthFlutter.getPrivKey();
+    return Web3AuthFlutter.getPrivateKey();
   }
 
   Future<UserInfo> _getUserInfo() {
