@@ -37,6 +37,12 @@ class LoginParams {
   final MFALevel? mfaLevel;
   final String? dappUrl;
 
+  /// The auth connection id to be used for login.
+  final String? authConnectionId;
+
+  /// The grouped auth connection id to be used for login.
+  final String? groupedAuthConnectionId;
+
   LoginParams(
       {required this.authConnection,
       this.dappShare,
@@ -45,7 +51,9 @@ class LoginParams {
       this.redirectUrl,
       this.appState,
       this.mfaLevel,
-      this.dappUrl});
+      this.dappUrl,
+      this.authConnectionId,
+      this.groupedAuthConnectionId});
 
   Map<String, dynamic> toJson() => {
         "authConnection": authConnection.name,
@@ -55,7 +63,9 @@ class LoginParams {
         "redirectUrl": redirectUrl?.toString(),
         "appState": appState,
         "mfaLevel": mfaLevel?.type,
-        "dappUrl": dappUrl
+        "dappUrl": dappUrl,
+        "authConnectionId": authConnectionId,
+        "groupedAuthConnectionId": groupedAuthConnectionId,
       };
 }
 
@@ -75,11 +85,9 @@ class AuthConnectionConfig {
   /// Description for the button. If provided, it renders as a full length button. else, icon button.
   final String? description;
 
+  ///  The grouped auth connection id.
+  ///  If provided, authConnectionId will become a sub identifier for the groupedAuthConnectionId.
   final String? groupedAuthConnectionId;
-
-  /// The field in JWT token which maps to verifier id. Please make sure you selected
-  /// correct JWT verifier id in the developer dashboard.
-  final String? verifierSubIdentifier;
 
   /// Logo to be shown on mouse hover.
   final String? logoHover;
