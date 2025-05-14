@@ -1,12 +1,19 @@
 import 'dart:collection';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 class LoginParams {
-  /// [loginProvider] sets the oAuth login method to be used. You can use any of the
-  /// valid [Provider] from the supported list.
-  final Provider loginProvider;
+  /// [authConnection] sets the oAuth login method to be used. You can use any of the
+  /// valid [AuthConnection] from the supported list.
+  final AuthConnection authConnection;
+
+  /// The auth connection id to be used for login.
+  final String? authConnectionId;
+
+  /// The grouped auth connection id to be used for login.
+  final String? groupedAuthConnectionId;
 
   /// Custom verifier logins can get a dapp share returned to them post successful login.
   /// This is useful if the dapps want to use this share to allow users to login seamlessly.
@@ -22,7 +29,7 @@ class LoginParams {
   /// The default value is [Curve.secp256k1].
   final Curve? curve;
 
-  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [loginProvider].
+  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AuthConnection].
   ///
   /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
   final ExtraLoginOptions? extraLoginOptions;
@@ -37,7 +44,9 @@ class LoginParams {
   final String? dappUrl;
 
   LoginParams(
-      {required this.loginProvider,
+      {required this.authConnection,
+        this.authConnectionId,
+        this.groupedAuthConnectionId,
       this.dappShare,
       this.curve = Curve.secp256k1,
       this.extraLoginOptions,
@@ -47,23 +56,25 @@ class LoginParams {
       this.dappUrl});
 
   Map<String, dynamic> toJson() => {
-        "loginProvider": loginProvider.name,
+        "authConnection": authConnection.name,
+        "authConnectionId": authConnectionId,
+        "groupedAuthConnectionId": groupedAuthConnectionId,
         "dappShare": dappShare,
         "curve": curve?.name,
         "extraLoginOptions": extraLoginOptions?.toJson(),
         "redirectUrl": redirectUrl?.toString(),
         "appState": appState,
         "mfaLevel": mfaLevel?.type,
-        "dappUrl": dappUrl
+        "dappUrl": dappUrl,
       };
 }
 
-class LoginConfigItem {
+class AuthConnectionConfig {
   /// Custom verifier name given in the developer dashboard.
-  final String verifier;
+  final String authConnectionId;
 
   /// The type of login for custom verifier.
-  final TypeOfLogin typeOfLogin;
+  final AuthConnection authConnection;
 
   /// Client id provided by your login provider used for custom verifier.
   final String clientId;
@@ -74,9 +85,9 @@ class LoginConfigItem {
   /// Description for the button. If provided, it renders as a full length button. else, icon button.
   final String? description;
 
-  /// The field in JWT token which maps to verifier id. Please make sure you selected
-  /// correct JWT verifier id in the developer dashboard.
-  final String? verifierSubIdentifier;
+  ///  The grouped auth connection id.
+  ///  If provided, authConnectionId will become a sub identifier for the groupedAuthConnectionId.
+  final String? groupedAuthConnectionId;
 
   /// Logo to be shown on mouse hover.
   final String? logoHover;
@@ -99,13 +110,13 @@ class LoginConfigItem {
   /// Whether to show the login button on Mobile.
   final bool? showOnMobile;
 
-  LoginConfigItem({
-    required this.verifier,
-    required this.typeOfLogin,
+  AuthConnectionConfig({
+    required this.authConnectionId,
+    required this.authConnection,
     required this.clientId,
     this.name,
     this.description,
-    this.verifierSubIdentifier,
+    this.groupedAuthConnectionId,
     this.logoHover,
     this.logoLight,
     this.logoDark,
@@ -117,12 +128,12 @@ class LoginConfigItem {
 
   Map<String, dynamic> toJson() {
     return {
-      'verifier': verifier,
-      'typeOfLogin': typeOfLogin.name,
+      'authConnectionId': authConnectionId,
+      'authConnection': authConnection.name,
       'clientId': clientId,
       'name': name,
       'description': description,
-      'verifierSubIdentifier': verifierSubIdentifier,
+      'groupedAuthConnectionId': groupedAuthConnectionId,
       'logoHover': logoHover,
       'logoLight': logoLight,
       'logoDark': logoDark,
@@ -410,13 +421,14 @@ class Web3AuthOptions {
 
   /// Web3Auth Network to use for the session & the issued idToken.
   ///
-  /// User [Network.sapphire_mainnet] for production build.
-  final Network network;
+  /// User [Web3AuthNetwork.sapphire_mainnet] for production build.
+  @JsonKey(name: 'network')
+  final Web3AuthNetwork web3AuthNetwork;
 
-  /// [buildEnv] is used for internal testing purposes. This buildEnv
+  /// [authBuildEnv] is used for internal testing purposes. This buildEnv
   /// signifies the enviroment for Web3Auth, and doesn't signifies
   /// the enviorment of the application.
-  final BuildEnv? buildEnv;
+  final BuildEnv? authBuildEnv;
 
   /// Define the desired Web3Auth service url.
   final String? sdkUrl;
@@ -436,7 +448,7 @@ class Web3AuthOptions {
   final WhiteLabelData? whiteLabel;
 
   /// Login config for the custom verifiers.
-  final HashMap<String, LoginConfigItem>? loginConfig;
+  final List<AuthConnectionConfig>? authConnectionConfig;
 
   /// Use [useCoreKitKey] to get the core kit key.
   final bool? useCoreKitKey;
@@ -461,13 +473,13 @@ class Web3AuthOptions {
 
   Web3AuthOptions({
     required this.clientId,
-    required this.network,
-    this.buildEnv = BuildEnv.production,
+    required this.web3AuthNetwork,
+    this.authBuildEnv = BuildEnv.production,
     String? sdkUrl,
     String? walletSdkUrl,
     this.redirectUrl,
     this.whiteLabel,
-    this.loginConfig,
+    List<AuthConnectionConfig>? authConnectionConfig,
     this.useCoreKitKey,
     this.chainNamespace = ChainNamespace.eip155,
     this.sessionTime = 30 * 86400,
@@ -475,22 +487,23 @@ class Web3AuthOptions {
     this.originData,
     String? dashboardUrl,
   })  : chainConfig = null,
-        sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
+        sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv ?? BuildEnv.production),
         walletSdkUrl =
-            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production),
+            walletSdkUrl ?? getWalletSdkUrl(authBuildEnv ?? BuildEnv.production),
         dashboardUrl =
-            dashboardUrl ?? getDashboardUrl(buildEnv ?? BuildEnv.production);
+            dashboardUrl ?? getDashboardUrl(authBuildEnv ?? BuildEnv.production),
+        authConnectionConfig = authConnectionConfig ?? const [];
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
-      'network': network.name,
+      'network': web3AuthNetwork.name,
       'sdkUrl': sdkUrl,
       'walletSdkUrl': walletSdkUrl,
-      'buildEnv': buildEnv?.name,
+      'buildEnv': authBuildEnv?.name,
       'redirectUrl': redirectUrl.toString(),
       'whiteLabel': whiteLabel?.toJson(),
-      'loginConfig': loginConfig,
+      'authConnectionConfig': authConnectionConfig,
       'useCoreKitKey': useCoreKitKey,
       'chainNamespace': chainNamespace?.name,
       'mfaSettings': mfaSettings,
@@ -511,7 +524,7 @@ class UnKnownException implements Exception {
 }
 
 String getSdkUrl(BuildEnv? buildEnv) {
-  const String version = "v9";
+  const String version = "v10";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-auth.web3auth.io/$version";

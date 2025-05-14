@@ -113,15 +113,15 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 // There is no initialize function in swift
                 result(nil)
                 return
-            case "getPrivKey":
-                let privKey = web3auth?.getPrivkey()
+            case "getPrivateKey":
+                let privKey = web3auth?.getPrivateKey()
                 result(privKey)
                 return
-            case "getEd25519PrivKey":
-                let getEd25519PrivKey = web3auth?.getEd25519PrivKey()
+            case "getEd25519PrivateKey":
+                let getEd25519PrivKey = web3auth?.getEd25519PrivateKey()
                 result(getEd25519PrivKey)
                 return
-            case "launchWalletServices":
+            case "showWalletUI":
                 let wsParams: WalletServicesParams
                 do {
                     wsParams = try decoder.decode(WalletServicesParams.self, from: data)
@@ -135,7 +135,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 
                 do {
-                    try await web3auth?.launchWalletServices(chainConfig: wsParams.chainConfig, path: wsParams.path)
+                    try await web3auth?.showWalletUI(chains: wsParams.chains, chainId: wsParams.chainId, path: wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -256,7 +256,8 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
 }
 
 struct WalletServicesParams: Codable {
-    let chainConfig: ChainConfig
+    let chainConfig: [ChainConfig]
+    let chainId: String
     let path: String?
 }
 

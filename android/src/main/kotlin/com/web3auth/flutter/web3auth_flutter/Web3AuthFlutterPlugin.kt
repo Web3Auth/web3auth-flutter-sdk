@@ -151,15 +151,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "getPrivKey" -> {
-                val privKey = web3auth.getPrivkey()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivKey")
+            "getPrivateKey" -> {
+                val privKey = web3auth.privateKey
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivateKey")
                 return privKey
             }
 
-            "getEd25519PrivKey" -> {
-                val ed25519Key = web3auth.getEd25519PrivKey()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
+            "getEd25519PrivateKey" -> {
+                val ed25519Key = web3auth.ed25519PrivateKey
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivateKey")
                 return ed25519Key
             }
 
@@ -189,14 +189,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "launchWalletServices" -> {
+            "showWalletUI" -> {
                 try {
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#showWalletUI")
                     val wsArgs = call.arguments<String>() ?: return null
                     val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
                     Log.d(wsParams.toString(), "#wsParams")
-                    val launchWalletCF = web3auth.launchWalletServices(
+                    val launchWalletCF = web3auth.showWalletUI(
                         wsParams.chainConfig,
+                        wsParams.chainId,
                         wsParams.path
                     )
                     launchWalletCF.get()
@@ -241,7 +242,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
             "request" -> {
                 try {
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#request")
                     val requestArgs = call.arguments<String>() ?: return null
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
@@ -301,13 +302,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 }
 @Keep
 data class WalletServicesJson(
-    @Keep val chainConfig: ChainConfig,
+    @Keep val chainConfig: List<ChainConfig>,
+    @Keep val chainId: String,
     @Keep val path: String? = "wallet"
 )
 
 @Keep
 data class RequestJson(
     @Keep val chainConfig: ChainConfig,
+    @Keep val chainId: String,
     @Keep val method: String,
     @Keep val requestParams: List<Any?>,
     @Keep val path: String? = "wallet/request",
