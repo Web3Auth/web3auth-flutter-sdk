@@ -9,6 +9,12 @@ class LoginParams {
   /// valid [AuthConnection] from the supported list.
   final AuthConnection authConnection;
 
+  /// The auth connection id to be used for login.
+  final String? authConnectionId;
+
+  /// The grouped auth connection id to be used for login.
+  final String? groupedAuthConnectionId;
+
   /// Custom verifier logins can get a dapp share returned to them post successful login.
   /// This is useful if the dapps want to use this share to allow users to login seamlessly.
   final String? dappShare;
@@ -37,26 +43,22 @@ class LoginParams {
   final MFALevel? mfaLevel;
   final String? dappUrl;
 
-  /// The auth connection id to be used for login.
-  final String? authConnectionId;
-
-  /// The grouped auth connection id to be used for login.
-  final String? groupedAuthConnectionId;
-
   LoginParams(
       {required this.authConnection,
+        this.authConnectionId,
+        this.groupedAuthConnectionId,
       this.dappShare,
       this.curve = Curve.secp256k1,
       this.extraLoginOptions,
       this.redirectUrl,
       this.appState,
       this.mfaLevel,
-      this.dappUrl,
-      this.authConnectionId,
-      this.groupedAuthConnectionId});
+      this.dappUrl});
 
   Map<String, dynamic> toJson() => {
         "authConnection": authConnection.name,
+        "authConnectionId": authConnectionId,
+        "groupedAuthConnectionId": groupedAuthConnectionId,
         "dappShare": dappShare,
         "curve": curve?.name,
         "extraLoginOptions": extraLoginOptions?.toJson(),
@@ -64,8 +66,6 @@ class LoginParams {
         "appState": appState,
         "mfaLevel": mfaLevel?.type,
         "dappUrl": dappUrl,
-        "authConnectionId": authConnectionId,
-        "groupedAuthConnectionId": groupedAuthConnectionId,
       };
 }
 
@@ -117,7 +117,6 @@ class AuthConnectionConfig {
     this.name,
     this.description,
     this.groupedAuthConnectionId,
-    this.verifierSubIdentifier,
     this.logoHover,
     this.logoLight,
     this.logoDark,
@@ -135,7 +134,6 @@ class AuthConnectionConfig {
       'name': name,
       'description': description,
       'groupedAuthConnectionId': groupedAuthConnectionId,
-      'verifierSubIdentifier': verifierSubIdentifier,
       'logoHover': logoHover,
       'logoLight': logoLight,
       'logoDark': logoDark,
