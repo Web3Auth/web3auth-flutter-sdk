@@ -29,6 +29,11 @@ enum AuthConnection {
   farcaster,
 }
 
+enum EmailFlowType {
+  link,
+  code,
+}
+
 enum Display {
   /// Displays the UI with a full page view.
   page,

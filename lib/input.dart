@@ -161,10 +161,12 @@ class ExtraLoginOptions {
 
   /// The field in JWT token which maps to verifier id. Please make sure you selected
   /// correct JWT verifier id in the developer dashboard.
-  final String? verifierIdField;
+  final String? userIdField;
 
   /// Whether the verifier id field is case sensitive or not.
-  final bool? isVerifierIdCaseSensitive;
+  final bool? isUserIdCaseSensitive;
+
+  final String? access_token;
 
   /// Allows developers the configure the display of UI. Checkout [Display] for more
   /// details.
@@ -186,6 +188,8 @@ class ExtraLoginOptions {
   final String? id_token_hint;
 
   final String? id_token;
+
+  final EmailFlowType? flow_type;
 
   /// [login_hint] is used to send the user's email address during [Provider.email_passwordless].
   final String? login_hint;
@@ -220,8 +224,10 @@ class ExtraLoginOptions {
     this.domain,
     this.client_id,
     this.leeway,
-    this.verifierIdField,
-    this.isVerifierIdCaseSensitive,
+    this.userIdField,
+    this.isUserIdCaseSensitive,
+    this.access_token,
+    this.flow_type,
     this.display,
     this.prompt,
     this.max_age,
@@ -244,8 +250,10 @@ class ExtraLoginOptions {
         "domain": domain,
         "client_id": client_id,
         "leeway": leeway,
-        "verifierIdField": verifierIdField,
-        "isVerifierIdCaseSensitive": isVerifierIdCaseSensitive,
+        "userIdField": userIdField,
+        "isUserIdCaseSensitive": isUserIdCaseSensitive,
+        "access_token": access_token,
+        "flow_type": flow_type?.name,
         "display": display?.name,
         "prompt": prompt?.name,
         "max_age": max_age,
