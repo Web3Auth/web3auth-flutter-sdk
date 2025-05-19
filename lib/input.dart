@@ -479,6 +479,9 @@ class Web3AuthOptions {
 
   final String? dashboardUrl;
 
+  /// [includeUserDataInToken] allows developers to include user data in the token.
+  final bool? includeUserDataInToken;
+
   Web3AuthOptions({
     required this.clientId,
     required this.web3AuthNetwork,
@@ -493,6 +496,7 @@ class Web3AuthOptions {
     this.sessionTime = 30 * 86400,
     this.mfaSettings,
     this.originData,
+    this.includeUserDataInToken,
     String? dashboardUrl,
   })  : chainConfig = null,
         sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv ?? BuildEnv.production),
@@ -518,6 +522,7 @@ class Web3AuthOptions {
       "sessionTime": sessionTime,
       "chainConfig": chainConfig?.toJson(),
       "originData": originData,
+      "includeUserDataInToken": includeUserDataInToken,
       "dashboardUrl": dashboardUrl,
     };
   }

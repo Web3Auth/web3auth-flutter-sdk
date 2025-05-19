@@ -8,7 +8,8 @@ class Web3AuthResponse {
   final String? privateKey;
 
   /// ed25519 private key compaitible with Solana ecosystem.
-  final String? ed25519PrivKey;
+  @JsonKey(name: 'ed25519PrivKey')
+  final String? ed25519PrivateKey;
 
   /// Current We3Auth sessionId.
   final String? sessionId;
@@ -37,7 +38,7 @@ class Web3AuthResponse {
       {this.privateKey,
       this.userInfo,
       this.error,
-      this.ed25519PrivKey,
+      this.ed25519PrivateKey,
       this.sessionId,
       this.coreKitKey,
       this.coreKitEd25519PrivKey,
@@ -53,7 +54,7 @@ class Web3AuthResponse {
 
   @override
   String toString() {
-    return "{privateKey=$privateKey, userInfo = ${userInfo.toString()}, ed25519PrivKey=$ed25519PrivKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error,"
+    return "{privateKey=$privateKey, userInfo = ${userInfo.toString()}, ed25519PrivateKey=$ed25519PrivateKey, coreKitKey=$coreKitKey, coreKitEd25519PrivKey=$coreKitEd25519PrivKey, sessionId=$sessionId, error=$error,"
         "factorKey=$factorKey, signatures=$signatures, tssShareIndex=$tssShareIndex, tssPubKey=$tssPubKey, tssShare=$tssShare, tssTag:$tssTag, tssNonce=$tssNonce, nodeIndexes=$nodeIndexes, keyMode=$keyMode}";
   }
 
@@ -61,7 +62,7 @@ class Web3AuthResponse {
     return {
       'privKey': privateKey,
       'userInfo': userInfo?.toJson(),
-      'ed25519PrivKey': ed25519PrivKey,
+      'ed25519PrivKey': ed25519PrivateKey,
       'sessionId': sessionId,
       'error': error,
       'coreKitKey': coreKitKey,
@@ -83,7 +84,7 @@ class Web3AuthResponse {
         userInfo = json['userInfo'] != null
             ? UserInfo.fromJson(json['userInfo'])
             : null,
-        ed25519PrivKey = json['ed25519PrivKey'],
+        ed25519PrivateKey = json['ed25519PrivKey'],
         sessionId = json['sessionId'],
         coreKitKey = json['coreKitKey'],
         coreKitEd25519PrivKey = json['coreKitEd25519PrivKey'],
