@@ -70,11 +70,12 @@ class LoginParams {
 }
 
 class AuthConnectionConfig {
-  /// Custom verifier name given in the developer dashboard.
-  final String authConnectionId;
 
   /// The type of login for custom verifier.
   final AuthConnection authConnection;
+
+  /// Custom verifier name given in the developer dashboard.
+  final String authConnectionId;
 
   /// Client id provided by your login provider used for custom verifier.
   final String clientId;
@@ -111,8 +112,8 @@ class AuthConnectionConfig {
   final bool? showOnMobile;
 
   AuthConnectionConfig({
-    required this.authConnectionId,
     required this.authConnection,
+    required this.authConnectionId,
     required this.clientId,
     this.name,
     this.description,
@@ -128,8 +129,8 @@ class AuthConnectionConfig {
 
   Map<String, dynamic> toJson() {
     return {
-      'authConnectionId': authConnectionId,
       'authConnection': authConnection.name,
+      'authConnectionId': authConnectionId,
       'clientId': clientId,
       'name': name,
       'description': description,
