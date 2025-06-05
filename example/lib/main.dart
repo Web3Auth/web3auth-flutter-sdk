@@ -53,13 +53,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     HashMap themeMap = HashMap<String, String>();
     themeMap['primary'] = "#229954";
 
-    Uri redirectUrl;
+    String redirectUrl;
     if (Platform.isAndroid) {
-      redirectUrl =
-          Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
+      redirectUrl = 'torusapp://org.torusresearch.flutter.web3authexample';
     } else if (Platform.isIOS) {
-      redirectUrl =
-          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
+      redirectUrl = 'com.web3auth.flutter.web3authflutterexample://auth';
     } else {
       throw UnKnownException('Unknown platform');
     }
@@ -75,19 +73,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     await Web3AuthFlutter.init(
       Web3AuthOptions(
         clientId:
-            'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
+            'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
         //sdkUrl: 'https://auth.mocaverse.xyz',
         //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
-        web3AuthNetwork: Web3AuthNetwork.sapphire_devnet,
+        web3AuthNetwork: Web3AuthNetwork.sapphire_mainnet,
         authBuildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
-        whiteLabel: WhiteLabelData(
-          mode: ThemeModes.dark,
-          defaultLanguage: Language.en,
-          appName: "Web3Auth Flutter App",
-          theme: themeMap,
-        ),
         authConnectionConfig: authConnectionConfig,
+        defaultChainId: "0x1",
       ),
     );
 
@@ -347,15 +340,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   VoidCallback _launchWalletServices() {
     return () async {
       try {
-        await Web3AuthFlutter.showWalletUI(
-            [
-              ChainConfig(
-                chainId: "0x89",
-                rpcTarget: "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
-              ),
-            ],
-            "0x89"
-        );
+        await Web3AuthFlutter.showWalletUI();
       } on UserCancelledException {
         log("User cancelled.");
       } on UnKnownException {
@@ -404,7 +389,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         params.add(address.hexEip55);
         params.add("Web3Auth");
         final signResponse = await Web3AuthFlutter.request(
-          ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
           "personal_sign",
           params,
           appState: "web3auth",

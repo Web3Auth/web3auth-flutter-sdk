@@ -136,22 +136,11 @@ class Web3AuthFlutter {
     }
   }
 
-  static Future<void> showWalletUI(
-    List<ChainConfig> chainConfig,
-    String chainId, {
+  static Future<void> showWalletUI({
     String path = "wallet",
   }) async {
     try {
-      List<Map<String, dynamic>> chainConfigJson = chainConfig
-          .map((config) {
-        final json = config.toJson();
-        json.removeWhere((key, value) => value == null);
-        return json;
-      }).toList();
-
       Map<String, dynamic> walletServicesJson = {
-        "chainConfig": chainConfigJson,
-        "chainId": chainId,
         "path": path,
       };
 
@@ -209,7 +198,6 @@ class Web3AuthFlutter {
   }
 
   static Future<SignResponse> request(
-    ChainConfig chainConfig,
     String method,
     List<dynamic> requestParams, {
     String path = "wallet/request",
@@ -222,7 +210,6 @@ class Web3AuthFlutter {
 
       // Build the request JSON
       Map<String, dynamic> requestJson = {
-        "chainConfig": chainConfig.toJson(),
         "method": method,
         "requestParams": modifiedRequestParams,
         "path": path,

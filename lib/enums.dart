@@ -91,3 +91,10 @@ enum Prompt {
 }
 
 enum Curve { secp256k1, ed25519 }
+
+enum ConfirmationStrategy {
+  popup,
+  modal,
+  autoApprove,
+  defaultStrategy
+}

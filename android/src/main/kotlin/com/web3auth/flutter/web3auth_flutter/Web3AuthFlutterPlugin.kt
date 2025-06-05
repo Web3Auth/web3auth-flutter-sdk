@@ -99,7 +99,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val initParams = gson.fromJson(initArgs, Web3AuthOptions::class.java)
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
-                if (obj.has("redirectUrl")) initParams.redirectUrl = Uri.parse(obj.get("redirectUrl") as String?)
+                if (obj.has("redirectUrl")) initParams.redirectUrl = obj.get("redirectUrl").toString()
                 // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
                     initParams, activity!!
@@ -116,8 +116,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     val obj = JSONObject(loginArgs)
-                    if (obj.has("redirectUrl")) loginParams.redirectUrl = Uri.parse(obj.get("redirectUrl") as String?)
-                    val loginCF = web3auth.login(loginParams)
+                    val loginCF = web3auth.connectTo(loginParams)
                     // Log.d(loginParams.toString(), "#loginParams")
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
                     val loginResult: Web3AuthResponse = loginCF.get()
@@ -196,8 +195,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
                     Log.d(wsParams.toString(), "#wsParams")
                     val launchWalletCF = web3auth.showWalletUI(
-                        wsParams.chainConfig,
-                        wsParams.chainId,
                         wsParams.path
                     )
                     launchWalletCF.get()
@@ -214,8 +211,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     val obj = JSONObject(loginArgs)
-                    if (obj.has("redirectUrl")) loginParams.redirectUrl =
-                        Uri.parse(obj.get("redirectUrl") as String?)
                     val setupMfaCF = web3auth.enableMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
@@ -247,7 +242,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
                     val requestCF = web3auth.request(
-                        reqParams.chainConfig,
                         reqParams.method,
                         convertListToJsonArray(reqParams.requestParams) ,
                         reqParams.path,
@@ -266,8 +260,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     val obj = JSONObject(loginArgs)
-                    if (obj.has("redirectUrl")) loginParams.redirectUrl =
-                        Uri.parse(obj.get("redirectUrl") as String?)
                     val setupMfaCF = web3auth.manageMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
@@ -302,15 +294,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 }
 @Keep
 data class WalletServicesJson(
-    @Keep val chainConfig: List<ChainConfig>,
-    @Keep val chainId: String,
     @Keep val path: String? = "wallet"
 )
 
 @Keep
 data class RequestJson(
-    @Keep val chainConfig: ChainConfig,
-    @Keep val chainId: String,
     @Keep val method: String,
     @Keep val requestParams: List<Any?>,
     @Keep val path: String? = "wallet/request",

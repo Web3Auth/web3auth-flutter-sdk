@@ -15,6 +15,16 @@ class LoginParams {
   /// The grouped auth connection id to be used for login.
   final String? groupedAuthConnectionId;
 
+  final String? appState;
+
+  /// Customize the MFA screen shown to the user during OAuth authentication.
+  final MFALevel? mfaLevel;
+
+  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AuthConnection].
+  ///
+  /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
+  final ExtraLoginOptions? extraLoginOptions;
+
   /// Custom verifier logins can get a dapp share returned to them post successful login.
   /// This is useful if the dapps want to use this share to allow users to login seamlessly.
   final String? dappShare;
@@ -29,44 +39,40 @@ class LoginParams {
   /// The default value is [Curve.secp256k1].
   final Curve? curve;
 
-  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AuthConnection].
-  ///
-  /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
-  final ExtraLoginOptions? extraLoginOptions;
-
-  /// Deeplinking for the application where user will be redirected after login.
-  final Uri? redirectUrl;
-
-  final String? appState;
-
-  /// Customize the MFA screen shown to the user during OAuth authentication.
-  final MFALevel? mfaLevel;
   final String? dappUrl;
 
-  LoginParams(
-      {required this.authConnection,
-        this.authConnectionId,
-        this.groupedAuthConnectionId,
-      this.dappShare,
-      this.curve = Curve.secp256k1,
-      this.extraLoginOptions,
-      this.redirectUrl,
-      this.appState,
-      this.mfaLevel,
-      this.dappUrl});
+  String? loginHint;
+  final String? idToken;
 
-  Map<String, dynamic> toJson() => {
-        "authConnection": authConnection.name,
-        "authConnectionId": authConnectionId,
-        "groupedAuthConnectionId": groupedAuthConnectionId,
-        "dappShare": dappShare,
-        "curve": curve?.name,
-        "extraLoginOptions": extraLoginOptions?.toJson(),
-        "redirectUrl": redirectUrl?.toString(),
-        "appState": appState,
-        "mfaLevel": mfaLevel?.type,
-        "dappUrl": dappUrl,
-      };
+  LoginParams({
+    required this.authConnection,
+    this.authConnectionId,
+    this.groupedAuthConnectionId,
+    this.appState,
+    this.mfaLevel,
+    this.extraLoginOptions,
+    this.dappShare,
+    this.curve = Curve.secp256k1,
+    this.dappUrl,
+    this.loginHint,
+    this.idToken,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'authConnection': authConnection.name,
+      'authConnectionId': authConnectionId,
+      'groupedAuthConnectionId': groupedAuthConnectionId,
+      'appState': appState,
+      'mfaLevel': mfaLevel?.name,
+      'extraLoginOptions': extraLoginOptions?.toJson(),
+      'dappShare': dappShare,
+      'curve': curve?.name,
+      'dappUrl': dappUrl,
+      'loginHint': loginHint,
+      'idToken': idToken,
+    };
+  }
 }
 
 class AuthConnectionConfig {
@@ -111,6 +117,8 @@ class AuthConnectionConfig {
   /// Whether to show the login button on Mobile.
   final bool? showOnMobile;
 
+  final ExtraLoginOptions? jwtParameters;
+
   AuthConnectionConfig({
     required this.authConnection,
     required this.authConnectionId,
@@ -125,6 +133,7 @@ class AuthConnectionConfig {
     this.showOnModal,
     this.showOnDesktop,
     this.showOnMobile,
+    this.jwtParameters,
   });
 
   Map<String, dynamic> toJson() {
@@ -141,7 +150,8 @@ class AuthConnectionConfig {
       'mainOption': mainOption,
       'showOnModal': showOnModal,
       'showOnDesktop': showOnDesktop,
-      'showOnMobile': showOnMobile
+      'showOnMobile': showOnMobile,
+      'jwtParameters': jwtParameters?.toJson()
     };
   }
 }
@@ -384,7 +394,7 @@ class MfaSettings {
   }
 }
 
-class ChainConfig {
+class Chains {
   final ChainNamespace chainNamespace;
   final int? decimals;
   final String? blockExplorerUrl;
@@ -395,7 +405,7 @@ class ChainConfig {
   final String? ticker;
   final String? tickerName;
 
-  ChainConfig({
+  Chains({
     this.chainNamespace = ChainNamespace.eip155,
     this.decimals = 18,
     this.blockExplorerUrl,
@@ -428,105 +438,131 @@ class Web3AuthOptions {
   /// You can obtain your client id from the web3auth [developer dashboard](https://dashboard.web3auth.io/).
   final String clientId;
 
+  /// Deeplinking for the application where user will be redirected after login.
+  /// Ideally, it should be bundleId and package name for iOS and Android respectively.
+  ///
+  /// While using redirectUrl, please make sure you have whitelisted it
+  /// developer dashboard. Checkout [SDK reference](https://web3auth.io/docs/sdk/pnp/flutter/install#configuration-1) more details.
+  final String redirectUrl;
+  final Map<String, String>? originData;
+
+  /// [authBuildEnv] is used for internal testing purposes. This buildEnv
+  /// signifies the enviroment for Web3Auth, and doesn't signifies
+  /// the enviorment of the application.
+  @JsonKey(name: 'buildEnv')
+  final BuildEnv? authBuildEnv;
+
+  /// Define the desired Web3Auth service url.
+  final String? sdkUrl;
+
+  String? storageServerUrl;
+  String? sessionSocketUrl;
+
+  /// Login config for the custom verifiers.
+  List<AuthConnectionConfig>? authConnectionConfig;
+
+  final String? dashboardUrl;
+  String? accountAbstractionConfig;
+  final String? walletSdkUrl;
+  String? sessionNamespace;
+
+  /// [includeUserDataInToken] allows developers to include user data in the token.
+  bool? includeUserDataInToken;
+
+  Chains? chains;
+  String defaultChainId = '0x1';
+  bool enableLogging;
+
+  /// [sessionTime] allows developers to configure the session management time.
+  ///
+  /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
+  final int sessionTime;
+
   /// Web3Auth Network to use for the session & the issued idToken.
   ///
   /// User [Web3AuthNetwork.sapphire_mainnet] for production build.
   @JsonKey(name: 'network')
   final Web3AuthNetwork web3AuthNetwork;
 
-  /// [authBuildEnv] is used for internal testing purposes. This buildEnv
-  /// signifies the enviroment for Web3Auth, and doesn't signifies
-  /// the enviorment of the application.
-  final BuildEnv? authBuildEnv;
-
-  /// Define the desired Web3Auth service url.
-  final String? sdkUrl;
-  final String? walletSdkUrl;
-
-  /// Deeplinking for the application where user will be redirected after login.
-  /// Ideally, it should be bundleId and package name for iOS and Android respectively.
-  ///
-  /// While using redirectUrl, please make sure you have whitelisted it
-  /// developer dashboard. Checkout [SDK reference](https://web3auth.io/docs/sdk/pnp/flutter/install#configuration-1) more details.
-  final Uri? redirectUrl;
+  final bool? useSFAKey;
 
   /// WhiteLabel options for web3auth. It helps you define
   /// custom UI, branding, and translations for your brand app.
   ///
-  /// Checkout [WhiteLabelData] for more details.
-  final WhiteLabelData? whiteLabel;
-
-  /// Login config for the custom verifiers.
-  final List<AuthConnectionConfig>? authConnectionConfig;
-
-  /// Use [useCoreKitKey] to get the core kit key.
-  final bool? useCoreKitKey;
-
-  final ChainNamespace? chainNamespace;
+  /// Checkout [WalletServicesConfig] for more details.
+  final WalletServicesConfig? walletServicesConfig;
 
   /// Allows developers to configure the [MfaSettings] for authentication.
   ///
   /// Checkout [MFA SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter/mfa) for more details.
   final MfaSettings? mfaSettings;
 
-  /// [sessionTime] allows developers to configure the session management time.
-  ///
-  /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
-  final int? sessionTime;
-
-  final ChainConfig? chainConfig;
-
-  final Map<String, String>? originData;
-
-  final String? dashboardUrl;
-
-  /// [includeUserDataInToken] allows developers to include user data in the token.
-  final bool? includeUserDataInToken;
-
   Web3AuthOptions({
     required this.clientId,
-    required this.web3AuthNetwork,
+    required this.redirectUrl,
+    this.originData,
     this.authBuildEnv = BuildEnv.production,
     String? sdkUrl,
-    String? walletSdkUrl,
-    this.redirectUrl,
-    this.whiteLabel,
-    List<AuthConnectionConfig>? authConnectionConfig,
-    this.useCoreKitKey,
-    this.chainNamespace = ChainNamespace.eip155,
-    this.sessionTime = 30 * 86400,
-    this.mfaSettings,
-    this.originData,
-    this.includeUserDataInToken,
+    this.storageServerUrl,
+    this.sessionSocketUrl,
+    this.authConnectionConfig = const [],
     String? dashboardUrl,
-  })  : chainConfig = null,
-        sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv ?? BuildEnv.production),
-        walletSdkUrl =
-            walletSdkUrl ?? getWalletSdkUrl(authBuildEnv ?? BuildEnv.production),
-        dashboardUrl =
-            dashboardUrl ?? getDashboardUrl(authBuildEnv ?? BuildEnv.production),
-        authConnectionConfig = authConnectionConfig ?? const [];
+    this.accountAbstractionConfig,
+    String? walletSdkUrl,
+    this.sessionNamespace,
+    this.includeUserDataInToken = true,
+    this.chains,
+    required this.defaultChainId,
+    this.enableLogging = false,
+    this.sessionTime = 30 * 86400,
+    required this.web3AuthNetwork,
+    this.useSFAKey = false,
+    this.walletServicesConfig,
+    this.mfaSettings,
+  })  : sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv),
+        dashboardUrl = dashboardUrl ?? getDashboardUrl(authBuildEnv),
+        walletSdkUrl = walletSdkUrl ?? getWalletSdkUrl(authBuildEnv);
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
-      'network': web3AuthNetwork.name,
-      'sdkUrl': sdkUrl,
-      'walletSdkUrl': walletSdkUrl,
+      'redirectUrl': redirectUrl,
+      'originData': originData,
       'buildEnv': authBuildEnv?.name,
-      'redirectUrl': redirectUrl.toString(),
-      'whiteLabel': whiteLabel?.toJson(),
-      'authConnectionConfig': authConnectionConfig,
-      'useCoreKitKey': useCoreKitKey,
-      'chainNamespace': chainNamespace?.name,
-      'mfaSettings': mfaSettings,
-      "sessionTime": sessionTime,
-      "chainConfig": chainConfig?.toJson(),
-      "originData": originData,
-      "includeUserDataInToken": includeUserDataInToken,
-      "dashboardUrl": dashboardUrl,
+      'sdkUrl': sdkUrl,
+      'storageServerUrl': storageServerUrl,
+      'sessionSocketUrl': sessionSocketUrl,
+      'authConnectionConfig': authConnectionConfig?.map((config) => config.toJson()).toList(),
+      'dashboardUrl': dashboardUrl,
+      'accountAbstractionConfig': accountAbstractionConfig,
+      'walletSdkUrl': walletSdkUrl,
+      'sessionNamespace': sessionNamespace,
+      'includeUserDataInToken': includeUserDataInToken,
+      'chains': chains?.toJson(),
+      'defaultChainId': defaultChainId,
+      'enableLogging': enableLogging,
+      'sessionTime': sessionTime,
+      'network': web3AuthNetwork.name,
+      'useSFAKey': useSFAKey,
+      'walletServicesConfig': walletServicesConfig?.toJson(),
+      'mfaSettings': mfaSettings?.toJson(),
     };
   }
+}
+
+class WalletServicesConfig {
+  final ConfirmationStrategy? confirmationStrategy;
+  final WhiteLabelData? whiteLabel;
+
+  WalletServicesConfig({
+    this.confirmationStrategy = ConfirmationStrategy.defaultStrategy,
+    this.whiteLabel,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'confirmationStrategy': confirmationStrategy?.name,
+    'whiteLabel': whiteLabel?.toJson(),
+  };
 }
 
 class UserCancelledException implements Exception {}
