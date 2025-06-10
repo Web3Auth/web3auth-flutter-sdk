@@ -302,19 +302,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
-    return Web3AuthFlutter.login(
+    return Web3AuthFlutter.connectTo(
       LoginParams(
           authConnection: AuthConnection.google, mfaLevel: MFALevel.NONE),
     );
   }
 
   Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.login(
+    return Web3AuthFlutter.connectTo(
         LoginParams(authConnection: AuthConnection.facebook));
   }
 
   Future<Web3AuthResponse> _withEmailPasswordless() {
-    return Web3AuthFlutter.login(
+    return Web3AuthFlutter.connectTo(
       LoginParams(
         authConnection: AuthConnection.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
@@ -325,7 +325,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<Web3AuthResponse> _withDiscord() {
-    return Web3AuthFlutter.login(
+    return Web3AuthFlutter.connectTo(
         LoginParams(authConnection: AuthConnection.discord));
   }
 

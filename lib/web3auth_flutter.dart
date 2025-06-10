@@ -19,17 +19,17 @@ class Web3AuthFlutter {
     await _channel.invokeMethod('init', jsonEncode(initParamsJson));
   }
 
-  /// [login] method will initiate login flow, opening the browser allowing
+  /// [connectTo] method will initiate login flow, opening the browser allowing
   /// users to authenticate themselves with preferred login provider.
   ///
   /// Use [loginParams] to change the login provider, curve, and other parameters.
   /// For more details, look into [LoginParams].
-  static Future<Web3AuthResponse> login(LoginParams loginParams) async {
+  static Future<Web3AuthResponse> connectTo(LoginParams loginParams) async {
     try {
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
       loginParamsJson.removeWhere((key, value) => value == null);
       final String loginResponse = await _channel.invokeMethod(
-        'login',
+        'connectTo',
         jsonEncode(loginParamsJson),
       );
 

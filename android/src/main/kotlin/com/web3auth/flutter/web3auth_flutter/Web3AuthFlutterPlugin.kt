@@ -111,7 +111,7 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 return null
             }
 
-            "login" -> {
+            "connectTo" -> {
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
