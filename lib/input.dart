@@ -461,6 +461,10 @@ class Web3AuthOptions {
   /// Login config for the custom verifiers.
   List<AuthConnectionConfig>? authConnectionConfig;
 
+  /// WhiteLabel options for web3auth. It helps you define
+  /// custom UI, branding, and translations for your brand app
+  final WhiteLabelData? whiteLabel;
+
   final String? dashboardUrl;
   String? accountAbstractionConfig;
   final String? walletSdkUrl;
@@ -506,6 +510,7 @@ class Web3AuthOptions {
     this.storageServerUrl,
     this.sessionSocketUrl,
     this.authConnectionConfig = const [],
+    this.whiteLabel,
     String? dashboardUrl,
     this.accountAbstractionConfig,
     String? walletSdkUrl,
@@ -533,6 +538,7 @@ class Web3AuthOptions {
       'storageServerUrl': storageServerUrl,
       'sessionSocketUrl': sessionSocketUrl,
       'authConnectionConfig': authConnectionConfig?.map((config) => config.toJson()).toList(),
+      'whiteLabel': whiteLabel?.toJson(),
       'dashboardUrl': dashboardUrl,
       'accountAbstractionConfig': accountAbstractionConfig,
       'walletSdkUrl': walletSdkUrl,
