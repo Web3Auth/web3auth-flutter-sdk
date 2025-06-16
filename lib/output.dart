@@ -11,13 +11,13 @@ class Web3AuthResponse {
   @JsonKey(name: 'ed25519PrivKey')
   final String? ed25519PrivateKey;
 
-  /// Current We3Auth sessionId.
-  final String? sessionId;
-
   /// User's information based on the current session.
   final UserInfo? userInfo;
 
   final String? error;
+
+  /// Current We3Auth sessionId.
+  final String? sessionId;
 
   /// secp256k1 core kit key.
   final String? coreKitKey;

@@ -474,7 +474,7 @@ class Web3AuthOptions {
   bool? includeUserDataInToken;
 
   Chains? chains;
-  String defaultChainId = '0x1';
+  String? defaultChainId = '0x1';
   bool enableLogging;
 
   /// [sessionTime] allows developers to configure the session management time.
@@ -517,7 +517,7 @@ class Web3AuthOptions {
     this.sessionNamespace,
     this.includeUserDataInToken = true,
     this.chains,
-    required this.defaultChainId,
+    this.defaultChainId,
     this.enableLogging = false,
     this.sessionTime = 30 * 86400,
     required this.web3AuthNetwork,

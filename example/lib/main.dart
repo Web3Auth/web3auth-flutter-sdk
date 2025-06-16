@@ -8,6 +8,7 @@ import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/input.dart';
 import 'package:web3auth_flutter/output.dart';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
+import 'package:web3auth_flutter_example/utils.dart';
 import 'package:web3dart/web3dart.dart';
 
 void main() {
@@ -181,6 +182,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             onPressed: _login(_withDiscord),
                             child: const Text('Discord'),
                           ),
+                          ElevatedButton(
+                            onPressed: _login(sfaSignIn),
+                            child: const Text('SFA SignIn'),
+                          ),
                         ],
                       ),
                     ),
@@ -327,6 +332,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<Web3AuthResponse> _withDiscord() {
     return Web3AuthFlutter.connectTo(
         LoginParams(authConnection: AuthConnection.discord));
+  }
+
+  Future<Web3AuthResponse> sfaSignIn() {
+    return Web3AuthFlutter.connectTo(
+        LoginParams(authConnection: AuthConnection.discord,
+        authConnectionId: "torus-test-health",
+        idToken: Utils().es256Token("devnettestuser@tor.us"),
+        groupedAuthConnectionId: "torus-aggregate-sapphire-mainnet"));
   }
 
   Future<String?> _getPrivKey() {

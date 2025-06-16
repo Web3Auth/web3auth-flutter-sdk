@@ -32,9 +32,9 @@ class Web3AuthFlutter {
         'connectTo',
         jsonEncode(loginParamsJson),
       );
-
       return Web3AuthResponse.fromJson(jsonDecode(loginResponse));
     } on PlatformException catch (e) {
+
       throw _handlePlatformException(e);
     }
   }
