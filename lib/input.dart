@@ -238,7 +238,7 @@ class ExtraLoginOptions {
     this.userIdField,
     this.isUserIdCaseSensitive,
     this.access_token,
-    this.flow_type,
+    this.flow_type = EmailFlowType.code,
     this.display,
     this.prompt,
     this.max_age,
