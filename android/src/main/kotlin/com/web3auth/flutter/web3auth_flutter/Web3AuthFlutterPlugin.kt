@@ -3,7 +3,6 @@ package com.web3auth.flutter.web3auth_flutter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.annotation.Keep
 import androidx.annotation.NonNull
@@ -12,7 +11,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.ChainConfig
 import com.web3auth.core.types.ErrorCode
 import com.web3auth.core.types.LoginParams
 import com.web3auth.core.types.Web3AuthError
