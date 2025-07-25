@@ -267,7 +267,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           logoutVisible = false;
         });
       } on UserCancelledException {
-        log("User cancelled.");
+        log("User cancelled");
       } on UnKnownException {
         log("Unknown exception occurred");
       }
@@ -336,7 +336,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<Web3AuthResponse> sfaSignIn() {
     return Web3AuthFlutter.connectTo(
-        LoginParams(authConnection: AuthConnection.discord,
+        LoginParams(authConnection: AuthConnection.google,
         authConnectionId: "torus-test-health",
         idToken: Utils().es256Token("devnettestuser@tor.us"),
         groupedAuthConnectionId: "torus-aggregate-sapphire-mainnet"));
