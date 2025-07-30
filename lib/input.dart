@@ -607,13 +607,14 @@ String getWalletSdkUrl(BuildEnv? buildEnv) {
 
 String getDashboardUrl(BuildEnv? buildEnv) {
   const String walletAccountConstant = "wallet/account";
+  const String authDashboardVersion = "v10";
   switch (buildEnv) {
     case BuildEnv.staging:
-      return "https://staging-account.web3auth.io/$walletAccountConstant";
+      return "https://staging-account.web3auth.io/$authDashboardVersion/$walletAccountConstant";
     case BuildEnv.testing:
       return "https://develop-account.web3auth.io/$walletAccountConstant";
     case BuildEnv.production:
     default:
-      return "https://account.web3auth.io/$walletAccountConstant";
+      return "https://account.web3auth.io/$authDashboardVersion/$walletAccountConstant";
   }
 }
