@@ -60,7 +60,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: error.localizedDescription))
                     return
                 }
-            case "login":
+            case "connectTo":
                 guard let web3auth = web3auth
                 else {
                     result(FlutterError(
@@ -83,7 +83,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 var resultMap: String = ""
                 do {
-                    let result = try await web3auth.login(loginParams)
+                    let result = try await web3auth.connectTo(loginParams)
                     let resultData = try encoder.encode(result)
                     resultMap = String(decoding: resultData, as: UTF8.self)
                 } catch {
@@ -135,7 +135,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 
                 do {
-                    try await web3auth?.showWalletUI(chains: wsParams.chains, chainId: wsParams.chainId, path: wsParams.path)
+                    try await web3auth?.showWalletUI(path: wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -197,7 +197,6 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 
                     do {
                         let signResponse = try await web3auth?.request(
-                            chainConfig: reqParams.chainConfig,
                             method: reqParams.method,
                             requestParams: reqParams.requestParams,
                             path: reqParams.path,
@@ -256,13 +255,10 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
 }
 
 struct WalletServicesParams: Codable {
-    let chainConfig: [ChainConfig]
-    let chainId: String
     let path: String?
 }
 
 struct RequestJson: Codable {
-    let chainConfig: ChainConfig
     let method: String
     let requestParams: [String]
     let path: String?
