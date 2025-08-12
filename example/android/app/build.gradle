@@ -24,6 +24,7 @@ if (flutterVersionName == null) {
 }
 
 android {
+    namespace "com.web3auth.flutter.web3auth_flutter_example"
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
