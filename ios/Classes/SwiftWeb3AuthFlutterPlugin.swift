@@ -60,7 +60,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: error.localizedDescription))
                     return
                 }
-            case "login":
+            case "connectTo":
                 guard let web3auth = web3auth
                 else {
                     result(FlutterError(
@@ -83,7 +83,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 var resultMap: String = ""
                 do {
-                    let result = try await web3auth.login(loginParams)
+                    let result = try await web3auth.connectTo(loginParams)
                     let resultData = try encoder.encode(result)
                     resultMap = String(decoding: resultData, as: UTF8.self)
                 } catch {
@@ -113,15 +113,15 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 // There is no initialize function in swift
                 result(nil)
                 return
-            case "getPrivKey":
-                let privKey = web3auth?.getPrivkey()
+            case "getPrivateKey":
+                let privKey = web3auth?.getPrivateKey()
                 result(privKey)
                 return
-            case "getEd25519PrivKey":
-                let getEd25519PrivKey = web3auth?.getEd25519PrivKey()
+            case "getEd25519PrivateKey":
+                let getEd25519PrivKey = web3auth?.getEd25519PrivateKey()
                 result(getEd25519PrivKey)
                 return
-            case "launchWalletServices":
+            case "showWalletUI":
                 let wsParams: WalletServicesParams
                 do {
                     wsParams = try decoder.decode(WalletServicesParams.self, from: data)
@@ -135,7 +135,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 
                 do {
-                    try await web3auth?.launchWalletServices(chainConfig: wsParams.chainConfig, path: wsParams.path)
+                    try await web3auth?.showWalletUI(path: wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -197,7 +197,6 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 
                     do {
                         let signResponse = try await web3auth?.request(
-                            chainConfig: reqParams.chainConfig,
                             method: reqParams.method,
                             requestParams: reqParams.requestParams,
                             path: reqParams.path,
@@ -256,12 +255,10 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
 }
 
 struct WalletServicesParams: Codable {
-    let chainConfig: ChainConfig
     let path: String?
 }
 
 struct RequestJson: Codable {
-    let chainConfig: ChainConfig
     let method: String
     let requestParams: [String]
     let path: String?

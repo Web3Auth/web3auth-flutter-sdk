@@ -3,7 +3,6 @@ package com.web3auth.flutter.web3auth_flutter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.annotation.Keep
 import androidx.annotation.NonNull
@@ -12,7 +11,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.web3auth.core.Web3Auth
-import com.web3auth.core.types.ChainConfig
 import com.web3auth.core.types.ErrorCode
 import com.web3auth.core.types.LoginParams
 import com.web3auth.core.types.Web3AuthError
@@ -99,7 +97,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val initParams = gson.fromJson(initArgs, Web3AuthOptions::class.java)
                 // handle custom parameters which are gson excluded
                 val obj = JSONObject(initArgs)
-                if (obj.has("redirectUrl")) initParams.redirectUrl = Uri.parse(obj.get("redirectUrl") as String?)
+                if (obj.has("redirectUrl")) initParams.redirectUrl =
+                    obj.get("redirectUrl").toString()
+                // set flutter analytics flag to true
+                initParams.setFlutterAnalytics(true, "7.0.0")
                 // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
                     initParams, activity!!
@@ -111,14 +112,13 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 return null
             }
 
-            "login" -> {
+            "connectTo" -> {
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     val obj = JSONObject(loginArgs)
-                    if (obj.has("redirectUrl")) loginParams.redirectUrl = Uri.parse(obj.get("redirectUrl") as String?)
-                    val loginCF = web3auth.login(loginParams)
-                    // Log.d(loginParams.toString(), "#loginParams")
+                    //Log.d("#loginParams", loginParams.toString())
+                    val loginCF = web3auth.connectTo(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
                     val loginResult: Web3AuthResponse = loginCF.get()
                     return gson.toJson(loginResult)
@@ -151,15 +151,15 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "getPrivKey" -> {
-                val privKey = web3auth.getPrivkey()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivKey")
+            "getPrivateKey" -> {
+                val privKey = web3auth.getPrivateKey()
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getPrivateKey")
                 return privKey
             }
 
-            "getEd25519PrivKey" -> {
-                val ed25519Key = web3auth.getEd25519PrivKey()
-                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivKey")
+            "getEd25519PrivateKey" -> {
+                val ed25519Key = web3auth.getEd25519PrivateKey()
+                Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#getEd25519PrivateKey")
                 return ed25519Key
             }
 
@@ -189,14 +189,13 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 }
             }
 
-            "launchWalletServices" -> {
+            "showWalletUI" -> {
                 try {
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#launchWalletServices")
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#showWalletUI")
                     val wsArgs = call.arguments<String>() ?: return null
                     val wsParams = gson.fromJson(wsArgs, WalletServicesJson::class.java)
                     Log.d(wsParams.toString(), "#wsParams")
-                    val launchWalletCF = web3auth.launchWalletServices(
-                        wsParams.chainConfig,
+                    val launchWalletCF = web3auth.showWalletUI(
                         wsParams.path
                     )
                     launchWalletCF.get()
@@ -213,8 +212,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     val obj = JSONObject(loginArgs)
-                    if (obj.has("redirectUrl")) loginParams.redirectUrl =
-                        Uri.parse(obj.get("redirectUrl") as String?)
                     val setupMfaCF = web3auth.enableMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
@@ -241,12 +238,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 
             "request" -> {
                 try {
-                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#signMessage")
+                    Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#request")
                     val requestArgs = call.arguments<String>() ?: return null
                     val reqParams = gson.fromJson(requestArgs, RequestJson::class.java)
                     Log.d(reqParams.toString(), "#reqParams")
                     val requestCF = web3auth.request(
-                        reqParams.chainConfig,
                         reqParams.method,
                         convertListToJsonArray(reqParams.requestParams) ,
                         reqParams.path,
@@ -265,8 +261,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
                     val obj = JSONObject(loginArgs)
-                    if (obj.has("redirectUrl")) loginParams.redirectUrl =
-                        Uri.parse(obj.get("redirectUrl") as String?)
                     val setupMfaCF = web3auth.manageMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
@@ -301,13 +295,11 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
 }
 @Keep
 data class WalletServicesJson(
-    @Keep val chainConfig: ChainConfig,
     @Keep val path: String? = "wallet"
 )
 
 @Keep
 data class RequestJson(
-    @Keep val chainConfig: ChainConfig,
     @Keep val method: String,
     @Keep val requestParams: List<Any?>,
     @Keep val path: String? = "wallet/request",

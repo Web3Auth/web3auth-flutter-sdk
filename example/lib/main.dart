@@ -8,6 +8,7 @@ import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/input.dart';
 import 'package:web3auth_flutter/output.dart';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
+import 'package:web3auth_flutter_example/utils.dart';
 import 'package:web3dart/web3dart.dart';
 
 void main() {
@@ -53,39 +54,34 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     HashMap themeMap = HashMap<String, String>();
     themeMap['primary'] = "#229954";
 
-    Uri redirectUrl;
+    String redirectUrl;
     if (Platform.isAndroid) {
-      redirectUrl = Uri.parse('torusapp://org.torusresearch.flutter.web3authexample');
+      redirectUrl = 'torusapp://org.torusresearch.flutter.web3authexample';
     } else if (Platform.isIOS) {
-      redirectUrl =
-          Uri.parse('com.web3auth.flutter.web3authflutterexample://auth');
+      redirectUrl = 'com.web3auth.flutter.web3authflutterexample://auth';
     } else {
       throw UnKnownException('Unknown platform');
     }
 
-    final loginConfig = HashMap<String, LoginConfigItem>();
-    loginConfig['jwt'] = LoginConfigItem(
-        verifier: "w3a-auth0-demo", // get it from web3auth dashboard
-        typeOfLogin: TypeOfLogin.jwt,
-        clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O" // auth0 client id
-        );
+    final List<AuthConnectionConfig> authConnectionConfig = [
+      AuthConnectionConfig(
+        authConnectionId: "web3auth-auth0-email-passwordless-sapphire-devnet",
+        authConnection: AuthConnection.custom,
+        clientId: "d84f6xvbdV75VTGmHiMWfZLeSPk8M07C",
+      )
+    ];
 
     await Web3AuthFlutter.init(
       Web3AuthOptions(
         clientId:
-            'BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw',
+            'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
         //sdkUrl: 'https://auth.mocaverse.xyz',
         //walletSdkUrl: 'https://lrc-mocaverse.web3auth.io',
-        network: Network.sapphire_devnet,
-        buildEnv: BuildEnv.production,
+        web3AuthNetwork: Web3AuthNetwork.sapphire_mainnet,
+        authBuildEnv: BuildEnv.testing,
         redirectUrl: redirectUrl,
-        whiteLabel: WhiteLabelData(
-          mode: ThemeModes.dark,
-          defaultLanguage: Language.en,
-          appName: "Web3Auth Flutter App",
-          theme: themeMap,
-        ),
-        loginConfig: loginConfig,
+        authConnectionConfig: authConnectionConfig,
+        defaultChainId: "0x1",
       ),
     );
 
@@ -95,7 +91,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       print('Error during Web3Auth initialization: $e');
     }
 
-    final String res = await Web3AuthFlutter.getPrivKey();
+    final String res = await Web3AuthFlutter.getPrivateKey();
     log(res);
     if (res.isNotEmpty) {
       setState(() {
@@ -186,6 +182,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             onPressed: _login(_withDiscord),
                             child: const Text('Discord'),
                           ),
+                          ElevatedButton(
+                            onPressed: _login(sfaSignIn),
+                            child: const Text('SFA SignIn'),
+                          ),
                         ],
                       ),
                     ),
@@ -213,8 +213,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                             child: const Text('Launch Wallet Services'),
                           ),
                           ElevatedButton(
-                            onPressed: _setupMFA(),
-                            child: const Text('Setup MFA'),
+                            onPressed: _enableMFA(),
+                            child: const Text('Enable MFA'),
                           ),
                           ElevatedButton(
                             onPressed: _manageMFA(),
@@ -267,7 +267,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           logoutVisible = false;
         });
       } on UserCancelledException {
-        log("User cancelled.");
+        log("User cancelled");
       } on UnKnownException {
         log("Unknown exception occurred");
       }
@@ -277,7 +277,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   VoidCallback _privKey(Future<String?> Function() method) {
     return () async {
       try {
-        final String response = await Web3AuthFlutter.getPrivKey();
+        final String response = await Web3AuthFlutter.getPrivateKey();
         setState(() {
           _result = response;
           logoutVisible = true;
@@ -290,10 +290,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
   }
 
-  VoidCallback _userInfo(Future<TorusUserInfo> Function() method) {
+  VoidCallback _userInfo(Future<UserInfo> Function() method) {
     return () async {
       try {
-        final TorusUserInfo response = await Web3AuthFlutter.getUserInfo();
+        final UserInfo response = await Web3AuthFlutter.getUserInfo();
         setState(() {
           _result = response.toString();
           logoutVisible = true;
@@ -307,19 +307,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<Web3AuthResponse> _withGoogle() {
-    return Web3AuthFlutter.login(
-      LoginParams(loginProvider: Provider.google, mfaLevel: MFALevel.NONE),
+    return Web3AuthFlutter.connectTo(
+      LoginParams(
+          authConnection: AuthConnection.google, mfaLevel: MFALevel.NONE),
     );
   }
 
   Future<Web3AuthResponse> _withFacebook() {
-    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.facebook));
+    return Web3AuthFlutter.connectTo(
+        LoginParams(authConnection: AuthConnection.facebook));
   }
 
   Future<Web3AuthResponse> _withEmailPasswordless() {
-    return Web3AuthFlutter.login(
+    return Web3AuthFlutter.connectTo(
       LoginParams(
-        loginProvider: Provider.email_passwordless,
+        authConnection: AuthConnection.email_passwordless,
         extraLoginOptions: ExtraLoginOptions(
           login_hint: textEditingController.text,
         ),
@@ -328,27 +330,30 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<Web3AuthResponse> _withDiscord() {
-    return Web3AuthFlutter.login(LoginParams(loginProvider: Provider.discord));
+    return Web3AuthFlutter.connectTo(
+        LoginParams(authConnection: AuthConnection.discord));
+  }
+
+  Future<Web3AuthResponse> sfaSignIn() {
+    return Web3AuthFlutter.connectTo(
+        LoginParams(authConnection: AuthConnection.google,
+        authConnectionId: "torus-test-health",
+        idToken: Utils().es256Token("devnettestuser@tor.us"),
+        groupedAuthConnectionId: "torus-aggregate-sapphire-mainnet"));
   }
 
   Future<String?> _getPrivKey() {
-    return Web3AuthFlutter.getPrivKey();
+    return Web3AuthFlutter.getPrivateKey();
   }
 
-  Future<TorusUserInfo> _getUserInfo() {
+  Future<UserInfo> _getUserInfo() {
     return Web3AuthFlutter.getUserInfo();
   }
 
   VoidCallback _launchWalletServices() {
     return () async {
       try {
-        await Web3AuthFlutter.launchWalletServices(
-          ChainConfig(
-            chainId: "0x89",
-            rpcTarget:
-                "https://mainnet.infura.io/v3/daeee53504be4cd3a997d4f2718d33e0",
-          ),
-        );
+        await Web3AuthFlutter.showWalletUI();
       } on UserCancelledException {
         log("User cancelled.");
       } on UnKnownException {
@@ -357,7 +362,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     };
   }
 
-  VoidCallback _setupMFA() {
+  VoidCallback _enableMFA() {
     return () async {
       try {
         await Web3AuthFlutter.enableMFA();
@@ -397,7 +402,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         params.add(address.hexEip55);
         params.add("Web3Auth");
         final signResponse = await Web3AuthFlutter.request(
-          ChainConfig(chainId: "0x89", rpcTarget: "https://polygon-rpc.com/"),
           "personal_sign",
           params,
           appState: "web3auth",

@@ -1,12 +1,29 @@
 import 'dart:collection';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:web3auth_flutter/enums.dart';
 import 'package:web3auth_flutter/web3auth_flutter.dart';
 
 class LoginParams {
-  /// [loginProvider] sets the oAuth login method to be used. You can use any of the
-  /// valid [Provider] from the supported list.
-  final Provider loginProvider;
+  /// [authConnection] sets the oAuth login method to be used. You can use any of the
+  /// valid [AuthConnection] from the supported list.
+  final AuthConnection authConnection;
+
+  /// The auth connection id to be used for login.
+  final String? authConnectionId;
+
+  /// The grouped auth connection id to be used for login.
+  final String? groupedAuthConnectionId;
+
+  final String? appState;
+
+  /// Customize the MFA screen shown to the user during OAuth authentication.
+  final MFALevel? mfaLevel;
+
+  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AuthConnection].
+  ///
+  /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
+  final ExtraLoginOptions? extraLoginOptions;
 
   /// Custom verifier logins can get a dapp share returned to them post successful login.
   /// This is useful if the dapps want to use this share to allow users to login seamlessly.
@@ -22,48 +39,49 @@ class LoginParams {
   /// The default value is [Curve.secp256k1].
   final Curve? curve;
 
-  /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [loginProvider].
-  ///
-  /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
-  final ExtraLoginOptions? extraLoginOptions;
-
-  /// Deeplinking for the application where user will be redirected after login.
-  final Uri? redirectUrl;
-
-  final String? appState;
-
-  /// Customize the MFA screen shown to the user during OAuth authentication.
-  final MFALevel? mfaLevel;
   final String? dappUrl;
 
-  LoginParams(
-      {required this.loginProvider,
-      this.dappShare,
-      this.curve = Curve.secp256k1,
-      this.extraLoginOptions,
-      this.redirectUrl,
-      this.appState,
-      this.mfaLevel,
-      this.dappUrl});
+  String? loginHint;
+  final String? idToken;
 
-  Map<String, dynamic> toJson() => {
-        "loginProvider": loginProvider.name,
-        "dappShare": dappShare,
-        "curve": curve?.name,
-        "extraLoginOptions": extraLoginOptions?.toJson(),
-        "redirectUrl": redirectUrl?.toString(),
-        "appState": appState,
-        "mfaLevel": mfaLevel?.type,
-        "dappUrl": dappUrl
-      };
+  LoginParams({
+    required this.authConnection,
+    this.authConnectionId,
+    this.groupedAuthConnectionId,
+    this.appState,
+    this.mfaLevel,
+    this.extraLoginOptions,
+    this.dappShare,
+    this.curve = Curve.secp256k1,
+    this.dappUrl,
+    this.loginHint,
+    this.idToken,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'authConnection': authConnection.name,
+      'authConnectionId': authConnectionId,
+      'groupedAuthConnectionId': groupedAuthConnectionId,
+      'appState': appState,
+      'mfaLevel': mfaLevel?.name,
+      'extraLoginOptions': extraLoginOptions?.toJson(),
+      'dappShare': dappShare,
+      'curve': curve?.name,
+      'dappUrl': dappUrl,
+      'loginHint': loginHint,
+      'idToken': idToken,
+    };
+  }
 }
 
-class LoginConfigItem {
-  /// Custom verifier name given in the developer dashboard.
-  final String verifier;
+class AuthConnectionConfig {
 
   /// The type of login for custom verifier.
-  final TypeOfLogin typeOfLogin;
+  final AuthConnection authConnection;
+
+  /// Custom verifier name given in the developer dashboard.
+  final String authConnectionId;
 
   /// Client id provided by your login provider used for custom verifier.
   final String clientId;
@@ -74,9 +92,9 @@ class LoginConfigItem {
   /// Description for the button. If provided, it renders as a full length button. else, icon button.
   final String? description;
 
-  /// The field in JWT token which maps to verifier id. Please make sure you selected
-  /// correct JWT verifier id in the developer dashboard.
-  final String? verifierSubIdentifier;
+  ///  The grouped auth connection id.
+  ///  If provided, authConnectionId will become a sub identifier for the groupedAuthConnectionId.
+  final String? groupedAuthConnectionId;
 
   /// Logo to be shown on mouse hover.
   final String? logoHover;
@@ -99,13 +117,15 @@ class LoginConfigItem {
   /// Whether to show the login button on Mobile.
   final bool? showOnMobile;
 
-  LoginConfigItem({
-    required this.verifier,
-    required this.typeOfLogin,
+  final ExtraLoginOptions? jwtParameters;
+
+  AuthConnectionConfig({
+    required this.authConnection,
+    required this.authConnectionId,
     required this.clientId,
     this.name,
     this.description,
-    this.verifierSubIdentifier,
+    this.groupedAuthConnectionId,
     this.logoHover,
     this.logoLight,
     this.logoDark,
@@ -113,23 +133,25 @@ class LoginConfigItem {
     this.showOnModal,
     this.showOnDesktop,
     this.showOnMobile,
+    this.jwtParameters,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'verifier': verifier,
-      'typeOfLogin': typeOfLogin.name,
+      'authConnection': authConnection.name,
+      'authConnectionId': authConnectionId,
       'clientId': clientId,
       'name': name,
       'description': description,
-      'verifierSubIdentifier': verifierSubIdentifier,
+      'groupedAuthConnectionId': groupedAuthConnectionId,
       'logoHover': logoHover,
       'logoLight': logoLight,
       'logoDark': logoDark,
       'mainOption': mainOption,
       'showOnModal': showOnModal,
       'showOnDesktop': showOnDesktop,
-      'showOnMobile': showOnMobile
+      'showOnMobile': showOnMobile,
+      'jwtParameters': jwtParameters?.toJson()
     };
   }
 }
@@ -150,10 +172,12 @@ class ExtraLoginOptions {
 
   /// The field in JWT token which maps to verifier id. Please make sure you selected
   /// correct JWT verifier id in the developer dashboard.
-  final String? verifierIdField;
+  final String? userIdField;
 
   /// Whether the verifier id field is case sensitive or not.
-  final bool? isVerifierIdCaseSensitive;
+  final bool? isUserIdCaseSensitive;
+
+  final String? access_token;
 
   /// Allows developers the configure the display of UI. Checkout [Display] for more
   /// details.
@@ -175,6 +199,8 @@ class ExtraLoginOptions {
   final String? id_token_hint;
 
   final String? id_token;
+
+  final EmailFlowType? flow_type;
 
   /// [login_hint] is used to send the user's email address during [Provider.email_passwordless].
   final String? login_hint;
@@ -209,8 +235,10 @@ class ExtraLoginOptions {
     this.domain,
     this.client_id,
     this.leeway,
-    this.verifierIdField,
-    this.isVerifierIdCaseSensitive,
+    this.userIdField,
+    this.isUserIdCaseSensitive,
+    this.access_token,
+    this.flow_type = EmailFlowType.code,
     this.display,
     this.prompt,
     this.max_age,
@@ -233,8 +261,10 @@ class ExtraLoginOptions {
         "domain": domain,
         "client_id": client_id,
         "leeway": leeway,
-        "verifierIdField": verifierIdField,
-        "isVerifierIdCaseSensitive": isVerifierIdCaseSensitive,
+        "userIdField": userIdField,
+        "isUserIdCaseSensitive": isUserIdCaseSensitive,
+        "access_token": access_token,
+        "flow_type": flow_type?.name,
         "display": display?.name,
         "prompt": prompt?.name,
         "max_age": max_age,
@@ -364,7 +394,7 @@ class MfaSettings {
   }
 }
 
-class ChainConfig {
+class Chains {
   final ChainNamespace chainNamespace;
   final int? decimals;
   final String? blockExplorerUrl;
@@ -375,7 +405,7 @@ class ChainConfig {
   final String? ticker;
   final String? tickerName;
 
-  ChainConfig({
+  Chains({
     this.chainNamespace = ChainNamespace.eip155,
     this.decimals = 18,
     this.blockExplorerUrl,
@@ -408,98 +438,137 @@ class Web3AuthOptions {
   /// You can obtain your client id from the web3auth [developer dashboard](https://dashboard.web3auth.io/).
   final String clientId;
 
-  /// Web3Auth Network to use for the session & the issued idToken.
-  ///
-  /// User [Network.sapphire_mainnet] for production build.
-  final Network network;
-
-  /// [buildEnv] is used for internal testing purposes. This buildEnv
-  /// signifies the enviroment for Web3Auth, and doesn't signifies
-  /// the enviorment of the application.
-  final BuildEnv? buildEnv;
-
-  /// Define the desired Web3Auth service url.
-  final String? sdkUrl;
-  final String? walletSdkUrl;
-
   /// Deeplinking for the application where user will be redirected after login.
   /// Ideally, it should be bundleId and package name for iOS and Android respectively.
   ///
   /// While using redirectUrl, please make sure you have whitelisted it
   /// developer dashboard. Checkout [SDK reference](https://web3auth.io/docs/sdk/pnp/flutter/install#configuration-1) more details.
-  final Uri? redirectUrl;
+  final String redirectUrl;
+  final Map<String, String>? originData;
+
+  /// [authBuildEnv] is used for internal testing purposes. This buildEnv
+  /// signifies the enviroment for Web3Auth, and doesn't signifies
+  /// the enviorment of the application.
+  @JsonKey(name: 'buildEnv')
+  final BuildEnv? authBuildEnv;
+
+  /// Define the desired Web3Auth service url.
+  final String? sdkUrl;
+
+  String? storageServerUrl;
+  String? sessionSocketUrl;
+
+  /// Login config for the custom verifiers.
+  List<AuthConnectionConfig>? authConnectionConfig;
+
+  /// WhiteLabel options for web3auth. It helps you define
+  /// custom UI, branding, and translations for your brand app
+  final WhiteLabelData? whiteLabel;
+
+  final String? dashboardUrl;
+  String? accountAbstractionConfig;
+  final String? walletSdkUrl;
+  String? sessionNamespace;
+
+  /// [includeUserDataInToken] allows developers to include user data in the token.
+  bool? includeUserDataInToken;
+
+  Chains? chains;
+  String? defaultChainId = '0x1';
+  bool enableLogging;
+
+  /// [sessionTime] allows developers to configure the session management time.
+  ///
+  /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
+  final int sessionTime;
+
+  /// Web3Auth Network to use for the session & the issued idToken.
+  ///
+  /// User [Web3AuthNetwork.sapphire_mainnet] for production build.
+  @JsonKey(name: 'network')
+  final Web3AuthNetwork web3AuthNetwork;
+
+  final bool? useSFAKey;
 
   /// WhiteLabel options for web3auth. It helps you define
   /// custom UI, branding, and translations for your brand app.
   ///
-  /// Checkout [WhiteLabelData] for more details.
-  final WhiteLabelData? whiteLabel;
-
-  /// Login config for the custom verifiers.
-  final HashMap<String, LoginConfigItem>? loginConfig;
-
-  /// Use [useCoreKitKey] to get the core kit key.
-  final bool? useCoreKitKey;
-
-  final ChainNamespace? chainNamespace;
+  /// Checkout [WalletServicesConfig] for more details.
+  final WalletServicesConfig? walletServicesConfig;
 
   /// Allows developers to configure the [MfaSettings] for authentication.
   ///
   /// Checkout [MFA SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter/mfa) for more details.
   final MfaSettings? mfaSettings;
 
-  /// [sessionTime] allows developers to configure the session management time.
-  ///
-  /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
-  final int? sessionTime;
-
-  final ChainConfig? chainConfig;
-
-  final Map<String, String>? originData;
-
-  final String? dashboardUrl;
-
   Web3AuthOptions({
     required this.clientId,
-    required this.network,
-    this.buildEnv = BuildEnv.production,
-    String? sdkUrl,
-    String? walletSdkUrl,
-    this.redirectUrl,
-    this.whiteLabel,
-    this.loginConfig,
-    this.useCoreKitKey,
-    this.chainNamespace = ChainNamespace.eip155,
-    this.sessionTime = 30 * 86400,
-    this.mfaSettings,
+    required this.redirectUrl,
     this.originData,
+    this.authBuildEnv = BuildEnv.production,
+    String? sdkUrl,
+    this.storageServerUrl,
+    this.sessionSocketUrl,
+    this.authConnectionConfig = const [],
+    this.whiteLabel,
     String? dashboardUrl,
-  })  : chainConfig = null,
-        sdkUrl = sdkUrl ?? getSdkUrl(buildEnv ?? BuildEnv.production),
-        walletSdkUrl =
-            walletSdkUrl ?? getWalletSdkUrl(buildEnv ?? BuildEnv.production),
-        dashboardUrl =
-            dashboardUrl ?? getDashboardUrl(buildEnv ?? BuildEnv.production);
+    this.accountAbstractionConfig,
+    String? walletSdkUrl,
+    this.sessionNamespace,
+    this.includeUserDataInToken = true,
+    this.chains,
+    this.defaultChainId,
+    this.enableLogging = false,
+    this.sessionTime = 30 * 86400,
+    required this.web3AuthNetwork,
+    this.useSFAKey = false,
+    this.walletServicesConfig,
+    this.mfaSettings,
+  })  : sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv),
+        dashboardUrl = dashboardUrl ?? getDashboardUrl(authBuildEnv),
+        walletSdkUrl = walletSdkUrl ?? getWalletSdkUrl(authBuildEnv);
 
   Map<String, dynamic> toJson() {
     return {
       'clientId': clientId,
-      'network': network.name,
+      'redirectUrl': redirectUrl,
+      'originData': originData,
+      'buildEnv': authBuildEnv?.name,
       'sdkUrl': sdkUrl,
-      'walletSdkUrl': walletSdkUrl,
-      'buildEnv': buildEnv?.name,
-      'redirectUrl': redirectUrl.toString(),
+      'storageServerUrl': storageServerUrl,
+      'sessionSocketUrl': sessionSocketUrl,
+      'authConnectionConfig': authConnectionConfig?.map((config) => config.toJson()).toList(),
       'whiteLabel': whiteLabel?.toJson(),
-      'loginConfig': loginConfig,
-      'useCoreKitKey': useCoreKitKey,
-      'chainNamespace': chainNamespace?.name,
-      'mfaSettings': mfaSettings,
-      "sessionTime": sessionTime,
-      "chainConfig": chainConfig?.toJson(),
-      "originData": originData,
-      "dashboardUrl": dashboardUrl,
+      'dashboardUrl': dashboardUrl,
+      'accountAbstractionConfig': accountAbstractionConfig,
+      'walletSdkUrl': walletSdkUrl,
+      'sessionNamespace': sessionNamespace,
+      'includeUserDataInToken': includeUserDataInToken,
+      'chains': chains?.toJson(),
+      'defaultChainId': defaultChainId,
+      'enableLogging': enableLogging,
+      'sessionTime': sessionTime,
+      'network': web3AuthNetwork.name,
+      'useSFAKey': useSFAKey,
+      'walletServicesConfig': walletServicesConfig?.toJson(),
+      'mfaSettings': mfaSettings?.toJson(),
     };
   }
+}
+
+class WalletServicesConfig {
+  final ConfirmationStrategy? confirmationStrategy;
+  final WhiteLabelData? whiteLabel;
+
+  WalletServicesConfig({
+    this.confirmationStrategy = ConfirmationStrategy.defaultStrategy,
+    this.whiteLabel,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'confirmationStrategy': confirmationStrategy?.name,
+    'whiteLabel': whiteLabel?.toJson(),
+  };
 }
 
 class UserCancelledException implements Exception {}
@@ -511,7 +580,7 @@ class UnKnownException implements Exception {
 }
 
 String getSdkUrl(BuildEnv? buildEnv) {
-  const String version = "v9";
+  const String version = "v10";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-auth.web3auth.io/$version";
@@ -524,7 +593,7 @@ String getSdkUrl(BuildEnv? buildEnv) {
 }
 
 String getWalletSdkUrl(BuildEnv? buildEnv) {
-  const String walletServicesVersion = "v4";
+  const String walletServicesVersion = "v5";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-wallet.web3auth.io/$walletServicesVersion";
@@ -538,13 +607,14 @@ String getWalletSdkUrl(BuildEnv? buildEnv) {
 
 String getDashboardUrl(BuildEnv? buildEnv) {
   const String walletAccountConstant = "wallet/account";
+  const String authDashboardVersion = "v10";
   switch (buildEnv) {
     case BuildEnv.staging:
-      return "https://staging-account.web3auth.io/$walletAccountConstant";
+      return "https://staging-account.web3auth.io/$authDashboardVersion/$walletAccountConstant";
     case BuildEnv.testing:
       return "https://develop-account.web3auth.io/$walletAccountConstant";
     case BuildEnv.production:
     default:
-      return "https://account.web3auth.io/$walletAccountConstant";
+      return "https://account.web3auth.io/$authDashboardVersion/$walletAccountConstant";
   }
 }
