@@ -99,8 +99,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 val obj = JSONObject(initArgs)
                 if (obj.has("redirectUrl")) initParams.redirectUrl =
                     obj.get("redirectUrl").toString()
-                // set flutter analytics flag to true
-                initParams.setFlutterAnalytics(true, "7.0.0")
                 // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
                     initParams, activity!!
