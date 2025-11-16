@@ -28,6 +28,7 @@ class Web3AuthFlutter {
     try {
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
       loginParamsJson.removeWhere((key, value) => value == null);
+      //print(jsonEncode(loginParamsJson));
       final String loginResponse = await _channel.invokeMethod(
         'connectTo',
         jsonEncode(loginParamsJson),

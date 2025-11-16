@@ -82,6 +82,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         redirectUrl: redirectUrl,
         authConnectionConfig: authConnectionConfig,
         defaultChainId: "0x1",
+        isFlutterAnalytics: true,
       ),
     );
 
@@ -309,7 +310,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<Web3AuthResponse> _withGoogle() {
     return Web3AuthFlutter.connectTo(
       LoginParams(
-          authConnection: AuthConnection.google, mfaLevel: MFALevel.NONE),
+          authConnection: AuthConnection.google,
+          authConnectionId: "w3ads",
+          groupedAuthConnectionId: "aggregate-mobile",
+          mfaLevel: MFALevel.NONE),
     );
   }
 

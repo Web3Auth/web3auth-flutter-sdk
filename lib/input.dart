@@ -64,7 +64,7 @@ class LoginParams {
       'authConnectionId': authConnectionId,
       'groupedAuthConnectionId': groupedAuthConnectionId,
       'appState': appState,
-      'mfaLevel': mfaLevel?.name,
+      'mfaLevel': mfaLevel?.type,
       'extraLoginOptions': extraLoginOptions?.toJson(),
       'dappShare': dappShare,
       'curve': curve?.name,
@@ -501,6 +501,12 @@ class Web3AuthOptions {
   /// Checkout [MFA SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter/mfa) for more details.
   final MfaSettings? mfaSettings;
 
+  /// Indicates if this is a Flutter SDK session
+  bool isFlutterAnalytics;
+
+  /// SDK version (used mainly for Flutter SDK)
+  String? sdkVersion;
+
   Web3AuthOptions({
     required this.clientId,
     required this.redirectUrl,
@@ -524,6 +530,8 @@ class Web3AuthOptions {
     this.useSFAKey = false,
     this.walletServicesConfig,
     this.mfaSettings,
+    this.isFlutterAnalytics = true,
+    this.sdkVersion,
   })  : sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv),
         dashboardUrl = dashboardUrl ?? getDashboardUrl(authBuildEnv),
         walletSdkUrl = walletSdkUrl ?? getWalletSdkUrl(authBuildEnv);
@@ -533,7 +541,7 @@ class Web3AuthOptions {
       'clientId': clientId,
       'redirectUrl': redirectUrl,
       'originData': originData,
-      'buildEnv': authBuildEnv?.name,
+      'buildEnv': authBuildEnv?.name.toLowerCase(),
       'sdkUrl': sdkUrl,
       'storageServerUrl': storageServerUrl,
       'sessionSocketUrl': sessionSocketUrl,
@@ -548,10 +556,12 @@ class Web3AuthOptions {
       'defaultChainId': defaultChainId,
       'enableLogging': enableLogging,
       'sessionTime': sessionTime,
-      'network': web3AuthNetwork.name,
+      'network': web3AuthNetwork.name.toLowerCase(),
       'useSFAKey': useSFAKey,
       'walletServicesConfig': walletServicesConfig?.toJson(),
       'mfaSettings': mfaSettings?.toJson(),
+      'isFlutterAnalytics': isFlutterAnalytics,
+      'sdkVersion': sdkVersion,
     };
   }
 }
