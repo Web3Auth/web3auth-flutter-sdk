@@ -311,8 +311,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return Web3AuthFlutter.connectTo(
       LoginParams(
           authConnection: AuthConnection.google,
-          authConnectionId: "w3ads",
-          groupedAuthConnectionId: "aggregate-mobile",
           mfaLevel: MFALevel.NONE),
     );
   }
