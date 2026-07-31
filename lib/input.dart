@@ -473,7 +473,7 @@ class Web3AuthOptions {
   /// [includeUserDataInToken] allows developers to include user data in the token.
   bool? includeUserDataInToken;
 
-  Chains? chains;
+  List<Chains>? chains;
   String? defaultChainId = '0x1';
   bool enableLogging;
 
@@ -552,7 +552,7 @@ class Web3AuthOptions {
       'walletSdkUrl': walletSdkUrl,
       'sessionNamespace': sessionNamespace,
       'includeUserDataInToken': includeUserDataInToken,
-      'chains': chains?.toJson(),
+      'chains': chains?.map((chain) => chain.toJson()).toList(),
       'defaultChainId': defaultChainId,
       'enableLogging': enableLogging,
       'sessionTime': sessionTime,

@@ -9,8 +9,8 @@ class Utils {
       final jwt = JWT({
         "sub": "email|hello",
         "aud": "torus-key-test",
-        "exp": DateTime.now().millisecond,
-        "iat": DateTime.now().millisecond,
+        "exp": DateTime.now().millisecondsSinceEpoch ~/ 1000 + 600,
+        "iat": DateTime.now().millisecondsSinceEpoch ~/ 1000,
         "iss": "torus-key-test",
         "email": email,
         "nickname": email.split("@")[0],

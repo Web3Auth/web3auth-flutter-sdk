@@ -114,7 +114,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
-                    val obj = JSONObject(loginArgs)
                     //Log.d("#loginParams", loginParams.toString())
                     val loginCF = web3auth.connectTo(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
@@ -209,7 +208,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
-                    val obj = JSONObject(loginArgs)
                     val setupMfaCF = web3auth.enableMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
@@ -258,7 +256,6 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
                     val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
-                    val obj = JSONObject(loginArgs)
                     val setupMfaCF = web3auth.manageMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()

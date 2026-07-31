@@ -119,9 +119,9 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 let loginParams: LoginParams
                 do {
                     loginParams = try decoder.decode(LoginParams.self, from: data)
-                    print("loginParams: \(loginParams)")
+                    // print("loginParams: \(loginParams)")
                 } catch {
-                    print(error)
+                    // print(error)
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
                         message: "Invalid Login Params",
@@ -336,4 +336,31 @@ struct InitParams: Codable {
     let mfaSettings: MfaSettings?
     let isFlutterAnalytics: Bool?
     let sdkVersion: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case clientId
+        case redirectUrl
+        case originData
+        case authBuildEnv = "buildEnv"
+        case sdkUrl
+        case storageServerUrl
+        case sessionSocketUrl
+        case authConnectionConfig
+        case whiteLabel
+        case dashboardUrl
+        case accountAbstractionConfig
+        case walletSdkUrl
+        case sessionNamespace
+        case includeUserDataInToken
+        case chains
+        case defaultChainId
+        case enableLogging
+        case sessionTime
+        case network
+        case useSFAKey
+        case walletServicesConfig
+        case mfaSettings
+        case isFlutterAnalytics
+        case sdkVersion
+    }
 }
