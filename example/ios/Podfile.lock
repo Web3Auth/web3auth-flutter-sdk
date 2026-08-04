@@ -1,19 +1,33 @@
 PODS:
+  - AnalyticsSwiftCocoapod (1.8.0):
+    - JSONSafeEncoding (= 2.0.0)
+    - Sovran (= 1.1.1)
   - BigInt (5.2.0)
   - curvelib.swift (2.0.0)
   - Flutter (1.0.0)
+  - JSONSafeEncoding (2.0.0)
+  - JWTDecode (3.3.0)
   - KeychainSwift (20.0.0)
-  - TorusSessionManager (6.0.2):
+  - Sovran (1.1.1)
+  - Torus-fetchNodeDetails (8.0.1):
+    - BigInt (~> 5.2.0)
+  - Torus-utils (10.0.1):
+    - curvelib.swift (~> 2.0.0)
+    - Torus-fetchNodeDetails (~> 8.0.1)
+  - TorusSessionManager (6.1.0):
     - curvelib.swift (~> 2.0.0)
     - KeychainSwift (~> 20.0.0)
-  - Web3Auth (11.0.5):
+  - Web3Auth (12.0.1):
+    - AnalyticsSwiftCocoapod (~> 1.8.0)
     - BigInt (~> 5.2.0)
     - curvelib.swift (~> 2.0.0)
+    - JWTDecode (~> 3.3.0)
     - KeychainSwift (~> 20.0.0)
-    - TorusSessionManager (~> 6.0.2)
+    - Torus-utils (~> 10.0.1)
+    - TorusSessionManager (~> 6.1.0)
   - web3auth_flutter (2.0.1):
     - Flutter
-    - Web3Auth (~> 11.0.5)
+    - Web3Auth (~> 12.0.1)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -21,9 +35,15 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
+    - AnalyticsSwiftCocoapod
     - BigInt
     - curvelib.swift
+    - JSONSafeEncoding
+    - JWTDecode
     - KeychainSwift
+    - Sovran
+    - Torus-fetchNodeDetails
+    - Torus-utils
     - TorusSessionManager
     - Web3Auth
 
@@ -34,14 +54,20 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/web3auth_flutter/ios"
 
 SPEC CHECKSUMS:
+  AnalyticsSwiftCocoapod: cc3e4d4e381a080c89a6f5f56845577c298bc627
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   curvelib.swift: b9223e5cac801effed8a5fe8968e952b3fe427a5
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  JSONSafeEncoding: 54722ebc4fe1482e3e60a8450e1287481e32dd8b
+  JWTDecode: 1ca6f765844457d0dd8690436860fecee788f631
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
-  TorusSessionManager: 3c47c2a4c4d6173a10006eb0af4b86317ee45ff8
-  Web3Auth: cf501e2bccf63d7a9746c0e53eb98cf143841a5c
-  web3auth_flutter: 79be94bbb719a1837c79e0c07e793abd64e11dd7
+  Sovran: f8212bb3855042a24689a73ea0219ca5295235da
+  Torus-fetchNodeDetails: 0ae97719263ee98f5bf5549a86464eea38a828f3
+  Torus-utils: 7c53a9c71663c2f458bfdcf1a380d7a5b88f9632
+  TorusSessionManager: cd2de693425cefb976c7bca42a45964297d8c2cc
+  Web3Auth: 5459b2d5bcdb150c5e84c7229639422cba684814
+  web3auth_flutter: 9c145c6b87ac77f1cbd2a016188ac9ec6162b243
 
 PODFILE CHECKSUM: 1d58595b82b880200a7ded05da9181d30ef8c1b7
 
-COCOAPODS: 1.14.2
+COCOAPODS: 1.16.2

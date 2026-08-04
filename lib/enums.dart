@@ -1,4 +1,4 @@
-enum Network { mainnet, testnet, cyan, aqua, sapphire_devnet, sapphire_mainnet }
+enum Web3AuthNetwork { mainnet, testnet, cyan, aqua, sapphire_devnet, sapphire_mainnet }
 
 enum BuildEnv { production, staging, testing }
 
@@ -8,25 +8,7 @@ enum Language { en, de, ja, ko, zh, es, fr, pt, nl , tr}
 
 enum ThemeModes { light, dark, auto }
 
-enum Provider {
-  google,
-  facebook,
-  reddit,
-  discord,
-  twitch,
-  github,
-  apple,
-  linkedin,
-  twitter,
-  line,
-  kakao,
-  email_passwordless,
-  jwt,
-  sms_passwordless,
-  farcaster,
-}
-
-enum TypeOfLogin {
+enum AuthConnection {
   google,
   facebook,
   reddit,
@@ -42,9 +24,14 @@ enum TypeOfLogin {
   line,
   email_passwordless,
   email_password,
-  jwt,
+  custom,
   sms_passwordless,
   farcaster,
+}
+
+enum EmailFlowType {
+  link,
+  code,
 }
 
 enum Display {
@@ -104,3 +91,10 @@ enum Prompt {
 }
 
 enum Curve { secp256k1, ed25519 }
+
+enum ConfirmationStrategy {
+  popup,
+  modal,
+  autoApprove,
+  defaultStrategy
+}

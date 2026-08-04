@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import Web3Auth
+import FetchNodeDetails
 
 public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -9,9 +10,28 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
+    private func getNetwork(_ network: String) -> Web3AuthNetwork {
+        switch network {
+        case "mainnet":
+            return .MAINNET
+        case "testnet":
+            return .TESTNET
+        case "aqua":
+            return .AQUA
+        case "cyan":
+            return .CYAN
+        case "sapphire_devnet":
+            return .SAPPHIRE_DEVNET
+        case "sapphire_mainnet":
+            return .SAPPHIRE_MAINNET
+        default:
+            return .SAPPHIRE_MAINNET
+        }
+    }
+
     var web3auth: Web3Auth?
-    public var state: Web3AuthState? {
-        return web3auth?.state
+    public var web3AuthResponse: Web3AuthResponse? {
+        return web3auth?.web3AuthResponse
     }
     var decoder = JSONDecoder()
     var encoder = JSONEncoder()
@@ -36,10 +56,37 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
             // print("call data", data)
             switch call.method {
             case "init":
-                let initParams: W3AInitParams
+                var options: Web3AuthOptions
+                //print("RAW INIT DATA:", String(data: data, encoding: .utf8) ?? "Invalid UTF8")
                 do {
-                    initParams = try decoder.decode(W3AInitParams.self, from: data)
-                    // print(initParams, "params")
+                    let params = try decoder.decode(InitParams.self, from: data)
+                    let network = getNetwork(params.network)
+                    let buildEnv: BuildEnv = BuildEnv(rawValue: params.authBuildEnv ?? "production") ?? .production
+                    options = Web3AuthOptions(
+                        clientId: params.clientId,
+                        redirectUrl: params.redirectUrl,
+                        originData: params.originData,
+                        authBuildEnv: buildEnv,
+                        sdkUrl: params.sdkUrl,
+                        storageServerUrl: params.storageServerUrl,
+                        sessionSocketUrl: params.sessionSocketUrl,
+                        authConnectionConfig: params.authConnectionConfig,
+                        whiteLabel: params.whiteLabel,
+                        dashboardUrl: params.dashboardUrl,
+                        accountAbstractionConfig: params.accountAbstractionConfig,
+                        walletSdkUrl: params.walletSdkUrl,
+                        includeUserDataInToken: params.includeUserDataInToken ?? true,
+                        chains: params.chains,
+                        defaultChainId: params.defaultChainId ?? "0x1",
+                        enableLogging: params.enableLogging ?? false,
+                        sessionTime: params.sessionTime ?? 30 * 86400,
+                        web3AuthNetwork: network,
+                        useSFAKey: params.useSFAKey ?? false,
+                        walletServicesConfig: params.walletServicesConfig,
+                        mfaSettings: params.mfaSettings
+                    )
+
+                    options.setFlutterAnalytics(params.isFlutterAnalytics ?? true, sdkVersion: params.sdkVersion)
                 } catch {
                     // print(error)
                     result(FlutterError(
@@ -49,7 +96,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
                 do {
-                    let web3auth = try await Web3Auth(initParams)
+                    let web3auth = try await Web3Auth(options: options)
                     self.web3auth = web3auth
                     result(nil)
                     return
@@ -60,7 +107,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: error.localizedDescription))
                     return
                 }
-            case "login":
+            case "connectTo":
                 guard let web3auth = web3auth
                 else {
                     result(FlutterError(
@@ -69,12 +116,12 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         details: nil))
                     return
                 }
-                let loginParams: W3ALoginParams
+                let loginParams: LoginParams
                 do {
-                    loginParams = try decoder.decode(W3ALoginParams.self, from: data)
-                    //print("loginParams: \(loginParams)")
+                    loginParams = try decoder.decode(LoginParams.self, from: data)
+                    // print("loginParams: \(loginParams)")
                 } catch {
-                    //print(error)
+                    // print(error)
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
                         message: "Invalid Login Params",
@@ -83,7 +130,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 var resultMap: String = ""
                 do {
-                    let result = try await web3auth.login(loginParams)
+                    let result = try await web3auth.connectTo(loginParams: loginParams)
                     let resultData = try encoder.encode(result)
                     resultMap = String(decoding: resultData, as: UTF8.self)
                 } catch {
@@ -113,19 +160,18 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 // There is no initialize function in swift
                 result(nil)
                 return
-            case "getPrivKey":
-                let privKey = web3auth?.getPrivkey()
+            case "getPrivateKey":
+                let privKey = web3auth?.getPrivateKey()
                 result(privKey)
                 return
-            case "getEd25519PrivKey":
-                let getEd25519PrivKey = web3auth?.getEd25519PrivKey()
+            case "getEd25519PrivateKey":
+                let getEd25519PrivKey = try? web3auth?.getEd25519PrivateKey()
                 result(getEd25519PrivKey)
                 return
-            case "launchWalletServices":
+            case "showWalletUI":
                 let wsParams: WalletServicesParams
                 do {
                     wsParams = try decoder.decode(WalletServicesParams.self, from: data)
-                    print("chainConfig: \(wsParams.chainConfig)")
                 } catch {
                     result(FlutterError(
                         code: "INVALID_ARGUMENTS",
@@ -135,7 +181,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
                 
                 do {
-                    try await web3auth?.launchWalletServices(chainConfig: wsParams.chainConfig, path: wsParams.path)
+                    try await web3auth?.showWalletUI(path: wsParams.path)
                     result(nil)
                     return
                 } catch {
@@ -147,7 +193,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
             case "enableMFA":
                 do {
-                    let loginParams = try? decoder.decode(W3ALoginParams.self, from: data)
+                    let loginParams = try? decoder.decode(LoginParams.self, from: data)
 
                     if let params = loginParams {
                         let enableMFAResult = try await web3auth?.enableMFA(params)
@@ -166,7 +212,7 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 }
             case "manageMFA":
                 do {
-                    let loginParams = try? decoder.decode(W3ALoginParams.self, from: data)
+                    let loginParams = try? decoder.decode(LoginParams.self, from: data)
 
                     if let params = loginParams {
                         let manageMFAResult = try await web3auth?.manageMFA(params)
@@ -197,7 +243,6 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 
                     do {
                         let signResponse = try await web3auth?.request(
-                            chainConfig: reqParams.chainConfig,
                             method: reqParams.method,
                             requestParams: reqParams.requestParams,
                             path: reqParams.path,
@@ -256,14 +301,66 @@ public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
 }
 
 struct WalletServicesParams: Codable {
-    let chainConfig: ChainConfig
     let path: String?
 }
 
 struct RequestJson: Codable {
-    let chainConfig: ChainConfig
     let method: String
     let requestParams: [String]
     let path: String?
     let appState: String?
+}
+
+struct InitParams: Codable {
+    let clientId: String
+    let redirectUrl: String
+    let originData: [String: String]?
+    let authBuildEnv: String?
+    let sdkUrl: String?
+    let storageServerUrl: String?
+    let sessionSocketUrl: String?
+    let authConnectionConfig: [AuthConnectionConfig]?
+    let whiteLabel: WhiteLabelData?
+    let dashboardUrl: String?
+    let accountAbstractionConfig: String?
+    let walletSdkUrl: String?
+    let sessionNamespace: String?
+    let includeUserDataInToken: Bool?
+    let chains: [Chains]?
+    let defaultChainId: String?
+    let enableLogging: Bool?
+    let sessionTime: Int?
+    let network: String
+    let useSFAKey: Bool?
+    let walletServicesConfig: WalletServicesConfig?
+    let mfaSettings: MfaSettings?
+    let isFlutterAnalytics: Bool?
+    let sdkVersion: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case clientId
+        case redirectUrl
+        case originData
+        case authBuildEnv = "buildEnv"
+        case sdkUrl
+        case storageServerUrl
+        case sessionSocketUrl
+        case authConnectionConfig
+        case whiteLabel
+        case dashboardUrl
+        case accountAbstractionConfig
+        case walletSdkUrl
+        case sessionNamespace
+        case includeUserDataInToken
+        case chains
+        case defaultChainId
+        case enableLogging
+        case sessionTime
+        case network
+        case useSFAKey
+        case walletServicesConfig
+        case mfaSettings
+        case isFlutterAnalytics
+        case sdkVersion
+    }
 }
