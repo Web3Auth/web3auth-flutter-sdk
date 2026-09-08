@@ -9,6 +9,10 @@
 .history
 .svn/
 
+# Swift Package Manager
+.build/
+.swiftpm/
+
 # IntelliJ related
 *.iml
 *.ipr
