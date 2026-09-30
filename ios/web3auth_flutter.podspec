@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'web3auth_flutter'
-  s.version          = '2.0.1'
+  s.version          = '7.0.0'
   s.summary          = 'Flutter SDK for Torus Web3Auth'
   s.description      = <<-DESC
 Flutter SDK for Torus Web3Auth (OpenLogin)
@@ -13,7 +13,9 @@ Flutter SDK for Torus Web3Auth (OpenLogin)
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Web3Auth' => 'hello@web3auth.io' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  # Dual CocoaPods + SwiftPM support: sources live under the SPM package tree.
+  # Keep in sync with ios/web3auth_flutter/Package.swift.
+  s.source_files = 'web3auth_flutter/Sources/web3auth_flutter/**/*.swift'
   s.dependency 'Flutter'
   s.dependency 'Web3Auth', '~> 12.0.1'
   s.platform = :ios, '14.0'

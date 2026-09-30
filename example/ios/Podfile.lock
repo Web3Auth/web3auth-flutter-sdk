@@ -25,7 +25,7 @@ PODS:
     - KeychainSwift (~> 20.0.0)
     - Torus-utils (~> 10.0.1)
     - TorusSessionManager (~> 6.1.0)
-  - web3auth_flutter (2.0.1):
+  - web3auth_flutter (7.0.0):
     - Flutter
     - Web3Auth (~> 12.0.1)
 
@@ -66,7 +66,7 @@ SPEC CHECKSUMS:
   Torus-utils: 7c53a9c71663c2f458bfdcf1a380d7a5b88f9632
   TorusSessionManager: cd2de693425cefb976c7bca42a45964297d8c2cc
   Web3Auth: 5459b2d5bcdb150c5e84c7229639422cba684814
-  web3auth_flutter: 9c145c6b87ac77f1cbd2a016188ac9ec6162b243
+  web3auth_flutter: 503a6d59562b5a39c37d66fbc03e09bac3557a51
 
 PODFILE CHECKSUM: 1d58595b82b880200a7ded05da9181d30ef8c1b7
 

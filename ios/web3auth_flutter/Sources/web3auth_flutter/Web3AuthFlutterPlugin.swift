@@ -3,10 +3,10 @@ import UIKit
 import Web3Auth
 import FetchNodeDetails
 
-public class SwiftWeb3AuthFlutterPlugin: NSObject, FlutterPlugin {
+public class Web3AuthFlutterPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "web3auth_flutter", binaryMessenger: registrar.messenger())
-        let instance = SwiftWeb3AuthFlutterPlugin()
+        let instance = Web3AuthFlutterPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
