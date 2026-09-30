@@ -1,3 +1,15 @@
+## 7.0.1
+
+* Add Swift Package Manager (SPM) support for iOS while keeping CocoaPods working
+  (dual support). See [#109](https://github.com/Web3Auth/web3auth-flutter-sdk/pull/109).
+* Move iOS sources into the SPM layout under `ios/web3auth_flutter/Sources/web3auth_flutter/`.
+* Convert the iOS plugin to pure Swift (`Web3AuthFlutterPlugin`).
+* Bump example iOS deployment target to 14.0.
+
+## 7.0.0
+
+* Version bump for Flutter SDK 7.x line.
+
 ## 0.0.1
 
 * Initial release with same API surface of the Android and iOS SDK.

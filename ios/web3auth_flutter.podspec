@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'web3auth_flutter'
-  s.version          = '7.0.0'
+  s.version          = '7.0.1'
   s.summary          = 'Flutter SDK for Torus Web3Auth'
   s.description      = <<-DESC
 Flutter SDK for Torus Web3Auth (OpenLogin)
