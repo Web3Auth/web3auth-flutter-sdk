@@ -328,10 +328,16 @@ class WhiteLabelData {
   /// will be used for the loader.
   final bool? useLogoLoader;
 
-  /// Terms & conditions link shown in consent UI.
+  /// Terms & conditions URL shown in consent UI.
+  ///
+  /// Plain string URL — matches Auth / Android (`String?`) / iOS (`String?`).
+  /// Not a language-keyed map.
   final String? tncLink;
 
-  /// Privacy policy link shown in consent UI.
+  /// Privacy policy URL shown in consent UI.
+  ///
+  /// Plain string URL — matches Auth / Android (`String?`) / iOS (`String?`).
+  /// Not a language-keyed map.
   final String? privacyPolicy;
 
   WhiteLabelData({
