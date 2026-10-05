@@ -16,13 +16,13 @@ let package = Package(
         // Keep in sync with ios/web3auth_flutter.podspec Web3Auth dependency.
         .package(
             url: "https://github.com/web3auth/web3auth-swift-sdk.git",
-            from: "12.0.1"
+            from: "13.0.0"
         ),
         // Direct dependency required because Web3AuthFlutterPlugin imports
         // FetchNodeDetails (Web3AuthNetwork). SPM does not expose transitive modules.
         .package(
             url: "https://github.com/torusresearch/fetch-node-details-swift.git",
-            from: "8.0.1"
+            from: "9.0.1"
         ),
         // Flutter 3.44+ requires FlutterFramework. Uncomment when targeting Flutter ≥ 3.44:
         // .package(name: "FlutterFramework", path: "../FlutterFramework"),

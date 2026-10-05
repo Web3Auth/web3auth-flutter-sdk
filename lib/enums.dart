@@ -48,9 +48,11 @@ enum Display {
   wap,
 }
 
+/// MFA level shown during OAuth authentication.
+///
+/// Auth v11 removed the former `default` level — use [OPTIONAL], [MANDATORY],
+/// or [NONE] only (aligned with Android/iOS native SDKs).
 enum MFALevel {
-  /// Presents the MFA screen every third login.
-  DEFAULT,
   /// Presents the MFA screen on every login, but user can skip it.
   OPTIONAL,
   /// Make it mandatory for users to set up MFA after login.
@@ -62,16 +64,12 @@ enum MFALevel {
 extension MFALevelExtension on MFALevel {
   String get type {
     switch (this) {
-      case MFALevel.DEFAULT:
-        return "default";
       case MFALevel.OPTIONAL:
         return "optional";
       case MFALevel.MANDATORY:
         return "mandatory";
       case MFALevel.NONE:
         return "none";
-      default:
-        return "default";
     }
   }
 }
@@ -92,9 +90,27 @@ enum Prompt {
 
 enum Curve { secp256k1, ed25519 }
 
+/// Wallet services confirmation strategy.
+///
+/// Serialized values match native SDK Gson/Codable names (`auto-approve`, `default`).
 enum ConfirmationStrategy {
   popup,
   modal,
   autoApprove,
-  defaultStrategy
+  defaultStrategy,
+}
+
+extension ConfirmationStrategyExtension on ConfirmationStrategy {
+  String get serializedName {
+    switch (this) {
+      case ConfirmationStrategy.popup:
+        return 'popup';
+      case ConfirmationStrategy.modal:
+        return 'modal';
+      case ConfirmationStrategy.autoApprove:
+        return 'auto-approve';
+      case ConfirmationStrategy.defaultStrategy:
+        return 'default';
+    }
+  }
 }

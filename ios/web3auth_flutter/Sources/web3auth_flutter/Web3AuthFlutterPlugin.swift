@@ -61,7 +61,9 @@ public class Web3AuthFlutterPlugin: NSObject, FlutterPlugin {
                 do {
                     let params = try decoder.decode(InitParams.self, from: data)
                     let network = getNetwork(params.network)
-                    let buildEnv: BuildEnv = BuildEnv(rawValue: params.authBuildEnv ?? "production") ?? .production
+                    // Disambiguate from FetchNodeDetails.BuildEnv (both modules export BuildEnv).
+                    let buildEnv: Web3AuthBuildEnv =
+                        Web3AuthBuildEnv(rawValue: params.authBuildEnv ?? "production") ?? .production
                     options = Web3AuthOptions(
                         clientId: params.clientId,
                         redirectUrl: params.redirectUrl,
@@ -70,6 +72,7 @@ public class Web3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         sdkUrl: params.sdkUrl,
                         storageServerUrl: params.storageServerUrl,
                         sessionSocketUrl: params.sessionSocketUrl,
+                        citadelServerUrl: params.citadelServerUrl,
                         authConnectionConfig: params.authConnectionConfig,
                         whiteLabel: params.whiteLabel,
                         dashboardUrl: params.dashboardUrl,
@@ -79,13 +82,17 @@ public class Web3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         chains: params.chains,
                         defaultChainId: params.defaultChainId ?? "0x1",
                         enableLogging: params.enableLogging ?? false,
-                        sessionTime: params.sessionTime ?? 30 * 86400,
+                        sessionTime: params.sessionTime,
                         web3AuthNetwork: network,
                         useSFAKey: params.useSFAKey ?? false,
                         walletServicesConfig: params.walletServicesConfig,
-                        mfaSettings: params.mfaSettings
+                        mfaSettings: params.mfaSettings,
+                        sessionNamespace: params.sessionNamespace,
+                        wsEmbedDappClientId: params.wsEmbedDappClientId,
+                        useAAWithExternalWallet: params.useAAWithExternalWallet
                     )
 
+                    // Sets loginSource to web3auth-flutter on /start (native LOGIN_SOURCE_FLUTTER).
                     options.setFlutterAnalytics(params.isFlutterAnalytics ?? true, sdkVersion: params.sdkVersion)
                 } catch {
                     // print(error)
@@ -157,9 +164,114 @@ public class Web3AuthFlutterPlugin: NSObject, FlutterPlugin {
                     return
                 }
             case "initialize":
-                // There is no initialize function in swift
-                result(nil)
-                return
+                // Swift restores citadel session inside Web3Auth.init. Mirror Android
+                // initialize() by failing when no authenticated session is present.
+                guard let web3auth = web3auth
+                else {
+                    result(FlutterError(
+                        code: "NotInitializedException",
+                        message: "Web3Auth.init has to be called first",
+                        details: nil))
+                    return
+                }
+                do {
+                    _ = try await web3auth.getAccessToken()
+                    result(nil)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "NoUserFoundException",
+                        message: "Web3Auth initialize failed — no active session",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+            case "getAccessToken":
+                guard let web3auth = web3auth
+                else {
+                    result(FlutterError(
+                        code: "NotInitializedException",
+                        message: "Web3Auth.init has to be called first",
+                        details: nil))
+                    return
+                }
+                do {
+                    let token = try await web3auth.getAccessToken()
+                    result(token)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "GetAccessTokenFailedException",
+                        message: "Web3Auth getAccessToken failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+            case "getIdentityToken":
+                guard let web3auth = web3auth
+                else {
+                    result(FlutterError(
+                        code: "NotInitializedException",
+                        message: "Web3Auth.init has to be called first",
+                        details: nil))
+                    return
+                }
+                do {
+                    let token = try await web3auth.getIdentityToken()
+                    result(token)
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "GetIdentityTokenFailedException",
+                        message: "Web3Auth getIdentityToken failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+            case "refreshSession":
+                guard let web3auth = web3auth
+                else {
+                    result(FlutterError(
+                        code: "NotInitializedException",
+                        message: "Web3Auth.init has to be called first",
+                        details: nil))
+                    return
+                }
+                do {
+                    let refreshed = try await web3auth.refreshSession()
+                    let resultData = try encoder.encode(refreshed)
+                    result(String(decoding: resultData, as: UTF8.self))
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "RefreshSessionFailedException",
+                        message: "Web3Auth refreshSession failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
+            case "getUserInfoAsync":
+                guard let web3auth = web3auth
+                else {
+                    result(FlutterError(
+                        code: "NotInitializedException",
+                        message: "Web3Auth.init has to be called first",
+                        details: nil))
+                    return
+                }
+                do {
+                    let userInfo = try await web3auth.getUserInfoAsync()
+                    let resultData = try encoder.encode(userInfo)
+                    result(String(decoding: resultData, as: UTF8.self))
+                    return
+                } catch {
+                    result(FlutterError(
+                        code: "GetUserInfoFailedException",
+                        message: "Web3Auth getUserInfoAsync failed",
+                        details: error.localizedDescription
+                    ))
+                    return
+                }
             case "getPrivateKey":
                 let privKey = web3auth?.getPrivateKey()
                 result(privKey)
@@ -319,6 +431,7 @@ struct InitParams: Codable {
     let sdkUrl: String?
     let storageServerUrl: String?
     let sessionSocketUrl: String?
+    let citadelServerUrl: String?
     let authConnectionConfig: [AuthConnectionConfig]?
     let whiteLabel: WhiteLabelData?
     let dashboardUrl: String?
@@ -334,6 +447,8 @@ struct InitParams: Codable {
     let useSFAKey: Bool?
     let walletServicesConfig: WalletServicesConfig?
     let mfaSettings: MfaSettings?
+    let wsEmbedDappClientId: String?
+    let useAAWithExternalWallet: Bool?
     let isFlutterAnalytics: Bool?
     let sdkVersion: String?
 
@@ -345,6 +460,7 @@ struct InitParams: Codable {
         case sdkUrl
         case storageServerUrl
         case sessionSocketUrl
+        case citadelServerUrl
         case authConnectionConfig
         case whiteLabel
         case dashboardUrl
@@ -360,6 +476,8 @@ struct InitParams: Codable {
         case useSFAKey
         case walletServicesConfig
         case mfaSettings
+        case wsEmbedDappClientId
+        case useAAWithExternalWallet
         case isFlutterAnalytics
         case sdkVersion
     }

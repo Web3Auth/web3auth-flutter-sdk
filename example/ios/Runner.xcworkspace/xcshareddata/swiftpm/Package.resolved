@@ -1,0 +1,122 @@
+{
+  "pins" : [
+    {
+      "identity" : "analytics-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/analytics-swift.git",
+      "state" : {
+        "revision" : "5658b7ff5768083683b83162121bad8b4a4b267f",
+        "version" : "1.10.0"
+      }
+    },
+    {
+      "identity" : "bigint",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/attaswift/BigInt.git",
+      "state" : {
+        "revision" : "e07e00fa1fd435143a2dcf8b7eec9a7710b2fdfe",
+        "version" : "5.7.0"
+      }
+    },
+    {
+      "identity" : "curvelib.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tkey/curvelib.swift",
+      "state" : {
+        "revision" : "432bf1abe7ff505fc2ac9fcf697341ff5b2dc6d0",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "fetch-node-details-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/torusresearch/fetch-node-details-swift",
+      "state" : {
+        "revision" : "a7561e641863baddab80ac00d83aee398e62d083",
+        "version" : "9.0.1"
+      }
+    },
+    {
+      "identity" : "jsonsafeencoding-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/jsonsafeencoding-swift.git",
+      "state" : {
+        "revision" : "af6a8b360984085e36c6341b21ecb35c12f47ebd",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "jwtdecode.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/auth0/JWTDecode.swift.git",
+      "state" : {
+        "revision" : "36a5ce735a61c4bc119593f43ce2c027b4ca7392",
+        "version" : "3.3.0"
+      }
+    },
+    {
+      "identity" : "keychain-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/evgenyneu/keychain-swift.git",
+      "state" : {
+        "revision" : "d108a1fa6189e661f91560548ef48651ed8d93b9",
+        "version" : "20.0.0"
+      }
+    },
+    {
+      "identity" : "session-manager-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Web3Auth/session-manager-swift.git",
+      "state" : {
+        "revision" : "c4a9401e660624269e5367d0f439b647b6a0a419",
+        "version" : "7.0.1"
+      }
+    },
+    {
+      "identity" : "sovran-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/segmentio/sovran-swift.git",
+      "state" : {
+        "revision" : "24867f3e4ac62027db9827112135e6531b6f4051",
+        "version" : "1.1.2"
+      }
+    },
+    {
+      "identity" : "swift-asn1",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-asn1.git",
+      "state" : {
+        "revision" : "3b6410f7dee09eb33cdd26260c5fd47fda19b0e2",
+        "version" : "1.7.3"
+      }
+    },
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "revision" : "95ba0316a9b733e92bb6b071255ff46263bbe7dc",
+        "version" : "3.15.1"
+      }
+    },
+    {
+      "identity" : "torus-utils-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/torusresearch/torus-utils-swift.git",
+      "state" : {
+        "revision" : "61d9ea26a8fb90ff50c3b2c4d3ec456060bf7a25",
+        "version" : "11.0.0"
+      }
+    },
+    {
+      "identity" : "web3auth-swift-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Web3Auth/web3auth-swift-sdk.git",
+      "state" : {
+        "revision" : "9837fd2b7b1241754918c9ad3824d23a6f41694c",
+        "version" : "13.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

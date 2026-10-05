@@ -22,7 +22,7 @@ class LoginParams {
 
   /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AuthConnection].
   ///
-  /// For instance, you'll need to pass user's email address as `login_hint` for [Provider.email_passwordless].
+  /// For instance, you'll need to pass user's email address as `login_hint` for [AuthConnection.email_passwordless].
   final ExtraLoginOptions? extraLoginOptions;
 
   /// Custom verifier logins can get a dapp share returned to them post successful login.
@@ -44,6 +44,12 @@ class LoginParams {
   String? loginHint;
   final String? idToken;
 
+  /// Optional audit record id for `/start`. When null, native SDKs generate a UUID.
+  final String? recordId;
+
+  /// Audit login source sent on `/start`. Defaults to [loginSourceFlutter] when unset.
+  final String? loginSource;
+
   LoginParams({
     required this.authConnection,
     this.authConnectionId,
@@ -56,6 +62,8 @@ class LoginParams {
     this.dappUrl,
     this.loginHint,
     this.idToken,
+    this.recordId,
+    this.loginSource,
   });
 
   Map<String, dynamic> toJson() {
@@ -71,9 +79,14 @@ class LoginParams {
       'dappUrl': dappUrl,
       'loginHint': loginHint,
       'idToken': idToken,
+      'recordId': recordId,
+      'loginSource': loginSource ?? loginSourceFlutter,
     };
   }
 }
+
+/// Default `loginSource` for Flutter `/start` audit events.
+const String loginSourceFlutter = 'web3auth-flutter';
 
 class AuthConnectionConfig {
 
@@ -202,7 +215,7 @@ class ExtraLoginOptions {
 
   final EmailFlowType? flow_type;
 
-  /// [login_hint] is used to send the user's email address during [Provider.email_passwordless].
+  /// [login_hint] is used to send the user's email address during [AuthConnection.email_passwordless].
   final String? login_hint;
 
   final String? acr_values;
@@ -315,6 +328,12 @@ class WhiteLabelData {
   /// will be used for the loader.
   final bool? useLogoLoader;
 
+  /// Terms & conditions link shown in consent UI.
+  final String? tncLink;
+
+  /// Privacy policy link shown in consent UI.
+  final String? privacyPolicy;
+
   WhiteLabelData({
     this.appName,
     this.logoLight,
@@ -324,6 +343,8 @@ class WhiteLabelData {
     this.theme,
     this.appUrl,
     this.useLogoLoader = false,
+    this.tncLink,
+    this.privacyPolicy,
   });
 
   Map<String, dynamic> toJson() {
@@ -335,7 +356,9 @@ class WhiteLabelData {
       'mode': mode?.name,
       'theme': theme,
       'appUrl': appUrl,
-      'useLogoLoader': useLogoLoader
+      'useLogoLoader': useLogoLoader,
+      'tncLink': tncLink,
+      'privacyPolicy': privacyPolicy,
     };
   }
 }
@@ -458,6 +481,9 @@ class Web3AuthOptions {
   String? storageServerUrl;
   String? sessionSocketUrl;
 
+  /// Citadel auth-session base URL. When null, native SDKs pick env defaults.
+  String? citadelServerUrl;
+
   /// Login config for the custom verifiers.
   List<AuthConnectionConfig>? authConnectionConfig;
 
@@ -477,10 +503,9 @@ class Web3AuthOptions {
   String? defaultChainId = '0x1';
   bool enableLogging;
 
-  /// [sessionTime] allows developers to configure the session management time.
-  ///
-  /// Session Time is in seconds, default is 86400 seconds which is 1 day. [sessionTime] can be max 30 days.
-  final int sessionTime;
+  /// Session lifetime in seconds. When null, native SDKs hydrate from project config
+  /// (otherwise native default is [defaultSessionTime]). Max 30 days.
+  final int? sessionTime;
 
   /// Web3Auth Network to use for the session & the issued idToken.
   ///
@@ -501,10 +526,16 @@ class Web3AuthOptions {
   /// Checkout [MFA SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter/mfa) for more details.
   final MfaSettings? mfaSettings;
 
+  /// Optional dapp client id for wallet-services embed.
+  final String? wsEmbedDappClientId;
+
+  /// When true, use AA with external wallets (hydrated from project config when unset).
+  final bool? useAAWithExternalWallet;
+
   /// Indicates if this is a Flutter SDK session
   bool isFlutterAnalytics;
 
-  /// SDK version (used mainly for Flutter SDK)
+  /// SDK version (used mainly for Flutter SDK analytics `sdk_version`).
   String? sdkVersion;
 
   Web3AuthOptions({
@@ -515,6 +546,7 @@ class Web3AuthOptions {
     String? sdkUrl,
     this.storageServerUrl,
     this.sessionSocketUrl,
+    this.citadelServerUrl,
     this.authConnectionConfig = const [],
     this.whiteLabel,
     String? dashboardUrl,
@@ -525,11 +557,13 @@ class Web3AuthOptions {
     this.chains,
     this.defaultChainId,
     this.enableLogging = false,
-    this.sessionTime = 30 * 86400,
+    this.sessionTime,
     required this.web3AuthNetwork,
     this.useSFAKey = false,
     this.walletServicesConfig,
     this.mfaSettings,
+    this.wsEmbedDappClientId,
+    this.useAAWithExternalWallet,
     this.isFlutterAnalytics = true,
     this.sdkVersion,
   })  : sdkUrl = sdkUrl ?? getSdkUrl(authBuildEnv),
@@ -543,8 +577,9 @@ class Web3AuthOptions {
       'originData': originData,
       'buildEnv': authBuildEnv?.name.toLowerCase(),
       'sdkUrl': sdkUrl,
-      'storageServerUrl': storageServerUrl,
-      'sessionSocketUrl': sessionSocketUrl,
+      'storageServerUrl': storageServerUrl ?? getStorageServerUrl(authBuildEnv),
+      'sessionSocketUrl': sessionSocketUrl ?? getSessionSocketUrl(authBuildEnv),
+      'citadelServerUrl': citadelServerUrl ?? getCitadelServerUrl(authBuildEnv),
       'authConnectionConfig': authConnectionConfig?.map((config) => config.toJson()).toList(),
       'whiteLabel': whiteLabel?.toJson(),
       'dashboardUrl': dashboardUrl,
@@ -560,8 +595,10 @@ class Web3AuthOptions {
       'useSFAKey': useSFAKey,
       'walletServicesConfig': walletServicesConfig?.toJson(),
       'mfaSettings': mfaSettings?.toJson(),
+      'wsEmbedDappClientId': wsEmbedDappClientId,
+      'useAAWithExternalWallet': useAAWithExternalWallet,
       'isFlutterAnalytics': isFlutterAnalytics,
-      'sdkVersion': sdkVersion,
+      'sdkVersion': sdkVersion ?? packageVersion,
     };
   }
 }
@@ -569,17 +606,26 @@ class Web3AuthOptions {
 class WalletServicesConfig {
   final ConfirmationStrategy? confirmationStrategy;
   final WhiteLabelData? whiteLabel;
+  final bool? enableKeyExport;
 
   WalletServicesConfig({
-    this.confirmationStrategy = ConfirmationStrategy.defaultStrategy,
+    this.confirmationStrategy,
     this.whiteLabel,
+    this.enableKeyExport,
   });
 
   Map<String, dynamic> toJson() => {
-    'confirmationStrategy': confirmationStrategy?.name,
+    'confirmationStrategy': confirmationStrategy?.serializedName,
     'whiteLabel': whiteLabel?.toJson(),
+    'enableKeyExport': enableKeyExport,
   };
 }
+
+/// Flutter package version — used as analytics `sdk_version` when unset.
+const String packageVersion = '8.0.0';
+
+/// Native default session lifetime (30 days) when project config does not override.
+const int defaultSessionTime = 30 * 86400;
 
 class UserCancelledException implements Exception {}
 
@@ -589,21 +635,28 @@ class UnKnownException implements Exception {
   UnKnownException(this.message);
 }
 
+/// Auth service URL major (prod/staging). Keep in sync with native Android/iOS SDKs.
+const String authServiceVersion = 'v11';
+
+/// Wallet Services URL major — Auth v11 uses citadel sessionId + accessToken (v6).
+const String walletServicesVersion = 'v6';
+
+/// Auth dashboard URL major.
+const String authDashboardVersion = 'v11';
+
 String getSdkUrl(BuildEnv? buildEnv) {
-  const String version = "v10";
   switch (buildEnv) {
     case BuildEnv.staging:
-      return "https://staging-auth.web3auth.io/$version";
+      return "https://staging-auth.web3auth.io/$authServiceVersion";
     case BuildEnv.testing:
       return "https://develop-auth.web3auth.io";
     case BuildEnv.production:
     default:
-      return "https://auth.web3auth.io/$version";
+      return "https://auth.web3auth.io/$authServiceVersion";
   }
 }
 
 String getWalletSdkUrl(BuildEnv? buildEnv) {
-  const String walletServicesVersion = "v5";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-wallet.web3auth.io/$walletServicesVersion";
@@ -617,7 +670,6 @@ String getWalletSdkUrl(BuildEnv? buildEnv) {
 
 String getDashboardUrl(BuildEnv? buildEnv) {
   const String walletAccountConstant = "wallet/account";
-  const String authDashboardVersion = "v10";
   switch (buildEnv) {
     case BuildEnv.staging:
       return "https://staging-account.web3auth.io/$authDashboardVersion/$walletAccountConstant";
@@ -626,5 +678,41 @@ String getDashboardUrl(BuildEnv? buildEnv) {
     case BuildEnv.production:
     default:
       return "https://account.web3auth.io/$authDashboardVersion/$walletAccountConstant";
+  }
+}
+
+/// Citadel auth-session service base URL (aligned with native `Web3AuthUrls`).
+String getCitadelServerUrl(BuildEnv? buildEnv) {
+  switch (buildEnv) {
+    case BuildEnv.testing:
+      return "https://api-develop.web3auth.io/citadel-service";
+    case BuildEnv.staging:
+    case BuildEnv.production:
+    default:
+      return "https://api.web3auth.io/citadel-service";
+  }
+}
+
+/// Ephemeral session-service storage URL.
+String getStorageServerUrl(BuildEnv? buildEnv) {
+  switch (buildEnv) {
+    case BuildEnv.testing:
+      return "https://api-develop.web3auth.io/session-service";
+    case BuildEnv.staging:
+    case BuildEnv.production:
+    default:
+      return "https://api.web3auth.io/session-service";
+  }
+}
+
+/// Session websocket URL.
+String getSessionSocketUrl(BuildEnv? buildEnv) {
+  switch (buildEnv) {
+    case BuildEnv.testing:
+      return "https://develop-session.web3auth.io";
+    case BuildEnv.staging:
+    case BuildEnv.production:
+    default:
+      return "https://session.web3auth.io";
   }
 }

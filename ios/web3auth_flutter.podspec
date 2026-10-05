@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'web3auth_flutter'
-  s.version          = '7.0.1'
+  s.version          = '8.0.0'
   s.summary          = 'Flutter SDK for Torus Web3Auth'
   s.description      = <<-DESC
 Flutter SDK for Torus Web3Auth (OpenLogin)
@@ -17,7 +17,10 @@ Flutter SDK for Torus Web3Auth (OpenLogin)
   # Keep in sync with ios/web3auth_flutter/Package.swift.
   s.source_files = 'web3auth_flutter/Sources/web3auth_flutter/**/*.swift'
   s.dependency 'Flutter'
-  s.dependency 'Web3Auth', '~> 12.0.1'
+  # Auth v11 / citadel — web3auth-swift-sdk 13.0.0 (EMBED-398).
+  # Tagged on GitHub; until CocoaPods trunk lists 13.0.0, the example Podfile
+  # pins `:git` + `:tag => '13.0.0'` (see example/ios/Podfile).
+  s.dependency 'Web3Auth', '~> 13.0.0'
   s.platform = :ios, '14.0'
 
   # Flutter.framework does not contain a i386 slice.
