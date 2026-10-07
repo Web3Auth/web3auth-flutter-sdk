@@ -88,6 +88,7 @@ public class Web3AuthFlutterPlugin: NSObject, FlutterPlugin {
                         walletServicesConfig: params.walletServicesConfig,
                         mfaSettings: params.mfaSettings,
                         sessionNamespace: params.sessionNamespace,
+                        // Pass-through for native Android/iOS parity (optional).
                         wsEmbedDappClientId: params.wsEmbedDappClientId,
                         useAAWithExternalWallet: params.useAAWithExternalWallet
                     )

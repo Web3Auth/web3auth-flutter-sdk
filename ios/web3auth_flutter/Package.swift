@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "web3auth-flutter", targets: ["web3auth_flutter"])
     ],
     dependencies: [
-        // Keep in sync with ios/web3auth_flutter.podspec Web3Auth dependency.
+        // Auth v11 / citadel — resolved via SPM only.
         .package(
             url: "https://github.com/web3auth/web3auth-swift-sdk.git",
             from: "13.0.0"

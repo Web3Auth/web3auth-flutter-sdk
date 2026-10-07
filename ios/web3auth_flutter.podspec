@@ -13,14 +13,11 @@ Flutter SDK for Torus Web3Auth (OpenLogin)
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Web3Auth' => 'hello@web3auth.io' }
   s.source           = { :path => '.' }
-  # Dual CocoaPods + SwiftPM support: sources live under the SPM package tree.
-  # Keep in sync with ios/web3auth_flutter/Package.swift.
+  # Plugin sources live under the SPM package tree. Native Web3Auth is resolved
+  # via Swift Package Manager only (see ios/web3auth_flutter/Package.swift) —
+  # do not declare a CocoaPods Web3Auth dependency here.
   s.source_files = 'web3auth_flutter/Sources/web3auth_flutter/**/*.swift'
   s.dependency 'Flutter'
-  # Auth v11 / citadel — web3auth-swift-sdk 13.0.0 (EMBED-398).
-  # Tagged on GitHub; until CocoaPods trunk lists 13.0.0, the example Podfile
-  # pins `:git` + `:tag => '13.0.0'` (see example/ios/Podfile).
-  s.dependency 'Web3Auth', '~> 13.0.0'
   s.platform = :ios, '14.0'
 
   # Flutter.framework does not contain a i386 slice.

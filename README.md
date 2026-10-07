@@ -51,7 +51,7 @@ flutter pub add web3auth_flutter
 | Platform | Native dependency |
 | --- | --- |
 | Android | `com.github.Web3Auth:web3auth-android-sdk:11.0.0` (JitPack) |
-| iOS | `Web3Auth ~> 13.0.0` (CocoaPods / SPM) — citadel AuthSessionManager |
+| iOS | `Web3Auth` **13.0.0+** via **Swift Package Manager** — citadel AuthSessionManager |
 
 ## 🌟 Configuration
 
@@ -69,7 +69,7 @@ citadel `sessionId` + `accessToken` in the WebView hash (not a session-service k
 | Auth / dashboard URLs | `/v10` | `/v11` |
 | Wallet Services URL | `/v5` | `/v6` |
 | Android native | `10.0.1` | `11.0.0` |
-| iOS native | `12.0.1` | `13.0.0` (citadel) |
+| iOS native | `12.0.1` (CocoaPods) | `13.0.0` via SPM (citadel) |
 | `MFALevel.DEFAULT` | present | **removed** |
 | Login audit | — | `loginSource` defaults to `web3auth-flutter`; optional `recordId` |
 | Session APIs | — | `getAccessToken`, `getIdentityToken`, `refreshSession`, `getUserInfoAsync` |

@@ -33,10 +33,7 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  # Auth v11 / citadel: Web3Auth 13.0.0 is resolved via Swift Package Manager
-  # (ios/web3auth_flutter/Package.swift). Do not pin Web3Auth here until
-  # CocoaPods trunk publishes 13.0.0 + Torus-utils 11 / Torus-fetchNodeDetails 9.
-
+  # Native Web3Auth comes from SPM (plugin Package.swift), not CocoaPods.
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 

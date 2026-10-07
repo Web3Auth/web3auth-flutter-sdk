@@ -12,7 +12,8 @@
 * **Breaking:** remove `MFALevel.DEFAULT` (Auth v11 only supports optional/mandatory/none).
 * New MethodChannel APIs: `getAccessToken`, `getIdentityToken`, `refreshSession`,
   `getUserInfoAsync`. iOS `initialize` verifies an active citadel session.
-* Android dep: `web3auth-android-sdk:11.0.0`. iOS pod/SPM: `Web3Auth ~> 13.0.0`.
+* Android dep: `web3auth-android-sdk:11.0.0`. iOS: `Web3Auth` 13.0.0+ via SPM
+  (no CocoaPods `Web3Auth` dependency in the plugin podspec).
 
 ## 7.0.1
 
