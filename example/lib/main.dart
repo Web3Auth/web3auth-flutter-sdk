@@ -83,6 +83,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         authConnectionConfig: authConnectionConfig,
         defaultChainId: "0x1",
         isFlutterAnalytics: true,
+        sdkVersion: packageVersion,
       ),
     );
 
@@ -208,6 +209,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           ElevatedButton(
                             onPressed: _userInfo(_getUserInfo),
                             child: const Text('Get UserInfo'),
+                          ),
+                          ElevatedButton(
+                            onPressed: _getAccessToken(),
+                            child: const Text('Get Access Token'),
+                          ),
+                          ElevatedButton(
+                            onPressed: _refreshSession(),
+                            child: const Text('Refresh Session'),
                           ),
                           ElevatedButton(
                             onPressed: _launchWalletServices(),
@@ -350,6 +359,35 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Future<UserInfo> _getUserInfo() {
     return Web3AuthFlutter.getUserInfo();
+  }
+
+  VoidCallback _getAccessToken() {
+    return () async {
+      try {
+        final String token = await Web3AuthFlutter.getAccessToken();
+        setState(() {
+          _result = token;
+          logoutVisible = true;
+        });
+      } catch (e) {
+        log(e.toString());
+      }
+    };
+  }
+
+  VoidCallback _refreshSession() {
+    return () async {
+      try {
+        final Web3AuthResponse response =
+            await Web3AuthFlutter.refreshSession();
+        setState(() {
+          _result = response.toString();
+          logoutVisible = true;
+        });
+      } catch (e) {
+        log(e.toString());
+      }
+    };
   }
 
   VoidCallback _launchWalletServices() {

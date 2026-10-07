@@ -15,6 +15,8 @@ class Web3AuthFlutter {
   /// Please checkout [Web3AuthOptions] for more details
   static Future<void> init(Web3AuthOptions initParams) async {
     Map<String, dynamic> initParamsJson = initParams.toJson();
+    initParamsJson['sdkVersion'] ??= packageVersion;
+    initParamsJson['isFlutterAnalytics'] ??= true;
     initParamsJson.removeWhere((key, value) => value == null);
     await _channel.invokeMethod('init', jsonEncode(initParamsJson));
   }
@@ -27,8 +29,8 @@ class Web3AuthFlutter {
   static Future<Web3AuthResponse> connectTo(LoginParams loginParams) async {
     try {
       Map<String, dynamic> loginParamsJson = loginParams.toJson();
+      loginParamsJson['loginSource'] ??= loginSourceFlutter;
       loginParamsJson.removeWhere((key, value) => value == null);
-      //print(jsonEncode(loginParamsJson));
       final String loginResponse = await _channel.invokeMethod(
         'connectTo',
         jsonEncode(loginParamsJson),
@@ -50,15 +52,66 @@ class Web3AuthFlutter {
     }
   }
 
-  /// Initializes the [Web3AuthFlutter] with session if present. 
-  /// If no active session is present, the method will throw an error. 
-  /// 
-  /// You should use try and catch block to handle the error when no 
+  /// Initializes / restores the [Web3AuthFlutter] session if present.
+  ///
+  /// On Android this calls native `initialize()` (project config + citadel
+  /// authorize). On iOS, `Web3Auth.init` already attempts citadel restore;
+  /// this channel verifies a session exists (throws when none).
+  ///
+  /// You should use try and catch block to handle the error when no
   /// active session is present.
   static Future<void> initialize() async {
     try {
       await _channel.invokeMethod('initialize', jsonEncode({}));
       return;
+    } on PlatformException catch (e) {
+      throw _handlePlatformException(e);
+    }
+  }
+
+  /// Returns the current citadel access token.
+  ///
+  /// Throws when no authenticated session is present.
+  static Future<String> getAccessToken() async {
+    try {
+      final String token =
+          await _channel.invokeMethod('getAccessToken', jsonEncode({}));
+      return token;
+    } on PlatformException catch (e) {
+      throw _handlePlatformException(e);
+    }
+  }
+
+  /// Returns the current identity token (OIDC idToken) from the citadel session.
+  ///
+  /// Throws when no authenticated session is present.
+  static Future<String> getIdentityToken() async {
+    try {
+      final String token =
+          await _channel.invokeMethod('getIdentityToken', jsonEncode({}));
+      return token;
+    } on PlatformException catch (e) {
+      throw _handlePlatformException(e);
+    }
+  }
+
+  /// Refreshes the citadel session and returns the updated [Web3AuthResponse].
+  static Future<Web3AuthResponse> refreshSession() async {
+    try {
+      final String response =
+          await _channel.invokeMethod('refreshSession', jsonEncode({}));
+      return Web3AuthResponse.fromJson(jsonDecode(response));
+    } on PlatformException catch (e) {
+      throw _handlePlatformException(e);
+    }
+  }
+
+  /// Fetches user info asynchronously (may backfill idToken from citadel).
+  static Future<UserInfo> getUserInfoAsync() async {
+    try {
+      final String torusUserInfo =
+          await _channel.invokeMethod('getUserInfoAsync', jsonEncode({}));
+      return UserInfo.fromJson(jsonDecode(torusUserInfo));
     } on PlatformException catch (e) {
       throw _handlePlatformException(e);
     }
@@ -162,10 +215,14 @@ class Web3AuthFlutter {
     try {
       bool isMFASetup = false;
       if (loginParams == null) {
-        isMFASetup = await _channel.invokeMethod('enableMFA', jsonEncode({}));
+        isMFASetup = await _channel.invokeMethod(
+          'enableMFA',
+          jsonEncode({'loginSource': loginSourceFlutter}),
+        );
         return isMFASetup;
       } else {
         Map<String, dynamic> loginParamsJson = loginParams.toJson();
+        loginParamsJson['loginSource'] ??= loginSourceFlutter;
         loginParamsJson.removeWhere((key, value) => value == null);
         isMFASetup = await _channel.invokeMethod(
           'enableMFA',
@@ -182,10 +239,14 @@ class Web3AuthFlutter {
     try {
       bool isManageMFA = false;
       if (loginParams == null) {
-        isManageMFA = await _channel.invokeMethod('manageMFA', jsonEncode({}));
+        isManageMFA = await _channel.invokeMethod(
+          'manageMFA',
+          jsonEncode({'loginSource': loginSourceFlutter}),
+        );
         return isManageMFA;
       } else {
         Map<String, dynamic> loginParamsJson = loginParams.toJson();
+        loginParamsJson['loginSource'] ??= loginSourceFlutter;
         loginParamsJson.removeWhere((key, value) => value == null);
         isManageMFA = await _channel.invokeMethod(
           'manageMFA',

@@ -1,3 +1,20 @@
+## 8.0.0
+
+* **Breaking:** Align with Auth SDK **v11** / Wallet Services **v6** / citadel session model
+  (EMBED-400). Thin-wrapper update over native Android `11.0.0` and iOS `13.0.0`.
+* URL helpers: auth/dashboard `v11`, wallet `v6` (TESTING hosts remain unversioned).
+* Add `LoginParams.recordId` / `loginSource` (default `web3auth-flutter`).
+* Add `Web3AuthOptions.citadelServerUrl`, `wsEmbedDappClientId`, `useAAWithExternalWallet`;
+  `sessionTime` is now nullable (hydrated from project config when unset).
+* Extend `WhiteLabelData` with `tncLink`, `privacyPolicy`.
+* Extend `WalletServicesConfig` with `enableKeyExport`; serialize confirmation strategy
+  with native names (`auto-approve`, `default`).
+* **Breaking:** remove `MFALevel.DEFAULT` (Auth v11 only supports optional/mandatory/none).
+* New MethodChannel APIs: `getAccessToken`, `getIdentityToken`, `refreshSession`,
+  `getUserInfoAsync`. iOS `initialize` verifies an active citadel session.
+* Android dep: `web3auth-android-sdk:11.0.0`. iOS: `Web3Auth` 13.0.0+ via SPM
+  (no CocoaPods `Web3Auth` dependency in the plugin podspec).
+
 ## 7.0.1
 
 * Add Swift Package Manager (SPM) support for iOS while keeping CocoaPods working

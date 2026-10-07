@@ -94,12 +94,20 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
         when (call.method) {
             "init" -> {
                 val initArgs = call.arguments<String>() ?: return null
-                val initParams = gson.fromJson(initArgs, Web3AuthOptions::class.java)
-                // handle custom parameters which are gson excluded
+                // Flutter sends chains as an array (matches iOS). Android SDK
+                // expects a single Chains object — normalize before Gson.
                 val obj = JSONObject(initArgs)
+                if (obj.has("chains") && obj.opt("chains") is org.json.JSONArray) {
+                    val chains = obj.getJSONArray("chains")
+                    if (chains.length() > 0) {
+                        obj.put("chains", chains.getJSONObject(0))
+                    } else {
+                        obj.remove("chains")
+                    }
+                }
+                val initParams = gson.fromJson(obj.toString(), Web3AuthOptions::class.java)
                 if (obj.has("redirectUrl")) initParams.redirectUrl =
                     obj.get("redirectUrl").toString()
-                // Log.d(initParams.toString(), "#initParams")
                 web3auth = Web3Auth(
                     initParams, activity!!
                 )
@@ -113,8 +121,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             "connectTo" -> {
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
-                    val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
-                    //Log.d("#loginParams", loginParams.toString())
+                    val loginParams = gson.fromJson(
+                        ensureFlutterLoginSource(loginArgs),
+                        LoginParams::class.java
+                    )
                     val loginCF = web3auth.connectTo(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#login")
                     val loginResult: Web3AuthResponse = loginCF.get()
@@ -143,6 +153,40 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#initialize")
                     initializeCF.get()
                     return null
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "getAccessToken" -> {
+                try {
+                    return web3auth.getAccessToken().get()
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "getIdentityToken" -> {
+                try {
+                    return web3auth.getIdentityToken().get()
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "refreshSession" -> {
+                try {
+                    val refreshed = web3auth.refreshSession().get()
+                    return gson.toJson(refreshed)
+                } catch (e: Throwable) {
+                    throw Error(e)
+                }
+            }
+
+            "getUserInfoAsync" -> {
+                try {
+                    val userInfoResult = web3auth.getUserInfoAsync().get()
+                    return gson.toJson(userInfoResult)
                 } catch (e: Throwable) {
                     throw Error(e)
                 }
@@ -207,7 +251,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             "enableMFA" -> {
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
-                    val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
+                    val loginParams = gson.fromJson(
+                        ensureFlutterLoginSource(loginArgs),
+                        LoginParams::class.java
+                    )
                     val setupMfaCF = web3auth.enableMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
@@ -255,7 +302,10 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             "manageMFA" -> {
                 try {
                     val loginArgs = call.arguments<String>() ?: return null
-                    val loginParams = gson.fromJson(loginArgs, LoginParams::class.java)
+                    val loginParams = gson.fromJson(
+                        ensureFlutterLoginSource(loginArgs),
+                        LoginParams::class.java
+                    )
                     val setupMfaCF = web3auth.manageMFA(loginParams)
                     Log.d("${Web3AuthFlutterPlugin::class.qualifiedName}", "#enableMFA")
                     return setupMfaCF.get()
@@ -267,6 +317,19 @@ class Web3AuthFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler,
             }
         }
         throw NotImplementedError()
+    }
+
+    /**
+     * Android native defaults `loginSource` to `web3auth-android` when null.
+     * Ensure Flutter traffic is tagged as `web3auth-flutter` for /start audit.
+     */
+    private fun ensureFlutterLoginSource(loginArgs: String): String {
+        val obj = JSONObject(loginArgs)
+        val current = obj.optString("loginSource", "")
+        if (current.isBlank()) {
+            obj.put("loginSource", "web3auth-flutter")
+        }
+        return obj.toString()
     }
 
     private fun convertListToJsonArray(list: List<Any?>): JsonArray {

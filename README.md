@@ -37,7 +37,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^6.1.2
+  web3auth_flutter: ^8.0.0
 ```
 
 or
@@ -46,10 +46,37 @@ or
 flutter pub add web3auth_flutter
 ```
 
+### Native SDK requirements (Auth v11)
+
+| Platform | Native dependency |
+| --- | --- |
+| Android | `com.github.Web3Auth:web3auth-android-sdk:11.0.0` (JitPack) |
+| iOS | `Web3Auth` **13.0.0+** via **Swift Package Manager** — citadel AuthSessionManager |
+
 ## 🌟 Configuration
 
 Checkout [SDK Reference](https://web3auth.io/docs/sdk/pnp/flutter/install) to configure for Android and iOS
 builds.
+
+## 🔁 Migration: v7 → v8 (Auth v10 → v11)
+
+Flutter remains a **thin MethodChannel wrapper** — citadel session tokens, `/start` audit fields,
+MFA refresh, and Wallet Services v6 rehydration live in the **native** SDKs. Wallet v6 uses
+citadel `sessionId` + `accessToken` in the WebView hash (not a session-service key mirror).
+
+| Area | v7 | v8 |
+| --- | --- | --- |
+| Auth / dashboard URLs | `/v10` | `/v11` |
+| Wallet Services URL | `/v5` | `/v6` |
+| Android native | `10.0.1` | `11.0.0` |
+| iOS native | `12.0.1` (CocoaPods) | `13.0.0` via SPM (citadel) |
+| `MFALevel.DEFAULT` | present | **removed** |
+| Login audit | — | `loginSource` defaults to `web3auth-flutter`; optional `recordId` |
+| Session APIs | — | `getAccessToken`, `getIdentityToken`, `refreshSession`, `getUserInfoAsync` |
+| Whitelabel | — | `tncLink`, `privacyPolicy` |
+| Options | — | `citadelServerUrl`, nullable `sessionTime`, `wsEmbedDappClientId` |
+
+`TESTING` / `DEVELOPMENT` build envs still use **unversioned** develop hosts.
 
 ## 🩹 Example
 
@@ -59,23 +86,28 @@ Checkout the examples for your preferred blockchain and platform in our [example
 // Initialization
 await Web3AuthFlutter.init(
   Web3AuthOptions(
-    // Get your client it from dashboard.web3auth.io
+    // Get your client id from dashboard.web3auth.io
     clientId: 'YOUR_WEB3AUTH_CLIENT_ID',
-    network: Network.sapphire_devnet,
+    web3AuthNetwork: Web3AuthNetwork.sapphire_devnet,
     // Your redirect url, check how to configure.
     // Android: https://web3auth.io/docs/sdk/pnp/flutter/install#android-configuration
     // iOS: https://web3auth.io/docs/sdk/pnp/flutter/install#ios-configuration
     redirectUrl: redirectUrl,
+    isFlutterAnalytics: true,
   ),
 );
 
-// Call initialize() function to get privKey and user information without relogging in
-// user if a user has an active session. If no active session is present, the 
-// function throws an error. 
+// Restore citadel session without re-login. Throws if no active session.
 await Web3AuthFlutter.initialize();
 
-// Login
-await Web3AuthFlutter.login(LoginParams(loginProvider: Provider.google));
+// Login (loginSource defaults to web3auth-flutter on /start)
+await Web3AuthFlutter.connectTo(
+  LoginParams(authConnection: AuthConnection.google),
+);
+
+// Citadel tokens (native AuthSessionManager)
+final accessToken = await Web3AuthFlutter.getAccessToken();
+await Web3AuthFlutter.refreshSession();
 
 // Logout
 await Web3AuthFlutter.logout();
