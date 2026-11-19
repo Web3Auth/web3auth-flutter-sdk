@@ -345,12 +345,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         LoginParams(authConnection: AuthConnection.discord));
   }
 
+  /// Custom JWT / SFA login — Auth-first by default (omit [MFALevel]).
+  ///
+  /// For silent local SFA (known non-MFA users only), pass
+  /// `mfaLevel: MFALevel.NONE`. MFA-upgraded users must use Auth-first with a
+  /// fresh JWT (this default path).
   Future<Web3AuthResponse> sfaSignIn() {
     return Web3AuthFlutter.connectTo(
-        LoginParams(authConnection: AuthConnection.google,
+      LoginParams(
+        authConnection: AuthConnection.google,
         authConnectionId: "torus-test-health",
         idToken: Utils().es256Token("devnettestuser@tor.us"),
-        groupedAuthConnectionId: "torus-aggregate-sapphire-mainnet"));
+        groupedAuthConnectionId: "torus-aggregate-sapphire-mainnet",
+        // Omit mfaLevel → Auth-first (default). Uncomment for silent SFA only:
+        // mfaLevel: MFALevel.NONE,
+      ),
+    );
   }
 
   Future<String?> _getPrivKey() {
