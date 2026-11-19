@@ -1,3 +1,16 @@
+## 8.0.1
+
+* Pick up native **custom JWT / SFA MFA** alignment (thin wrapper only — no Dart MFA routing).
+  - Android floor: `web3auth-android-sdk` **11.0.2+** ([PR #124](https://github.com/Web3Auth/web3auth-android-sdk/pull/124)).
+  - iOS floor: Swift SFA/JWT MFA Auth-first fix (pin to merge/tag **13.0.1+** when published;
+    temporarily SPM-revision of `fix/sfa-jwt-mfa-align-web` until then).
+* JWT `connectTo(LoginParams(idToken: …))` is **Auth-first** by default (Auth `/start` before
+  Torus `retrieveShares`) so MFA works and `enableMFA` / `manageMFA` are allowed for JWT/SFA
+  sessions (natives no longer early-reject SFA/idToken).
+* Use `mfaLevel: MFALevel.NONE` only for known non-MFA silent local SFA; MFA-upgraded users
+  must omit `mfaLevel` (Auth-first) with a fresh JWT.
+* Example `sfaSignIn` documents Auth-first vs `MFALevel.NONE`.
+
 ## 8.0.0
 
 * **Breaking:** Align with Auth SDK **v11** / Wallet Services **v6** / citadel session model

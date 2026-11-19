@@ -37,7 +37,7 @@ Add `web3auth_flutter` as a dependency to your `pubspec.yaml` file.
 
 ```yml
 dependencies:
-  web3auth_flutter: ^8.0.0
+  web3auth_flutter: ^8.0.1
 ```
 
 or
@@ -50,8 +50,15 @@ flutter pub add web3auth_flutter
 
 | Platform | Native dependency |
 | --- | --- |
-| Android | `com.github.Web3Auth:web3auth-android-sdk:11.0.0` (JitPack) |
-| iOS | `Web3Auth` **13.0.0+** via **Swift Package Manager** — citadel AuthSessionManager |
+| Android | `com.github.Web3Auth:web3auth-android-sdk:11.0.2+` (JitPack) |
+| iOS | `Web3Auth` **13.0.1+** via **Swift Package Manager** (SFA/JWT MFA Auth-first; until tagged, plugin pins the fix revision) |
+
+### Custom JWT / SFA MFA
+
+Flutter only forwards `connectTo` / `enableMFA` / `manageMFA` to native. With Android **11.0.2+** and the iOS SFA/JWT MFA fix:
+
+- JWT `connectTo(LoginParams(idToken: …))` is **Auth-first** by default (omit `mfaLevel`) — Auth `/start` before Torus, so MFA and `enableMFA` work without “token is used”.
+- Set `mfaLevel: MFALevel.NONE` only for **known non-MFA** silent local SFA. If that path hits an MFA-upgraded user, natives error; retry Auth-first with a **fresh** JWT.
 
 ## 🌟 Configuration
 
@@ -68,8 +75,8 @@ citadel `sessionId` + `accessToken` in the WebView hash (not a session-service k
 | --- | --- | --- |
 | Auth / dashboard URLs | `/v10` | `/v11` |
 | Wallet Services URL | `/v5` | `/v6` |
-| Android native | `10.0.1` | `11.0.0` |
-| iOS native | `12.0.1` (CocoaPods) | `13.0.0` via SPM (citadel) |
+| Android native | `10.0.1` | `11.0.0` (JWT/SFA MFA: **11.0.2+** in Flutter **8.0.1**) |
+| iOS native | `12.0.1` (CocoaPods) | `13.0.0` via SPM (citadel); JWT/SFA MFA fix in **13.0.1+** |
 | `MFALevel.DEFAULT` | present | **removed** |
 | Login audit | — | `loginSource` defaults to `web3auth-flutter`; optional `recordId` |
 | Session APIs | — | `getAccessToken`, `getIdentityToken`, `refreshSession`, `getUserInfoAsync` |

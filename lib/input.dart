@@ -17,7 +17,11 @@ class LoginParams {
 
   final String? appState;
 
-  /// Customize the MFA screen shown to the user during OAuth authentication.
+  /// Customize the MFA screen shown during OAuth authentication.
+  ///
+  /// For custom JWT / SFA `connectTo` (`idToken` set): omit this (or leave null)
+  /// so native SDKs use **Auth-first** `/start` (required for MFA). Set
+  /// [MFALevel.NONE] only for known non-MFA users to force silent local SFA.
   final MFALevel? mfaLevel;
 
   /// [extraLoginOptions] can be used to set the OAuth login options for corresponding [AuthConnection].
@@ -628,7 +632,7 @@ class WalletServicesConfig {
 }
 
 /// Flutter package version — used as analytics `sdk_version` when unset.
-const String packageVersion = '8.0.0';
+const String packageVersion = '8.0.1';
 
 /// Native default session lifetime (30 days) when project config does not override.
 const int defaultSessionTime = 30 * 86400;

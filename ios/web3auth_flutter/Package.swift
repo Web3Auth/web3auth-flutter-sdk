@@ -14,9 +14,11 @@ let package = Package(
     ],
     dependencies: [
         // Auth v11 / citadel — resolved via SPM only.
+        // Temporarily pin to SFA/JWT MFA Auth-first fix (fix/sfa-jwt-mfa-align-web).
+        // Switch back to `from: "13.0.1"` (or later) once that Swift release is tagged.
         .package(
             url: "https://github.com/web3auth/web3auth-swift-sdk.git",
-            from: "13.0.0"
+            revision: "58dcd1c9be633bcf5de0ad19bd233853d4e278e8"
         ),
         // Direct dependency required because Web3AuthFlutterPlugin imports
         // FetchNodeDetails (Web3AuthNetwork). SPM does not expose transitive modules.
