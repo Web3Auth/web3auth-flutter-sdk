@@ -2,8 +2,9 @@
 
 * Pick up native **custom JWT / SFA MFA** alignment (thin wrapper only — no Dart MFA routing).
   - Android floor: `web3auth-android-sdk` **11.0.2+** ([PR #124](https://github.com/Web3Auth/web3auth-android-sdk/pull/124)).
-  - iOS floor: Swift SFA/JWT MFA Auth-first fix (pin to merge/tag **13.0.1+** when published;
-    temporarily SPM-revision of `fix/sfa-jwt-mfa-align-web` until then).
+  - iOS floor: Swift **13.0.1+** ([release](https://github.com/Web3Auth/web3auth-swift-sdk/releases/tag/13.0.1) /
+    [PR #98](https://github.com/Web3Auth/web3auth-swift-sdk/pull/98)) — Auth-first JWT/SFA MFA
+    and scoped `KeychainHelper.clearAll` on logout (plugin SPM `from: "13.0.1"`).
 * JWT `connectTo(LoginParams(idToken: …))` is **Auth-first** by default (Auth `/start` before
   Torus `retrieveShares`) so MFA works and `enableMFA` / `manageMFA` are allowed for JWT/SFA
   sessions (natives no longer early-reject SFA/idToken).

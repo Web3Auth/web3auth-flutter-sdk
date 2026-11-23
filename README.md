@@ -51,11 +51,11 @@ flutter pub add web3auth_flutter
 | Platform | Native dependency |
 | --- | --- |
 | Android | `com.github.Web3Auth:web3auth-android-sdk:11.0.2+` (JitPack) |
-| iOS | `Web3Auth` **13.0.1+** via **Swift Package Manager** (SFA/JWT MFA Auth-first; until tagged, plugin pins the fix revision) |
+| iOS | `Web3Auth` **13.0.1+** via **Swift Package Manager** ([release](https://github.com/Web3Auth/web3auth-swift-sdk/releases/tag/13.0.1)) |
 
 ### Custom JWT / SFA MFA
 
-Flutter only forwards `connectTo` / `enableMFA` / `manageMFA` to native. With Android **11.0.2+** and the iOS SFA/JWT MFA fix:
+Flutter only forwards `connectTo` / `enableMFA` / `manageMFA` to native. With Android **11.0.2+** and iOS **13.0.1+**:
 
 - JWT `connectTo(LoginParams(idToken: …))` is **Auth-first** by default (omit `mfaLevel`) — Auth `/start` before Torus, so MFA and `enableMFA` work without “token is used”.
 - Set `mfaLevel: MFALevel.NONE` only for **known non-MFA** silent local SFA. If that path hits an MFA-upgraded user, natives error; retry Auth-first with a **fresh** JWT.
