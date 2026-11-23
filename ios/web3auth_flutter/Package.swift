@@ -16,7 +16,7 @@ let package = Package(
         // Auth v11 / citadel — resolved via SPM only.
         .package(
             url: "https://github.com/web3auth/web3auth-swift-sdk.git",
-            from: "13.0.0"
+            from: "13.0.1"
         ),
         // Direct dependency required because Web3AuthFlutterPlugin imports
         // FetchNodeDetails (Web3AuthNetwork). SPM does not expose transitive modules.
